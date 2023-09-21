@@ -2,12 +2,13 @@ import * as SQLite from "expo-sqlite";
 import { useEffect } from "react";
 import React, {Component} from "react";
 
-const db = SQLite.openDatabase("version2.db");
 
+
+//const db = SQLite.openDatabase("version2.db");
 class LocalStorage{
   
     constructor() {
-    //this.db = null; //SQLite.openDatabase("version2.db");
+    this.db = null; //SQLite.openDatabase("version2.db");
     this.lastUpdated = null;
     this.debug = true;
     }
@@ -16,8 +17,9 @@ class LocalStorage{
 
 
     getConnection() {
-       
-      return db;
+      this.db = SQLite.openDatabase("version2.db");
+      //console.log(db);
+      return this.db;
     }
 
     
@@ -78,7 +80,9 @@ class LocalStorage{
       return new Promise((resolve, reject) => {
 
         let promises = [];
-        if(this.db == null){ this.getConnection();}
+        if(this.db === null){ 
+          this.getConnection();
+        }
         this.db.transaction(tx => {
           promises.push(this._createTipoProducto(tx));
           promises.push(this._createNivelSocioeconomico(tx));
@@ -98,16 +102,19 @@ class LocalStorage{
           promises.push(this._createSyntransaction(tx));
 
           Promise.all(promises)
-          .then( (success) => {
-
+          .then( () => {
             result = {type : 'resolve', success: true};
-          }), (error) => {
+            resolve({ success: true });
+          })
+          .catch((error) => {
 //            console.log({error});
             result = {type : 'reject', success: false, error: error};
-          }
+            reject({ success: false, error: error });
+          });
 
-        }, function(error) {
-          reject({success:false,error:error})
+        }, (error) => {
+          result = { type: 'reject', success: false, error: error };
+          reject({success:false, error:error})
         }, () => {
 //          console.log('Transaction de inicialización exitosa...');
           if(result.type == 'resolve'){
@@ -171,7 +178,8 @@ class LocalStorage{
       }
     }
 
-    createTipoProducto(tx){
+    _createTipoProducto(tx){
+      console.log ("entr...a")
       return tx.executeSql(
 //        'DELETE FROM TipoProducto',
 
@@ -317,7 +325,7 @@ id_sync_status
 
     _createConfiguracion(tx){
       console.log("entra aca?...")
-      return tx.executeSql(
+        return tx.executeSql(
 //        'DELETE FROM c_configuracion',
         'CREATE TABLE IF NOT EXISTS c_configuracion (id INTEGER PRIMARY KEY AUTOINCREMENT, key VARCHAR(50), value VARCHAR(50))'
       );

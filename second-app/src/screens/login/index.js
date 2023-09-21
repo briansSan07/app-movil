@@ -45,8 +45,12 @@ const ventaModel = new VentaModel();
 const FROM_ACTIVATION = 1;
 const FROM_IS_ACTIVATED = 0;
 
-//const db = SQLite.openDatabase("db.db");
-
+/*
+function openDatabase(){
+  const db = SQLite.openDatabase("db.db");
+  return db;
+}
+*/
 
 export default class Login extends Component {
 
@@ -230,7 +234,32 @@ this.reenviarVenta();
     });
   }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
   validateForm() {
+
+  /*  const db= openDatabase();
+    db.transaction((tx) => {
+      console.log(" 375 ")
+      tx.executeSql(
+        'CREATE TABLE IF NOT EXISTS t_venta_pago (id INTEGER PRIMARY KEY AUTOINCREMENT, id_venta INT NULL, importe DECIMAL(18, 4) NULL, id_metodo_pago VARCHAR(5) NULL, efectivo DECIMAL(18, 4) NULL, cambio DECIMAL(18, 4) NULL, id_banco INT NULL, tipo_tarjeta VARCHAR(50) NULL, autorizacion VARCHAR(20) NULL, ultimos_digitos VARCHAR(10) NULL, dias_credito INT NULL)'
+      ,
+        console.log("aaaaa")
+      );
+    });
+    console.log(db);
+    */
 
 let sourceId = null;
     if(!this.state.isActivated){
@@ -365,19 +394,9 @@ let sourceId = null;
     if(this.debug) console.log("ingresarApp(" + from + ")");
     
 
-
-
-  /*console.log(" 373 ")
-      db.transaction((tx) => {
-        console.log(" 375 ")
-        tx.executeSql(
-          `create table items where done = ?;`,
-          [ 1],
-          (_, { rows: { _array } }) => {setItems(_array),
-          console.log("aaaaa", _array)}
-        );
-      });
-    */
+  
+  
+    
   
 
 

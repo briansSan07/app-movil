@@ -1,4 +1,6 @@
 import 'react-native-gesture-handler';
+
+import * as Font from 'expo-font';
 import * as gluestack from '@gluestack-ui/themed';
 import { ScrollView, Text,StyleSheet, TouchableNativeFeedback, View, Button, Image } from 'react-native';
 import { useFonts } from 'expo-font';
@@ -30,11 +32,15 @@ import ConfirmacionVenta from './src/screens/venta/confirmacionVenta';
 import Pagando from './src/screens/venta/pagar/pagando';
 import Pagada from './src/screens/venta/pagar/pagada';
 
+const LocalStorage = require ('./src/lib/database/LocalStorage');
+const ConcradServer = require ('./src/lib/remote/ConcradServer');
+const AppConfiguration = require ('./src/lib/model/AppConfiguration')
+
+const concradServer = new ConcradServer();
+const localStorage = new LocalStorage();
+const appConfiguration = new AppConfiguration();
+
 import isObject from 'isobject';
-
-import AppConfiguration from './src/lib/model/AppConfiguration';
-
-
 import Constants from 'expo-constants';
 
 
@@ -280,10 +286,7 @@ function Rutas() {
   )
 }
 
-
-
-export default function App() {
-  
+/*function Navegacion(){
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -309,6 +312,196 @@ export default function App() {
     </Stack.Navigator>
     </NavigationContainer>
   );
+}
+*/
+
+
+export default class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isReady: false,
+      isActivated:false
+    };
+    this.debug = true;
+  }
+
+  verificarDatabase(){
+    console.log("**** verificarDatabase con ErrorLog",{state: this.state});
+    return localStorage.existLocalDatabase();
+  }
+
+  
+  setAppIsReady(){
+    
+    this.setState({ isReady: true },() => { 
+//      this.checkAppIsActivated();
+    });
+  }
+
+  setAppIsActivated( state ){
+    
+    this.setState({ isActivated: state },() => { 
+//      this.checkAppIsActivated();
+    });
+  }
+  
+  iniciarTodoTest(){
+
+    console.debug("**** iniciarTodo ");
+    localStorage.createLocalDatabase().then((success) => {
+//      console.debug('En app.js Transaction de createLocalDatabase exitosa...', success);    
+
+      concradServer.loadCatalogosFromServer().then( result => {
+//        console.debug("En app.js Transaction de loadCatalogosFromServer exitosa..." , (isObject(result)) );
+
+        localStorage.fillCatalogos(result.data).then((success) => {
+//          console.debug('En app.js Transaction de fillCatalogos exitosa...', success);    
+
+          localStorage.verifyCatalogos().then((success) => {
+
+//            console.debug('En app.js Transaction de verifyCatalogos exitosa...', success);    
+            this.setState({ isReady: true });
+          })
+          .catch((error) => {
+            console.debug('Error app.js en la Transaction de verifyCatalogos: ', error);
+          });
+        })
+        .catch((error) => {
+          console.debug('Error app.js en la Transaction de fillCatalogos: ', error);
+        });
+      })
+      .catch((err) => {
+        console.debug("Error app.js en la Transaction de loadCatalogosFromServer: " ,err);
+      });
+    })
+    .catch((error) => {
+      console.debug('Error app.js en la Transaction de createLocalDatabase: ', error);
+    });
+
+
+    today=new Date();
+    h=today.getHours();
+    m=today.getMinutes();
+    s=today.getSeconds();
+    a=today.getFullYear();
+    ms=today.getMonth();
+    d=today.getDate();
+    console.debug(a+"-"+ms+"-"+d+"T"+h+":"+m+":"+s);
+  }
+
+  /**
+   * se encarga de inicializar el almacenamiento local con la base de datos. Si no existe la base se crea y se inicializa.
+   */
+  inicializarApp(){
+
+    // VERIFICA SI EXISTE O NO EXISTE LA BASE DE DATOS
+    this.verificarDatabase()    
+    .then((success) => {
+      if(this.debug) console.debug("SI existe la base de datos: ",{success});
+      this.setAppIsReady();
+    })
+    .catch((error) => {
+      if(this.debug) console.debug('NO existe la base de datos... Se creará la base de datos');
+      // CREACION DE LA BASE DE DATOS LOCAL
+      localStorage.createLocalDatabase()
+      .then((success) => {
+        if(this.debug) console.debug('Creación exitosa de la base de datos local. ', success);    
+
+        localStorage.initializeLocalDatabase()
+        .then((success) => {
+          if(this.debug) console.debug('Inicialización exitosa de la base de datos local. ', success);
+          this.setAppIsReady();
+        })
+        .catch((error) => {
+          console.debug('Error en la inicialización de la base de datos local. ', error);
+        });
+      })
+      .catch((error) => {
+        console.debug('Error en la creación de la base de datos local. ', error);
+      });
+  
+
+    });
+  }
+
+  checkAppIsActivated(){
+    if(this.debug) console.debug("...checkAppIsActivated()");
+    appConfiguration.isAppActivated()
+    .then((result) => {
+      if(result.success && result.isAppActivated){
+        this.setAppIsActivated(true);
+//        console.debug('La aplicación SI esta activada!!!', result);
+      }else{
+        this.setAppIsActivated(false);
+//        console.debug('La aplicación NO esta activada!!!', result);
+      }
+    })
+    .catch((error) => {
+      this.setAppIsActivated(false);
+//      console.debug('La aplicación NO esta activada!!!', error);
+    });
+  }
+
+
+  async componentDidMount() {
+
+    this.inicializarApp();
+
+
+
+
+    /*await Font.loadAsync({
+      Roboto: require('native-base/Fonts/Roboto.ttf'),
+      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf')
+//      Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf")
+    });
+//    this.setState({ isReady: true });
+*/
+  }
+
+
+  /*render() {
+    if (!this.state.isReady) {
+      return <AppLoading />;
+    }
+
+    return (
+      <Root>
+        <AppContainer />
+      </Root>
+    );
+  }
+  */
+
+  render() {
+    return(
+    <NavigationContainer>
+      <Stack.Navigator>
+      <Stack.Screen
+      name="Ruta"
+      component={Rutas}
+      options={{ headerShown: false, title: ''
+      }}
+      />
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="SettingScreen" component={SettingScreen} />
+      <Stack.Screen name="Cliente" component={Cliente} />
+      <Stack.Screen name="AgregarCliente" component={Cliente} />
+      <Stack.Screen name="ClienteDetalle" component={ClienteDetalle} />
+      <Stack.Screen name="Venta" component={Venta} />
+      <Stack.Screen name="ConfirmacionVenta" component={ConfirmacionVenta} />
+      <Stack.Screen name="Pagando" component={Pagando} />
+      <Stack.Screen name="Pagada" component={Pagada} />
+      <Stack.Screen name="BluetoothList" component={BluetoothList} />
+      <Stack.Screen name="VideoIndex" component={VideoIndex} options={{title: '¿Qué es Concrad?'}} />
+      
+      
+    </Stack.Navigator>
+    </NavigationContainer>
+    );
+  }
+
 }
 
 
