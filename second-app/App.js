@@ -13,7 +13,7 @@ import Gradient from './assets/Icons/Gradient';
 import DocumentData from './assets/Icons/DocumentData';
 import LightBulbPerson from './assets/Icons/LightbulbPerson';
 import Rocket from './assets/Icons/Rocket';
-import Logo from './assets/Icons/Logo';
+
 import * as React from 'react';
 
 import Login from './src/screens/login';
@@ -280,8 +280,9 @@ function Rutas() {
   return(
       <Drawer.Navigator initialRouteName="Cliente">
         <Drawer.Screen name="Cliente" component={HomeScreen} />
-       
+      
         <Stack.Screen name="Detalles" component={SettingScreen} />
+        <Stack.Screen name="SideBar" component={SideBar}/>
       </Drawer.Navigator>
   )
 }
@@ -345,7 +346,7 @@ export default class App extends React.Component {
 //      this.checkAppIsActivated();
     });
   }
-  
+
   iniciarTodoTest(){
 
     console.debug("**** iniciarTodo ");
@@ -378,7 +379,6 @@ export default class App extends React.Component {
     .catch((error) => {
       console.debug('Error app.js en la Transaction de createLocalDatabase: ', error);
     });
-
 
     today=new Date();
     h=today.getHours();
@@ -498,6 +498,7 @@ export default class App extends React.Component {
       
       
     </Stack.Navigator>
+    
     </NavigationContainer>
     );
   }

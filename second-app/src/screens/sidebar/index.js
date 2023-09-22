@@ -1,32 +1,31 @@
 import React, { Component } from "react";
-import { Image,SafeAreaView } from "react-native";
-import {
-  Content,
-  Text,
-  List,
-  ListItem,
-  Icon,
-  Container,
-  Left,
-  Right,
-  Badge
-} from "react-native";
-import styles from "./style";
+import { Image,SafeAreaView, FlatList, Text, View, TouchableHighlight, Dimensions, Platform, StyleSheet, TouchableOpacity } from "react-native";
+
+
+import Icon from 'react-native-vector-icons/Ionicons';
+//import { TouchableOpacity } from "react-native-gesture-handler";
+
+
+
+
+const windowHeight = Dimensions.get("window").height;
+const windowWidth = Dimensions.get("window").width;
 
 const drawerCover = require("./../../../assets/blanco.png");
 const drawerImage = require("./../../../assets/concrad.png");
+
 const datas = [
   {
     name: "Nueva Venta",
     route: "Venta",
-    icon: "md-cart",
+    icon: "cart",
     key: "1",
    // bg: "#C5F442"
   },
   {
     name: "Clientes",
     route: "Cliente",
-    icon: "md-person",
+    icon: "person",
     key: "2",
   //  bg: "#477EEA",
   // types: "11"
@@ -204,6 +203,7 @@ const datas = [
   }*/
 ];
 
+
 export default class SideBar extends Component {
   constructor(props) {
     super(props);
@@ -219,13 +219,17 @@ export default class SideBar extends Component {
     global.ventaUnique = global.ventaUnique + 1
   }
 
+  componentDidMount(){
+  }
+
+  componentWillUnmount(){
+  } 
 
   render() {
 
     return (
-      <Container>
-        <Content
-          bounces={false}
+        <View
+          bounce={false}
           style={{ flex: 1, backgroundColor: "#fff", top: -1 }}
         >
           <SafeAreaView style={{flex: 1}}>
@@ -234,21 +238,89 @@ export default class SideBar extends Component {
             <Image square style={styles.drawerImage} source={drawerImage} />
 
 
-            <List
-            dataArray={datas}
-            renderRow={data =>
-              <ListItem
-                button
-                noBorder
+            <FlatList
+            contentContainerStyle={{flex:1}}
+            data={datas}
+            renderItem={({item}) => {
+              return (
+              <TouchableOpacity
+                style={{alignItems: 'center',
+                flexDirection:'row',
+                marginTop: 5}}
                 onPress={() => {
-                  this.props.navigation.closeDrawer()
+                  this.props.navigation.closeDrawer();
                   console.log("****** this.state.uniqueValue: " , global.ventaUnique);
-                  this.props.navigation.navigate(data.route , {uniqueValue:global.ventaUnique,origen:"MENU"});
+                  this.props.navigation.navigate(item.route , {uniqueValue:global.ventaUnique,origen:"MENU"});
                   this.nextAction();                  
-
+              
                 }}
               >
-                <Left>
+                <Icon
+                    name={item.icon}
+                    style={{ color: "#777", fontSize: 26, width: 30 }}
+                  />
+                <Text style={styles.text}>{item.name}</Text>
+                {item.types &&
+                  <View style={{ flex: 1 }}>
+                    <View
+                      style={{
+                        borderRadius: 3,
+                        height: 25,
+                        width: 72,
+                        backgroundColor: item.bg
+                      }}
+                    >
+                      <Text
+                        style={styles.badgeText}
+                      >{`${item.types} Types`}</Text>
+                    </View>
+                  </View>}
+              </TouchableOpacity>
+              )
+            }}
+            />
+          </SafeAreaView>
+        </View>
+
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  drawerCover: {
+    alignSelf: "stretch",
+    height: windowHeight / 3.5,
+    width: null,
+    position: "relative",
+    marginBottom: 10
+  },
+  drawerImage: {
+    position: "absolute",
+    left: Platform.OS === "android" ? windowWidth / 10 : windowWidth / 9,
+    top: Platform.OS === "android" ? windowHeight / 13 : windowHeight / 12,
+    width: 210,
+    height: 120,
+    resizeMode: "cover"
+  },
+  text: {
+    fontWeight: Platform.OS === "ios" ? "500" : "400",
+    fontSize: 16,
+    marginLeft: 20
+  },
+  badgeText: {
+    fontSize: Platform.OS === "ios" ? 13 : 11,
+    fontWeight: "400",
+    textAlign: "center",
+    marginTop: Platform.OS === "android" ? -3 : undefined
+  }
+})
+
+
+
+
+
+/*
+<Left>
                   <Icon
                     active
                     name={data.icon}
@@ -272,14 +344,5 @@ export default class SideBar extends Component {
                         style={styles.badgeText}
                       >{`${data.types} Types`}</Text>
                     </Badge>
-                  </Right>}
-              </ListItem>}
-            />
-
-          </SafeAreaView>
-        </Content>
-      </Container>
-    );
-  }
-}
-
+                  </Right>
+                  */

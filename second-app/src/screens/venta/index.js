@@ -38,7 +38,7 @@ if (process.env.NODE_ENV !== 'production') {
   //const {whyDidYouUpdate} = require('why-did-you-update');  whyDidYouUpdate(React)
 }
 
-//    console.log("* uniqueValue: " , (props.navigation.getParam('uniqueValue')));
+   //console.log("* uniqueValue: " , (props.route.params.uniqueValue));
 
     this.state = {
       count: 0, 
@@ -951,6 +951,7 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
             
 
     );
+    
   }
 
 
