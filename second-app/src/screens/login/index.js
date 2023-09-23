@@ -52,7 +52,7 @@ function openDatabase(){
 }
 */
 
-export default class Login extends Component {
+class Login extends Component {
 
   constructor(props) {
     super(props);
@@ -248,18 +248,6 @@ this.reenviarVenta();
 
 
   validateForm() {
-
-  /*  const db= openDatabase();
-    db.transaction((tx) => {
-      console.log(" 375 ")
-      tx.executeSql(
-        'CREATE TABLE IF NOT EXISTS t_venta_pago (id INTEGER PRIMARY KEY AUTOINCREMENT, id_venta INT NULL, importe DECIMAL(18, 4) NULL, id_metodo_pago VARCHAR(5) NULL, efectivo DECIMAL(18, 4) NULL, cambio DECIMAL(18, 4) NULL, id_banco INT NULL, tipo_tarjeta VARCHAR(50) NULL, autorizacion VARCHAR(20) NULL, ultimos_digitos VARCHAR(10) NULL, dias_credito INT NULL)'
-      ,
-        console.log("aaaaa")
-      );
-    });
-    console.log(db);
-    */
 
 let sourceId = null;
     if(!this.state.isActivated){
@@ -459,7 +447,6 @@ let sourceId = null;
                           usuarioModel.userLogin(this.state.usuario,this.state.password)
                           .then((result) => {
       
-      
                             if(this.debug) console.log( 'SI EXISTE el usuario  !!!', result.usuario );
       
                             global.usuario = result.usuario;
@@ -489,7 +476,8 @@ let sourceId = null;
                               if(this.debug) console.log('En executeSyncronization exitosa...', success);            
       
                               syncronizeCatalogs.startSyncronization(); // THREAD DE SINCRONIZACIÓN DE CATALOGOS
-      
+
+
                               this.props.navigation.navigate("Venta");
           
                           })
@@ -1117,28 +1105,6 @@ openVideo(){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const styles = StyleSheet.create({
   imageContainer: {
     flex: 2,
@@ -1170,3 +1136,5 @@ const styles = StyleSheet.create({
   }
 })
 
+
+module.exports = Login;

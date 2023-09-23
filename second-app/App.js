@@ -13,10 +13,10 @@ import Gradient from './assets/Icons/Gradient';
 import DocumentData from './assets/Icons/DocumentData';
 import LightBulbPerson from './assets/Icons/LightbulbPerson';
 import Rocket from './assets/Icons/Rocket';
-
+import Logo from './assets/Icons/Logo';
 import * as React from 'react';
 
-import Login from './src/screens/login';
+
 import SideBar from './src/screens/sidebar';
 
 //import Home from './src/screens/HomeScreen';
@@ -35,10 +35,12 @@ import Pagada from './src/screens/venta/pagar/pagada';
 const LocalStorage = require ('./src/lib/database/LocalStorage');
 const ConcradServer = require ('./src/lib/remote/ConcradServer');
 const AppConfiguration = require ('./src/lib/model/AppConfiguration')
+const Login = require ('./src/screens/login');
 
 const concradServer = new ConcradServer();
 const localStorage = new LocalStorage();
 const appConfiguration = new AppConfiguration();
+const login = new Login();
 
 import isObject from 'isobject';
 import Constants from 'expo-constants';
@@ -240,81 +242,29 @@ const Stack = createStackNavigator();
 
 
 
-function MyDrawer(){
-  return (
-    <Drawer.Navigator>
-      <Drawer.Screen name="Cliente" component={HomeScreen} />
-      <Drawer.Screen name="Venta" component={DetailsScreen} />
-    </Drawer.Navigator>
-  );
-}
 
-function MyStack() {
-  return (
-    <Stack.Navigator
-      initialRouteName="SettingScreen"
-      screenOptions={{
-        headerMode: 'screen',
-        headerTintColor: 'white',
-        headerStyle: { backgroundColor: 'tomato' },
-      }}
-      >
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="SettingScreen" component={SettingScreen} />
-      <Stack.Screen name="Cliente" component={Cliente} />
-      <Stack.Screen name="AgregarCliente" component={Cliente} />
-      <Stack.Screen name="ClienteDetalle" component={ClienteDetalle} />
-      <Stack.Screen name="Venta" component={Venta} />
-      <Stack.Screen name="ConfirmacionVenta" component={ConfirmacionVenta} />
-      <Stack.Screen name="Pagando" component={Pagando} />
-      <Stack.Screen name="Pagada" component={Pagada} />
-      <Stack.Screen name="BluetoothList" component={BluetoothList} />
-      <Stack.Screen name="VideoIndex" component={VideoIndex} />
-      
-      
-    </Stack.Navigator>
-  )
-}
 
 function Rutas() {
   return(
-      <Drawer.Navigator initialRouteName="Cliente">
-        <Drawer.Screen name="Cliente" component={HomeScreen} />
-      
-        <Stack.Screen name="Detalles" component={SettingScreen} />
-        <Stack.Screen name="SideBar" component={SideBar}/>
+      <Drawer.Navigator
+      initialRouteName = "Login"
+      screenOptions={{
+            activeTintColor: "#e91e63"
+      }}
+      drawerContent={(props) =><SideBar {...props} />}
+        >
+        <Drawer.Screen name="HomeScreen" component={HomeScreen} />
+        <Drawer.Screen name="SettingScreen" component={SettingScreen} />
+        <Drawer.Screen name="Cliente" component={Cliente} />
+        <Drawer.Screen name="Login" component={Login} 
+                                    options={{
+                                      headerShown: false, hidden: true
+                                            }} />
+        <Drawer.Screen name="Venta" component={Venta} />
       </Drawer.Navigator>
   )
 }
 
-/*function Navegacion(){
-  return (
-    <NavigationContainer>
-      <Stack.Navigator>
-      <Stack.Screen
-      name="Ruta"
-      component={Rutas}
-      options={{ headerShown: false, title: ''
-      }}
-      />
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="SettingScreen" component={SettingScreen} />
-      <Stack.Screen name="Cliente" component={Cliente} />
-      <Stack.Screen name="AgregarCliente" component={Cliente} />
-      <Stack.Screen name="ClienteDetalle" component={ClienteDetalle} />
-      <Stack.Screen name="Venta" component={Venta} />
-      <Stack.Screen name="ConfirmacionVenta" component={ConfirmacionVenta} />
-      <Stack.Screen name="Pagando" component={Pagando} />
-      <Stack.Screen name="Pagada" component={Pagada} />
-      <Stack.Screen name="BluetoothList" component={BluetoothList} />
-      <Stack.Screen name="VideoIndex" component={VideoIndex} options={{title: '¿Qué es Concrad?'}} />
-      
-      
-    </Stack.Navigator>
-    </NavigationContainer>
-  );
-}
-*/
 
 
 export default class App extends React.Component {

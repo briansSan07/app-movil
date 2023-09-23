@@ -3,9 +3,11 @@ import { Updates } from 'expo';
 import {
   Container,  Header,  Title, Subtitle,  Content,  Button,  ListItem,
   Text,  Thumbnail,  Left,  Body,  Right,  Item,  Footer,  FooterTab,
-  Badge,  Accordion,  View,  Input,  List,  Toast,  H1,  H2,  H3, Switch,Spinner,
-  FlatList, StyleSheet, StatusBar,
+  Badge,  Accordion,  View,  Input,  Toast,  H1,  H2,  H3, Switch,Spinner,
+  FlatList, StyleSheet, StatusBar, TouchableHighlight, SectionList
 } from "react-native";
+
+import { List } from 'react-native-paper';
 
 import { Icon } from '@rneui/themed';
 import {TextInput, AppRegistry,Navigator,SafeAreaView, Alert} from "react-native";
@@ -23,6 +25,7 @@ const syncronizeCatalogs = new SyncronizeCatalogs();
 
 import styles from "./styles";
 import globalStyles from "./../styles";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 
 var inicial=" ";
@@ -68,7 +71,7 @@ if (process.env.NODE_ENV !== 'production') {
       busquedaConcluida:false,      
       productosDisplay:null,
 
-      uniqueValue: (props.navigation.getParam('uniqueValue')) ? (props.navigation.getParam('uniqueValue')) : 0 ,
+      uniqueValue: props.route.Param?.uniqueValue || 0 ,
       carritoCompras:[],
       cliente:null,
       isAsignacionCliente:false,
@@ -122,9 +125,9 @@ if (process.env.NODE_ENV !== 'production') {
   componentDidUpdate(prevProps) {
     
 //    console.log( "********* venta.componentDidUpdate this.isLoading: " , prevProps );
-
-    const prevUniqueValue =  prevProps.navigation.getParam('uniqueValue');
-    const thisUniqueValue =  this.props.navigation.getParam('uniqueValue');
+//uniqueValue: props.route.Param?.uniqueValue || 0 ,
+    const prevUniqueValue =  prevProps.route.params?.uniqueValue;
+    const thisUniqueValue =  this.props.route.params?.uniqueValue;
     
     const stateUniqueValue =  this.state.uniqueValue;
 
@@ -144,7 +147,7 @@ if (process.env.NODE_ENV !== 'production') {
     
   }
   
-  shouldComponentUpdate(nextProps) {
+  /*shouldComponentUpdate(nextProps) {
     //productosDisplayArray
 //    console.log(".shouldComponentUpdate:" , {nextProps:nextProps.navigation.state.params.uniqueValue , "this.props": this.props.navigation.state.params.uniqueValue});
 //    if (this.props.navigation.state.params.uniqueValue == 0 || this.props.navigation.state.params.uniqueValue !== nextProps.navigation.state.params.uniqueValue) {
@@ -154,6 +157,7 @@ if (process.env.NODE_ENV !== 'production') {
 //      return true;
 //    }
   }
+  */
 
 
   checkAppUpdates(){
@@ -789,23 +793,6 @@ mostrarValor(producto){
 //console.log("categoriaBruta: " + categoria.tipo_producto + " expanded: " + expanded);
 
     return (
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       <View
         style={{
           flexDirection: "row",
@@ -834,28 +821,7 @@ mostrarValor(producto){
     );
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  _renderContent(categoria) {
+_renderContent(categoria) {
 
 
 //  let productoFiltrados = this.state.productosDisplayArray;
@@ -869,37 +835,10 @@ const ventaSinIva = this.state.ventaSinIva;
 if(productoFiltrados != null && productoFiltrados.length > 0){
 
     return (
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      <View
+    <FlatList
             dataArray={productoFiltrados}
-            renderRow={(producto) =>
-        <FlatList thumbnail style={{marginLeft:5,marginRight:5}}>
+            renderItem={(producto) =>
+        <TouchableOpacity  style={{marginLeft:5,marginRight:5}}>
                 <View>
                   <Image size="16" source ={{uri:'https://atletl.api.concrad.com/'+producto.imagen}} alt="react-native"   />
                 </View>
@@ -911,13 +850,13 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
                   <View>
                     
                     <View style={{ backgroundColor:'#fff', height: 27 }}>
-                    <Text note>Disp: {producto.cantidad}</Text> 
+                    <Text >Disp: {producto.cantidad}</Text> 
                     </View>
                     <View style={{ backgroundColor:'#fff', height: 27 }}>
-                    <Text note>$ {ventaSinIva ? Math.round(producto.precio_antes_impuestos*100)/100 : producto.precio}</Text> 
+                    <Text >$ {ventaSinIva ? Math.round(producto.precio_antes_impuestos*100)/100 : producto.precio}</Text> 
                     </View>
                     <View style={{ backgroundColor:'#fff', width:93, height: 27, flex:0, flexDirection:'row' }}>
-                      <Button transparent small style={{paddingTop:0,paddingBottom:0}} onPress={()=> this.menosUno(producto)}>
+                      <Button title="-"transparent small style={{paddingTop:0,paddingBottom:0}} onPress={()=> this.menosUno(producto)}>
                         <Icon name="remove" style={{...globalStyles.headerButton,marginLeft:8,marginRight:8}} />
                       </Button>
                       
@@ -931,7 +870,7 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
                               keyboardType={"numeric"}
                               value={ "" + this.state.carritoCompras.filter(row => row.id == producto.idProducto).reduce((cant,row) => cant + row.cantidad,inicial) }
                           />
-                        <Button transparent small style={{paddingTop:0,paddingBottom:0}}  onPress={()=> this.sumaUno(producto)}>
+                        <Button title="+" transparent small style={{paddingTop:0,paddingBottom:0}}  onPress={()=> this.sumaUno(producto)}>
                         <Icon name="add" style={{...globalStyles.headerButton,marginLeft:8,marginRight:10}} />
                       </Button>
                     </View>
@@ -945,7 +884,7 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
                    
                 </View>
 
-              </FlatList>}
+              </TouchableOpacity>}
               
               />
             
@@ -953,45 +892,46 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
     );
     
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   }
+
 
 
   render() {
 
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     const buscadorProductosActivo = this.state.buscadorProductosActivo;
 
 //    console.log("****** Render ");
     return (
-<View style={styles.container}>
+  <View style={styles.container}>
     
 
-        <View iosBarStyle={"dark-content"} style={{ ...globalStyles.header , height:115,paddingTop:10 }} searchBar rounded>
+        <View style={{ ...globalStyles.header , height:115,paddingTop:10 }} >
         <View style={{flex: 0}}>
-            <Button
-              transparent
+            <Button title="menu"
+              
               onPress={() => this.props.navigation.openDrawer()}>
               <Icon name="menu" style={globalStyles.headerButton} />
             </Button>
@@ -1001,7 +941,7 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
           buscadorProductosActivo &&
           <View style={{flex: 3}}>
           <View >
-              <Icon active name="search" style={globalStyles.headerButton} />
+              <Icon name="search" style={globalStyles.headerButton} />
               <TextInput placeholder="Producto" 
                   autoFocus = {true}
                   onChangeText={(busqueda) => this.onChangeSeachBox(busqueda)}                            
@@ -1040,7 +980,7 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
             <View>
               <View style={{height: 45}}>
               <View style={{  height: 45,width:45 }}>
-                <Button transparent style={{paddingLeft:10,paddingRight:5,height: 45}} onPress={() => this.activarBuscadorProductos() } >
+                <Button title="buscador"  style={{paddingLeft:10,paddingRight:5,height: 45}} onPress={() => this.activarBuscadorProductos() } >
                   {
                     !buscadorProductosActivo &&
                     <Icon name="search" style={globalStyles.headerButton} />
@@ -1052,7 +992,7 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
                 </Button>
               </View>
               <View style={{   height: 45,width:45 }}>
-                <Button  transparent style={{paddingLeft:10,paddingRight:5,height: 45}} onPress={() => this.mostrarClientes() } >
+                <Button title="cliente"  style={{paddingLeft:10,paddingRight:5,height: 45}} onPress={() => this.mostrarClientes() } >
                   <Icon name="person-add" style={globalStyles.headerButton} />
                 </Button>
               </View>
@@ -1100,7 +1040,7 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
           this.state.showUpdate ?
           <View style={{alignItems:'center'}}>
             <Text>Se ha liberado una actualización al aplicativo.</Text> 
-            <Button block style={{ margin: 15, marginTop: 20, backgroundColor: "#2496bc" }} onPress={() => this.doUpdate()}>
+            <Button title="Actualizar" block style={{ margin: 15, marginTop: 20, backgroundColor: "#2496bc" }} onPress={() => this.doUpdate()}>
               <Text>Clic para actualizar</Text>
             </Button>
       
@@ -1126,9 +1066,8 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
 {
   (( this.state.buscadorProductosActivo && !this.state.iniciarBusqueda && this.state.busquedaConcluida ))  &&
   
-
-<View>
-          <FlatList itemHeader first style={{paddingLeft:0,paddingRight:0,paddingBottom:0}}>
+<FlatList>
+          <TouchableOpacity  style={{paddingLeft:0,paddingRight:0,paddingBottom:0}}>
             <View
               style={{
                 flex:1,
@@ -1148,11 +1087,11 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
 
             </View>
 
-            </FlatList>
+            </TouchableOpacity>
   
             {  this._renderContent('') }
 
-          </View>
+          </FlatList>
 
 }
           </View>
@@ -1161,12 +1100,12 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
         <View >
           <View style={{backgroundColor: "#51747F"}}>
             <Button
-              
+            title="Datos"
              disabled={this.state.isLoading}
              onPress={() => this.pasarDatos()}
              style={{paddingTop:15}}
-              vertical
-              badge
+              
+              
             >
               <View style={{ backgroundColor: "#cb8d12" }}>
                 <Text>{this.state.count}</Text>
@@ -1175,7 +1114,7 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
               <Text style={{color: 'white'}}>Confirmar</Text>
 
             </Button>
-            <Button disabled={this.state.isLoading} onPress={() => this.pasarDatos()}>
+            <Button title="otroDAto" disabled={this.state.isLoading} onPress={() => this.pasarDatos()}>
               
               <NumberFormat value={Math.abs(this.state.suma)} displayType={'text'} thousandSeparator={true} prefix={'$'} fixedDecimalScale={true} decimalScale={2} renderText={value => <H3 style={{color: 'white'}}>{value}</H3> } />
 
@@ -1185,6 +1124,7 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
       </View >
     );
   }
+  
 }
 
 //export default Venta;
