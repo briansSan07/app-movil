@@ -1,30 +1,30 @@
 import React, { Component} from "react";
 import { Updates } from 'expo';
 import {
-  Container,  Header,  Title, Subtitle,  Content,  Button,  ListItem,
-  Text,  Thumbnail,  Left,  Body,  Right,  Item,  Footer,  FooterTab,
-  Badge,  Accordion,  View,  Input,  Toast,  H1,  H2,  H3, Switch,Spinner,
-  FlatList, StyleSheet, StatusBar, TouchableHighlight, SectionList
+ View, Switch,Spinner,
+  FlatList, StyleSheet, Dimensions, Text
 } from "react-native";
 
-import { List } from 'react-native-paper';
+const deviceHeight = Dimensions.get("window").height;
+const deviceWidth = Dimensions.get("window").width;
 
-import { Icon } from '@rneui/themed';
+import { AccordionList } from 'accordion-collapse-react-native';
+import Constants from 'expo-constants';
+import { Button, ListItem } from '@rneui/themed';
 import {TextInput, AppRegistry,Navigator,SafeAreaView, Alert} from "react-native";
-import { withNavigationFocus } from '@react-navigation/native';
-import { Col, Row, Grid } from 'react-native-easy-grid';
 import NumberFormat from 'react-number-format';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-
-import CatalogosModel from '../../lib/model/CatalogosModel';
-import ProductoModel from '../../lib/model/ProductoModel';
-import ClienteModel from '../../lib/model/ClienteModel';
-
+const CatalogosModel = require ('../../lib/model/CatalogosModel');
 const SyncronizeCatalogs = require ('./../../lib/syncronization/SyncronizeCatalogs');
-const syncronizeCatalogs = new SyncronizeCatalogs();
+const ProductoModel = require ('../../lib/model/ProductoModel');
+const ClienteModel = require ('../../lib/model/ClienteModel');
 
-import styles from "./styles";
-import globalStyles from "./../styles";
+const catalogosModel = new CatalogosModel();
+const syncronizeCatalogs = new SyncronizeCatalogs();
+const productoModel = new ProductoModel();
+const clienteModel = new ClienteModel();
+
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 
@@ -196,7 +196,7 @@ if (process.env.NODE_ENV !== 'production') {
   consultaCategoria(){
 
     if (global.TiposProducto == null || global.TiposProducto == undefined) {
-      ProductoModel.consultarTiposProducto()
+      productoModel.consultarTiposProducto()
       .then((result) => {
         console.log("consultarTiposProducto:" , result.list.length);
         global.TiposProducto = result.list;
@@ -214,7 +214,7 @@ if (process.env.NODE_ENV !== 'production') {
   consultaClientes(){
 
     if (global.clientes == null || global.clientes == undefined) {
-      ClienteModel.consultarClientes()
+      clienteModel.consultarClientes()
       .then((result) => {
         console.log("consultar Clientes:" , result.clientesList.length);
         global.clientes = result.clientesList;
@@ -229,7 +229,7 @@ if (process.env.NODE_ENV !== 'production') {
   consultaProductos(nivelSocioeconomico){
     console.log("**** consultaProductos");
 
-    ProductoModel.consultaProductos(nivelSocioeconomico)
+    productoModel.consultaProductos(nivelSocioeconomico)
     .then((result) => {
       console.log("consultaProductos:" , result.list.length);
       this.llenarProducto(result.list);
@@ -244,7 +244,7 @@ if (process.env.NODE_ENV !== 'production') {
   consultaProductosByTipoProducto(nivelSocioeconomico,tipoProducto){
     console.log("**** consultaProductosByTipoProducto");
 
-    ProductoModel.consultaProductosByTipoProducto(nivelSocioeconomico,tipoProducto)
+    productoModel.consultaProductosByTipoProducto(nivelSocioeconomico,tipoProducto)
     .then((result) => {
       console.log("consultaProductosByTipoProducto:" , result.list.length);
       this.llenarProducto(result.list);  
@@ -257,7 +257,7 @@ if (process.env.NODE_ENV !== 'production') {
 
   consultaNivelSocioeconomicoPublico(){
     if (global.publicoGeneral == null) {
-      CatalogosModel.consultarNivelSocioeconomicoPublicoGral()
+      catalogosModel.consultarNivelSocioeconomicoPublicoGral()
       .then((result) => {
 //        console.log("Resultado de consultarNivelPublico:" , result.nivelPublico);
         global.publicoGeneral = result.nivelPublico.id;
@@ -285,7 +285,7 @@ if (process.env.NODE_ENV !== 'production') {
 
   consultaMetodosPago(){
     if (global.metodosPago == null) {
-      CatalogosModel.consultarMetodosPago()
+      catalogosModel.consultarMetodosPago()
       .then((result) => {
 //        console.log("Resultado de consultarMetodosPago:" , result.metodosPagoList);
         global.metodosPago = result.metodosPagoList;
@@ -299,7 +299,7 @@ if (process.env.NODE_ENV !== 'production') {
 
   consultaBancos(){
     if (global.bancos == null || global.bancos == undefined) {
-      CatalogosModel.consultarBancos()
+      catalogosModel.consultarBancos()
       .then((result) => {
         console.log("Resultado de consultarBancos:" , result.bancosList.length);
         global.bancos = result.bancosList;
@@ -314,7 +314,7 @@ if (process.env.NODE_ENV !== 'production') {
 
   consultaEstados(){
     if (global.estados == null) {
-      CatalogosModel.consultarEstados()
+      catalogosModel.consultarEstados()
       .then((result) => {
 //        console.log("Resultado de consultarMetodosPago:" , result.metodosPagoList);
         global.estados = result.estadosList;
@@ -835,8 +835,9 @@ const ventaSinIva = this.state.ventaSinIva;
 if(productoFiltrados != null && productoFiltrados.length > 0){
 
     return (
+      <View>
     <FlatList
-            dataArray={productoFiltrados}
+            data={productoFiltrados}
             renderItem={(producto) =>
         <TouchableOpacity  style={{marginLeft:5,marginRight:5}}>
                 <View>
@@ -856,7 +857,7 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
                     <Text >$ {ventaSinIva ? Math.round(producto.precio_antes_impuestos*100)/100 : producto.precio}</Text> 
                     </View>
                     <View style={{ backgroundColor:'#fff', width:93, height: 27, flex:0, flexDirection:'row' }}>
-                      <Button title="-"transparent small style={{paddingTop:0,paddingBottom:0}} onPress={()=> this.menosUno(producto)}>
+                      <Button title="-" size="small" style={{paddingTop:0,paddingBottom:0}} onPress={()=> this.menosUno(producto)}>
                         <Icon name="remove" style={{...globalStyles.headerButton,marginLeft:8,marginRight:8}} />
                       </Button>
                       
@@ -870,7 +871,7 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
                               keyboardType={"numeric"}
                               value={ "" + this.state.carritoCompras.filter(row => row.id == producto.idProducto).reduce((cant,row) => cant + row.cantidad,inicial) }
                           />
-                        <Button title="+" transparent small style={{paddingTop:0,paddingBottom:0}}  onPress={()=> this.sumaUno(producto)}>
+                        <Button title="+" size="small" style={{paddingTop:0,paddingBottom:0}}  onPress={()=> this.sumaUno(producto)}>
                         <Icon name="add" style={{...globalStyles.headerButton,marginLeft:8,marginRight:10}} />
                       </Button>
                     </View>
@@ -887,7 +888,7 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
               </TouchableOpacity>}
               
               />
-            
+            </View>
 
     );
     
@@ -895,31 +896,7 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
   }
 
 
-
   render() {
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     const buscadorProductosActivo = this.state.buscadorProductosActivo;
 
@@ -1040,7 +1017,7 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
           this.state.showUpdate ?
           <View style={{alignItems:'center'}}>
             <Text>Se ha liberado una actualización al aplicativo.</Text> 
-            <Button title="Actualizar" block style={{ margin: 15, marginTop: 20, backgroundColor: "#2496bc" }} onPress={() => this.doUpdate()}>
+            <Button title="Actualizar" style={{ margin: 15, marginTop: 20, backgroundColor: "#2496bc" }} onPress={() => this.doUpdate()}>
               <Text>Clic para actualizar</Text>
             </Button>
       
@@ -1052,21 +1029,24 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
 {
   (!this.state.buscadorProductosActivo)  &&
 
-<List.Accordion
+<AccordionList
+
             dataArray={this.state.categoriaDisplayArray}
             animation={true}
-            expanded={this.state.categoriaExpanded} // Index of accordion set open
+            isExpanded={this.state.categoriaExpanded} // Index of accordion set open
             renderHeader={this._renderHeader.bind(this)}
             renderContent={this._renderContent.bind(this)}
             onAccordionOpen={ this.onAccordionOpen.bind(this)}
             onAccordionClose={ this.onAccordionClose.bind(this)}
+            
           />
+
 }
 
 {
   (( this.state.buscadorProductosActivo && !this.state.iniciarBusqueda && this.state.busquedaConcluida ))  &&
   
-<FlatList>
+<View>
           <TouchableOpacity  style={{paddingLeft:0,paddingRight:0,paddingBottom:0}}>
             <View
               style={{
@@ -1081,7 +1061,7 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
                 
               }}
             >
-              <Text style={{ fontWeight: "600", color: 'white',paddingLeft:10 }}>
+              <Text style={{ fontWeight: "600", color: '#ffffff',paddingLeft:10 }}>
                  { this.state.productosDisplayArray.length} PRODUCTOS ENCONTRADOS...
               </Text>
 
@@ -1091,7 +1071,7 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
   
             {  this._renderContent('') }
 
-          </FlatList>
+          </View>
 
 }
           </View>
@@ -1110,13 +1090,13 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
               <View style={{ backgroundColor: "#cb8d12" }}>
                 <Text>{this.state.count}</Text>
               </View>
-              <Icon style={{color: 'white'}} name="md-cart"/>
-              <Text style={{color: 'white'}}>Confirmar</Text>
+              <Icon style={{color: '#ffffff'}} name="cart"/>
+              <Text style={{color: '#ffffff'}}>Confirmar</Text>
 
             </Button>
             <Button title="otroDAto" disabled={this.state.isLoading} onPress={() => this.pasarDatos()}>
               
-              <NumberFormat value={Math.abs(this.state.suma)} displayType={'text'} thousandSeparator={true} prefix={'$'} fixedDecimalScale={true} decimalScale={2} renderText={value => <H3 style={{color: 'white'}}>{value}</H3> } />
+              <NumberFormat value={Math.abs(this.state.suma)} displayType={'text'} thousandSeparator={true} prefix={'$'} fixedDecimalScale={true} decimalScale={2} renderText={value => <view style={{color: '#ffffff'}}>{value}</view> } />
 
             </Button>
           </View>
@@ -1129,5 +1109,63 @@ if(productoFiltrados != null && productoFiltrados.length > 0){
 
 //export default Venta;
 
+const styles = StyleSheet.create({
 
- 
+  container: {
+    backgroundColor: "#FFF"
+  },
+  text: {
+    alignSelf: "center",
+    marginBottom: 7
+  },
+  mb: {
+    marginBottom: 15
+  },
+
+})
+
+
+const globalStyles = StyleSheet.create({
+container: {
+  backgroundColor: "#FFF"
+},
+text: {
+  alignSelf: "center",
+  marginBottom: 7
+},
+mb: {
+  marginBottom: 15
+},
+header: {
+  paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
+  backgroundColor:'#f6f6f6',
+  color:'#000000',
+  marginBottom: Platform.OS === 'ios' ? 0 : 0,
+  height:90
+},
+headerRight: {
+  paddingTop: Platform.OS === 'ios' ? 0 : 10
+},
+headerButton: {
+  color:'#2496bc'
+},
+headerTitle: {
+  color:'#000000',
+  textAlign:'center'
+},
+TouchableOpacityStyle: {
+  position: 'absolute',
+  width: 50,
+  height: 50,
+  alignItems: 'center',
+  justifyContent: 'center',
+  right: 20,
+  bottom: 110,
+},
+FloatingButtonStyle: {
+//    resizeMode: 'contain',
+  width: 50,
+  height: 50,
+  //backgroundColor:'black'
+},
+})

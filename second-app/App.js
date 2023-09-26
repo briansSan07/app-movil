@@ -247,7 +247,7 @@ const Stack = createStackNavigator();
 function Rutas() {
   return(
       <Drawer.Navigator
-      initialRouteName = "Login"
+      initialRouteName = "Venta"
       screenOptions={{
             activeTintColor: "#e91e63"
       }}

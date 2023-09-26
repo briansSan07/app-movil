@@ -193,4 +193,4 @@ class CatalogosModel  {
 
 }
 
-export default new CatalogosModel();
+module.exports = CatalogosModel;

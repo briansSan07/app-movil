@@ -191,4 +191,4 @@ class ClienteModel  {
 
 }
 
-export default new ClienteModel();
+module.exports = ClienteModel;

@@ -211,4 +211,4 @@ SELECT id ,id_producto , nivel_socioeconomico_id, precio_antes_impuestos, iva, i
 
 }
 
-export default new ProductoModel();
+module.exports = ProductoModel;
