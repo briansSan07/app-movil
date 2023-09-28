@@ -2,7 +2,7 @@ import React, { Component} from "react";
 import { Updates } from 'expo';
 import {
  View, Switch,Spinner,
-  FlatList, StyleSheet, Dimensions, Text
+  FlatList, StyleSheet, Dimensions, Text, ActivityIndicator
 } from "react-native";
 
 const deviceHeight = Dimensions.get("window").height;
@@ -357,7 +357,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 
 
-  onChangeTBox(producto, cantidad) {
+  onChangeTBox = (producto, cantidad) => {
 
     let carritoCompras = [...this.state.carritoCompras];
     console.log("onChangeTBox: [" + cantidad+"]");
@@ -416,7 +416,7 @@ if (process.env.NODE_ENV !== 'production') {
     }
 }
 
-sumaUno(producto) {
+sumaUno = (producto) => {
 
   let carritoCompras = [...this.state.carritoCompras];
   if (producto.cantidad <= 0) {
@@ -452,7 +452,7 @@ sumaUno(producto) {
   this.setState({carritoCompras: carritoCompras}, () => {this.calculandoCarrito()});
 }
 
-menosUno(producto) {
+menosUno = (producto) => {
   let carritoCompras = this.state.carritoCompras;
 
   let nuevoProductoParaCarrito = carritoCompras.filter(function(data) {return data.id === producto.idProducto;})
@@ -760,8 +760,12 @@ mostrarValor(producto){
 
 
   onAccordionOpen(categoria,index){
+   /* if (categoria && categoria.idtipoProducto) {
+      console.log("++++++++++++++++++")
+    }
+    else{console.log("--------")} */
     console.log("onAccordionOpen: " , {categoria,index});
-    this.state.categoriaExpanded = index;
+       this.state.categoriaExpanded = index;
     const isBusqueda = this.state.busquedaConcluida;
 
     if(this.state.productosDisplay != categoria.idtipoProducto){
@@ -770,339 +774,269 @@ mostrarValor(producto){
       if(isBusqueda ){
         this.setState({productosDisplay:"0",productosDisplayArray:this.state.productosDisplayArray});  
         return true;
-      } 
+      }
+      else { 
       const productosDisplayArray = this.state.productosArray.filter(function (producto) {        
         return  producto.idproductotipo === categoria.idtipoProducto;
       });
       console.log("Mostrare: " + productosDisplayArray.length + " productos.");
-      this.setState({productosDisplay:categoria.idtipoProducto,productosDisplayArray:productosDisplayArray});  
+      this.setState({productosDisplay: categoria.idtipoProducto, productosDisplayArray: productosDisplayArray});  
     }
-    
+  }
     
 //    this.consultaProductosByTipoProducto(this.state.nivelSocioeconomico,item.idtipoProducto);
   }
 
-  onAccordionClose(item,index){
+  onAccordionClose(producto,index){
     console.log("onAccordionClose: " );//, {item,index});
     this.setState({productosDisplayArray:[],productosDisplay:null,categoriaExpanded:0});
   }  
      
-  _renderHeader(categoria, expanded) {
+  _renderHeader(categoria, expanded, index) {
+    if (!categoria) {
+      return null;
+    }
     
-
 //console.log("categoriaBruta: " + categoria.tipo_producto + " expanded: " + expanded);
 
     return (
-      <View
-        style={{
-          flexDirection: "row",
-          padding: 10,
-          justifyContent: "space-between",
-          alignItems: "center",
-          backgroundColor: "#568DAE"
-        }}
+      
+      <TouchableOpacity style={{ flexDirection: "row", 
+      padding: 10, 
+      justifyContent: "space-between", 
+      alignItems: "center", 
+      backgroundColor: "#568DAE" }}
+      onPress={() => this.onAccordionOpen(categoria, expanded, index)}
       >
         <Text style={{ fontWeight: "600", color: 'white' }}>
-          {" "}{categoria.tipo_producto}
+          
+          {" "}{categoria.TiposProducto}
         </Text>
         {expanded
-          ? <Icon
-              fontSize= '18' 
-              color= 'white'
-              name="remove-circle" />
-          : <Icon 
-              fontSize= '18' 
-              color= 'white'
-              name="add-circle" />}
-      </View>
-
-      
-
+          ? <Icon style={{ fontSize: 18, color: 'white' }} name="remove-circle" />
+          : <Icon style={{ fontSize: 18, color: 'white' }} name="add-circle" />}
+    </TouchableOpacity>
     );
   }
 
-_renderContent(categoria) {
+renderProducto = ({ producto }) => {
 
+  const { ventaSinIva } = this.state;
 
-//  let productoFiltrados = this.state.productosDisplayArray;
+  return (
+      <View style={{ marginLeft: 5, marginRight: 5 }}>
+        <View style={{ flexDirection: "row" }}>
+          <Image
+            style={{ width: 50, height: 50 }}
+            source={{ uri: 'https://atletl.api.concrad.com/' + producto.imagen }}
+          />
+          <View style={{ marginLeft: 5 }}>
+            <Text style={{ fontSize: 14 }}>{producto.codigo} - {producto.nombre}</Text>
+            <View style={{ flexDirection: "row" }}>
+              <Text note>Disp: {producto.cantidad}</Text>
+              <Text note style={{ marginLeft: 10 }}>
+                $ {ventaSinIva ? Math.round(producto.precio_antes_impuestos * 100) / 100 : producto.precio}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={{ flexDirection: "row", alignItems: "center", marginTop: 5 }}>
+          <TouchableOpacity onPress={() => this.menosUno(producto)}>
+            <Icon name="remove" style={{ fontSize: 20, color: 'black' }} />
+          </TouchableOpacity>
+
+          <TextInput
+            placeholder="0"
+            placeholderTextColor="#000000"
+            style={{
+              width: 40,
+              borderColor: "gray",
+              borderWidth: 1,
+              backgroundColor: "#f3f3f3",
+              marginLeft: 5,
+              marginRight: 5,
+              textAlign: "center"
+            }}
+            onChangeText={(cantidad) => this.onChangeTBox(producto, cantidad)}
+            keyboardType={"numeric"}
+            value={"" + this.state.carritoCompras.filter(row => row.id === producto.idProducto).reduce((cant, row) => cant + row.cantidad, 0)}
+          />
+
+          <TouchableOpacity onPress={() => this.sumaUno(producto)}>
+            <Icon name="add" style={{ fontSize: 20, color: 'black' }} />
+          </TouchableOpacity>
+        </View>
+      </View>
+  );
   
-const productoFiltrados = this.state.productosDisplayArray;
+};
 
-//productoFiltrados = productoFiltrados.map((row) => { return {...row,key:''+row.idProducto}});
+renderContent = () => {
+  if (this.state.isLoading) {
+    return (
+      <View style={{ alignItems: 'center' }}>
+        <ActivityIndicator color='#51747F' />
+        <Text>Cargando...</Text>
+      </View>
+    );
+  }
 
-const ventaSinIva = this.state.ventaSinIva;
+  if (this.state.iniciarBusqueda) {
+    return (
+      <View style={{ alignItems: 'center' }}>
+        <ActivityIndicator color='#51747F' />
+        <Text>Realizando la búsqueda de productos...</Text>
+      </View>
+    );
+  }
 
-if(productoFiltrados != null && productoFiltrados.length > 0){
+  if (this.state.showUpdate) {
+    return (
+      <View style={{ alignItems: 'center' }}>
+        <Text>Se ha liberado una actualización al aplicativo.</Text>
+        <Button
+          title="Clic para actualizar"
+          onPress={() => this.doUpdate()}
+          style={{ margin: 15, marginTop: 20, backgroundColor: "#2496bc" }}
+        />
+      </View>
+    );
+  }
 
+  if (!this.state.buscadorProductosActivo) {
+    return (
+      <FlatList
+      data={this.state.categoriaDisplayArray}
+      renderItem={this._renderHeader}
+      keyExtractor={(categoria) => categoria.idtipoProducto.toString()}
+      />
+    );
+  }
+
+  if (this.state.buscadorProductosActivo && !this.state.iniciarBusqueda && this.state.busquedaConcluida) {
     return (
       <View>
-    <FlatList
-            data={productoFiltrados}
-            renderItem={(producto) =>
-        <TouchableOpacity  style={{marginLeft:5,marginRight:5}}>
-                <View>
-                  <Image size="16" source ={{uri:'https://atletl.api.concrad.com/'+producto.imagen}} alt="react-native"   />
-                </View>
-                <View style={{marginLeft:5,paddingTop:10,paddingBottom:10}}>
-                  <Text style={{fontSize:14}}>
-                  {producto.codigo} - {producto.nombre}
-                  </Text>
-                  
-                  <View>
-                    
-                    <View style={{ backgroundColor:'#fff', height: 27 }}>
-                    <Text >Disp: {producto.cantidad}</Text> 
-                    </View>
-                    <View style={{ backgroundColor:'#fff', height: 27 }}>
-                    <Text >$ {ventaSinIva ? Math.round(producto.precio_antes_impuestos*100)/100 : producto.precio}</Text> 
-                    </View>
-                    <View style={{ backgroundColor:'#fff', width:93, height: 27, flex:0, flexDirection:'row' }}>
-                      <Button title="-" size="small" style={{paddingTop:0,paddingBottom:0}} onPress={()=> this.menosUno(producto)}>
-                        <Icon name="remove" style={{...globalStyles.headerButton,marginLeft:8,marginRight:8}} />
-                      </Button>
-                      
-                          <TextInput   
-                              placeholder="0"
-                              placeholderTextColor="#000000"
-                              style={{width:40, borderColor: "gray", borderWidth: 1,  backgroundColor: "#f3f3f3"}}
-                              onChangeText={(cantidad) => this.onChangeTBox(producto,cantidad)}
-                              
-  //                            onChangeText={(cantidad) => this.setState({textPersistence:cantidad})}
-                              keyboardType={"numeric"}
-                              value={ "" + this.state.carritoCompras.filter(row => row.id == producto.idProducto).reduce((cant,row) => cant + row.cantidad,inicial) }
-                          />
-                        <Button title="+" size="small" style={{paddingTop:0,paddingBottom:0}}  onPress={()=> this.sumaUno(producto)}>
-                        <Icon name="add" style={{...globalStyles.headerButton,marginLeft:8,marginRight:10}} />
-                      </Button>
-                    </View>
-                    
-                  </View>
-
-
-                    
-                    
-                  
-                   
-                </View>
-
-              </TouchableOpacity>}
-              
-              />
-            </View>
-
+        <Text style={{ fontWeight: "600", color: 'white', paddingLeft: 10 }}>
+          {this.state.productosDisplayArray.length} PRODUCTOS ENCONTRADOS...
+        </Text>
+        <FlatList
+          data={this.state.productosDisplayArray}
+          renderItem={this.renderProducto}
+          keyExtractor={(producto) => producto.id.toString()}
+        />
+      </View>
     );
-    
   }
-  }
+};
 
 
-  render() {
+render() {
 
     const buscadorProductosActivo = this.state.buscadorProductosActivo;
 
 //    console.log("****** Render ");
     return (
-  <View style={styles.container}>
-    
-
-        <View style={{ ...globalStyles.header , height:115,paddingTop:10 }} >
-        <View style={{flex: 0}}>
-            <Button title="menu"
+  <SafeAreaView style={{ flex: 1 }}>
+    <View style={{ flex: 1}}>
+      <View style={{ height: 115, paddingTop: 10, backgroundColor: "#51747F" }}>
+            <View style={{ flexDirection: "row" }}>
               
-              onPress={() => this.props.navigation.openDrawer()}>
-              <Icon name="menu" style={globalStyles.headerButton} />
-            </Button>
-        </View>
 
-        {
-          buscadorProductosActivo &&
-          <View style={{flex: 3}}>
-          <View >
-              <Icon name="search" style={globalStyles.headerButton} />
-              <TextInput placeholder="Producto" 
-                  autoFocus = {true}
-                  onChangeText={(busqueda) => this.onChangeSeachBox(busqueda)}                            
-                  onBlur={ this.realizarBusqueda.bind(this)}
-                  blurOnSubmit={true}
-                  value={ "" + this.state.busqueda }
-                  style={globalStyles.headerButton}
-              />
-          </View>
-          <Text style={{fontSize:10}}>Mínimo 3 caracteres.. Da enter para iniciar búsqueda</Text>
-          </View>
 
-        }
-        {
-          !buscadorProductosActivo &&
-          <View style={{flex: 3}}>
-          <Text style={globalStyles.headerTitle} >Nueva Venta</Text>
-          
-
-          {
-           this.state.cliente != null && (
-            
-              
-            <Text style={{fontSize:12}}>Cliente: { this.state.cliente.clave } - {this.state.cliente.nombre_comercial}</Text>
-              
-            )
-          
-          }
-          { this.state.cliente == null && <Text>Venta al público</Text>}
-          
-          
-          </View>
-        }
-
-          <View style={globalStyles.headerRight} >
-            <View>
-              <View style={{height: 45}}>
-              <View style={{  height: 45,width:45 }}>
-                <Button title="buscador"  style={{paddingLeft:10,paddingRight:5,height: 45}} onPress={() => this.activarBuscadorProductos() } >
-                  {
-                    !buscadorProductosActivo &&
-                    <Icon name="search" style={globalStyles.headerButton} />
-                  }
-                  {
-                    buscadorProductosActivo &&
-                    <Icon name="close" style={globalStyles.headerButton} />
-                  }
-                </Button>
-              </View>
-              <View style={{   height: 45,width:45 }}>
-                <Button title="cliente"  style={{paddingLeft:10,paddingRight:5,height: 45}} onPress={() => this.mostrarClientes() } >
-                  <Icon name="person-add" style={globalStyles.headerButton} />
-                </Button>
-              </View>
-              </View>
-              { this.state.cliente != null && 
-
-                <View style={{height: 47, alignContent:"center"}}>
-                  <View style={{ height:47,alignItems:"center" }}>
-                    <Text style={{fontSize:10,paddingBottom:5}}>¿Con Factura? </Text>
-                    <Switch style={{paddingTop:10}} value={this.state.generaFactura} onValueChange={(checked) => this.paraFactura(checked) } />   
+    {buscadorProductosActivo ? (
+                <View style={{ flex: 3 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Icon active name="search" style={{ color: 'white', marginLeft: 10 }} />
+                    <TextInput
+                      placeholder="Producto"
+                      autoFocus={true}
+                      onChangeText={(busqueda) => this.onChangeSeachBox(busqueda)}
+                      onBlur={this.realizarBusqueda.bind(this)}
+                      blurOnSubmit={true}
+                      value={"" + this.state.busqueda}
+                      style={{ color: 'white', flex: 1 }}
+                    />
                   </View>
+                  <Text style={{ fontSize: 10, color: 'white', marginLeft: 10 }}>Mínimo 3 caracteres.. Da enter para iniciar búsqueda</Text>
                 </View>
-
-              }            
+    ) : (
+                <View style={{ flex: 3 }}>
+                  {this.state.cliente != null && (
+                    <Text style={{ fontSize: 12, color: 'white', marginLeft: 10 }}>
+                      Cliente: {this.state.cliente.clave} - {this.state.cliente.nombre_comercial}
+                    </Text>
+                  )}
+                  {this.state.cliente == null && <Text style={{ color: 'white', fontSize: 12, marginLeft: 10 }}>Venta al público</Text>}
+                </View>
+    )}
+              <View style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end" }}>
+                <TouchableOpacity
+                  style={{ flex: 0, paddingLeft: 10, paddingRight: 5, paddingTop: 15 }}
+                  onPress={() => this.activarBuscadorProductos()}
+                >
+                  {!buscadorProductosActivo ? (
+                    <Icon name="search" style={{ color: 'white' }} />
+                  ) : (
+                    <Icon name="close" style={{ color: 'white' }} />
+                  )}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{ flex: 0, paddingLeft: 10, paddingRight: 5, paddingTop: 15 }}
+                  onPress={() => this.mostrarClientes()}
+                >
+                  <Icon name="person-add" style={{ color: 'white' }} />
+                </TouchableOpacity>
+              </View>
+            </View>
+            {this.state.cliente != null && (
+              <View style={{ height: 47, alignItems: "center", flexDirection: "row" }}>
+                <Text style={{ fontSize: 10, paddingBottom: 5, color: 'white', marginLeft: 10 }}>¿Con Factura? </Text>
+                <Switch
+                  style={{ paddingTop: 10 }}
+                  value={this.state.generaFactura}
+                  onValueChange={(checked) => this.paraFactura(checked)}
+                />
+              </View>
+            )}     
             </View>
 
-          </View>
-        </View>
+          
+        
         
         <View>
           
-        <View style={{flex: 1}}>
-
-
-        {
-        this.state.isLoading &&
-
-        <View style={{alignItems:'center'}}>
-          <Spinner color='#51747F' />
-          <Text style={{alignItems:'center'}}>Cargando...</Text>
-        </View>  
-        }
-
-        {
-          this.state.iniciarBusqueda &&
-
-        <View style={{alignItems:'center'}}>
-          <Spinner color='#51747F' />
-          <Text style={{alignItems:'center'}}>Realizando la búsqueda de productos...</Text>
-        </View>  
-        }
-
-
-        {
-          this.state.showUpdate ?
-          <View style={{alignItems:'center'}}>
-            <Text>Se ha liberado una actualización al aplicativo.</Text> 
-            <Button title="Actualizar" style={{ margin: 15, marginTop: 20, backgroundColor: "#2496bc" }} onPress={() => this.doUpdate()}>
-              <Text>Clic para actualizar</Text>
-            </Button>
-      
-          </View>
-        : null 
-        }
-
-
-{
-  (!this.state.buscadorProductosActivo)  &&
-
-<AccordionList
-
-            dataArray={this.state.categoriaDisplayArray}
-            animation={true}
-            isExpanded={this.state.categoriaExpanded} // Index of accordion set open
-            renderHeader={this._renderHeader.bind(this)}
-            renderContent={this._renderContent.bind(this)}
-            onAccordionOpen={ this.onAccordionOpen.bind(this)}
-            onAccordionClose={ this.onAccordionClose.bind(this)}
-            
-          />
-
-}
-
-{
-  (( this.state.buscadorProductosActivo && !this.state.iniciarBusqueda && this.state.busquedaConcluida ))  &&
-  
-<View>
-          <TouchableOpacity  style={{paddingLeft:0,paddingRight:0,paddingBottom:0}}>
-            <View
-              style={{
-                flex:1,
-                flexDirection: "row",
-                padding: 0,
-                margin: 0,
-                height:41.5,
-                justifyContent: "space-between",
-                alignItems: "center",
-                backgroundColor: "#568DAE",
-                
-              }}
-            >
-              <Text style={{ fontWeight: "600", color: '#ffffff',paddingLeft:10 }}>
-                 { this.state.productosDisplayArray.length} PRODUCTOS ENCONTRADOS...
-              </Text>
-
-            </View>
-
-            </TouchableOpacity>
-  
-            {  this._renderContent('') }
-
-          </View>
-
-}
+        <View>
+    {this.renderContent()}
           </View>
         </View>
 
         <View >
           <View style={{backgroundColor: "#51747F"}}>
-            <Button
-            title="Datos"
-             disabled={this.state.isLoading}
-             onPress={() => this.pasarDatos()}
-             style={{paddingTop:15}}
-              
-              
-            >
-              <View style={{ backgroundColor: "#cb8d12" }}>
-                <Text>{this.state.count}</Text>
+          <TouchableOpacity
+                disabled={this.state.isLoading}
+                onPress={() => this.pasarDatos()}
+                style={{ paddingTop: 15, alignItems: "center" }}
+              >
+                <Icon name="md-cart" style={{ color: 'white', fontSize: 30 }} />
+                <Text style={{ color: 'white' }}>Confirmar</Text>
+                <Text style={{ color: 'white' }}>{this.state.count}</Text>
+              </TouchableOpacity>
               </View>
-              <Icon style={{color: '#ffffff'}} name="cart"/>
-              <Text style={{color: '#ffffff'}}>Confirmar</Text>
-
-            </Button>
-            <Button title="otroDAto" disabled={this.state.isLoading} onPress={() => this.pasarDatos()}>
-              
-              <NumberFormat value={Math.abs(this.state.suma)} displayType={'text'} thousandSeparator={true} prefix={'$'} fixedDecimalScale={true} decimalScale={2} renderText={value => <view style={{color: '#ffffff'}}>{value}</view> } />
-
-            </Button>
-          </View>
+              <View>
+              <TouchableOpacity
+                disabled={this.state.isLoading}
+                onPress={() => this.pasarDatos()}
+                style={{ backgroundColor: "#51747F", alignItems: "center", paddingTop: 10 }}
+              >
+                <Text style={{ color: 'white', fontSize: 18 }}>{this.state.suma}</Text>
+              </TouchableOpacity>
+            </View>
         </View>
-      </View >
+        </View>
+      </SafeAreaView>
     );
+    
   }
   
 }

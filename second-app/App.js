@@ -247,7 +247,7 @@ const Stack = createStackNavigator();
 function Rutas() {
   return(
       <Drawer.Navigator
-      initialRouteName = "Venta"
+      initialRouteName = "Login"
       screenOptions={{
             activeTintColor: "#e91e63"
       }}
@@ -260,7 +260,7 @@ function Rutas() {
                                     options={{
                                       headerShown: false, hidden: true
                                             }} />
-        <Drawer.Screen name="Venta" component={Venta} />
+        <Drawer.Screen name="Venta" component={Venta} options={{title: 'Nueva venta'}} />
       </Drawer.Navigator>
   )
 }
@@ -399,30 +399,7 @@ export default class App extends React.Component {
     this.inicializarApp();
 
 
-
-
-    /*await Font.loadAsync({
-      Roboto: require('native-base/Fonts/Roboto.ttf'),
-      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf')
-//      Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf")
-    });
-//    this.setState({ isReady: true });
-*/
   }
-
-
-  /*render() {
-    if (!this.state.isReady) {
-      return <AppLoading />;
-    }
-
-    return (
-      <Root>
-        <AppContainer />
-      </Root>
-    );
-  }
-  */
 
   render() {
     return(

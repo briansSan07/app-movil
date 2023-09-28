@@ -179,7 +179,6 @@ class LocalStorage{
     }
 
     _createTipoProducto(tx){
-      console.log ("entr...a")
       return tx.executeSql(
 //        'DELETE FROM TipoProducto',
 
