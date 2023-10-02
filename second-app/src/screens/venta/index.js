@@ -1,7 +1,7 @@
 import React, { Component} from "react";
 import { Updates } from 'expo';
 import {
- View, Switch,Spinner,
+ View, Switch,Spinner, Image,
   FlatList, StyleSheet, Dimensions, Text, ActivityIndicator
 } from "react-native";
 
@@ -78,10 +78,21 @@ if (process.env.NODE_ENV !== 'production') {
       generaFactura: false,
       ventaSinIva: false,
       showUpdate: false,
-      update:null
+      update:null,
+      showProducts: false
 
     };    
 
+  }
+
+  _onPress = () => {
+    if (this.state.showProducts === false){
+    this.setState({showProducts: true})
+    }
+    else{
+      this.setState({showProducts: false})
+    }
+    
   }
 
   initializeComponent(){
@@ -735,7 +746,6 @@ mostrarValor(producto){
         return finded
   }
         
-
   paraFactura(checked){
 
     console.log("paraFactura: " , checked);
@@ -758,32 +768,36 @@ mostrarValor(producto){
     
   }
 
+  onAccordionOpen(categoria, expanded){
 
-  onAccordionOpen(categoria,index){
-   /* if (categoria && categoria.idtipoProducto) {
-      console.log("++++++++++++++++++")
+    if (!categoria.item) {
+      return null;
     }
-    else{console.log("--------")} */
-    console.log("onAccordionOpen: " , {categoria,index});
-       this.state.categoriaExpanded = index;
-    const isBusqueda = this.state.busquedaConcluida;
 
-    if(this.state.productosDisplay != categoria.idtipoProducto){
-      console.log("filtrar productos por: " + categoria.idtipoProducto + " this.state.productosDisplay: " + this.state.productosDisplay );
+    console.log("onAccordionOpen: " , (categoria), "index", (categoria.index));
+
+    this.state.categoriaExpanded = categoria.index;
+    const isBusqueda = this.state.busquedaConcluida;
+    if(this.state.productosDisplay != categoria.item.idtipoProducto){
+      console.log("filtrar productos por: " + categoria.item.idtipoProducto + " this.state.productosDisplay: " + this.state.productosDisplay );
     
       if(isBusqueda ){
         this.setState({productosDisplay:"0",productosDisplayArray:this.state.productosDisplayArray});  
         return true;
       }
-      else { 
       const productosDisplayArray = this.state.productosArray.filter(function (producto) {        
-        return  producto.idproductotipo === categoria.idtipoProducto;
+        return  producto.idproductotipo === categoria.item.idtipoProducto;
       });
       console.log("Mostrare: " + productosDisplayArray.length + " productos.");
-      this.setState({productosDisplay: categoria.idtipoProducto, productosDisplayArray: productosDisplayArray});  
-    }
+      this.setState({productosDisplay: categoria.item.idtipoProducto, productosDisplayArray: productosDisplayArray});
+
   }
-    
+
+   /* else {
+      console.log("onAccordionClose: " );//, {item,index});
+    this.setState({productosDisplayArray:[],productosDisplay:null,categoriaExpanded:0});
+    }
+    */
 //    this.consultaProductosByTipoProducto(this.state.nivelSocioeconomico,item.idtipoProducto);
   }
 
@@ -792,38 +806,42 @@ mostrarValor(producto){
     this.setState({productosDisplayArray:[],productosDisplay:null,categoriaExpanded:0});
   }  
      
-  _renderHeader(categoria, expanded, index) {
+  _renderHeader(categoria, expanded ) {
     if (!categoria) {
       return null;
     }
-    
 //console.log("categoriaBruta: " + categoria.tipo_producto + " expanded: " + expanded);
-
     return (
-      
+      <View>
       <TouchableOpacity style={{ flexDirection: "row", 
       padding: 10, 
       justifyContent: "space-between", 
       alignItems: "center", 
       backgroundColor: "#568DAE" }}
-      onPress={() => this.onAccordionOpen(categoria, expanded, index)}
+      onPress={(expanded) => {this.onAccordionOpen(categoria, expanded)} }
       >
         <Text style={{ fontWeight: "600", color: 'white' }}>
           
-          {" "}{categoria.TiposProducto}
+          {" "}{categoria.item.tipo_producto}
         </Text>
         {expanded
           ? <Icon style={{ fontSize: 18, color: 'white' }} name="remove-circle" />
           : <Icon style={{ fontSize: 18, color: 'white' }} name="add-circle" />}
     </TouchableOpacity>
+
+    </View>
     );
   }
 
 renderProducto = ({ producto }) => {
-
+  const productoFiltrado = this.state.productosDisplayArray;
   const { ventaSinIva } = this.state;
-
+  console.log("-----------", producto)
+  if(productoFiltrado != null && productoFiltrado.length > 0){
   return (
+    <FlatList
+    data={productoFiltrado}
+    renderItem={(producto) => 
       <View style={{ marginLeft: 5, marginRight: 5 }}>
         <View style={{ flexDirection: "row" }}>
           <Image
@@ -836,7 +854,7 @@ renderProducto = ({ producto }) => {
               <Text note>Disp: {producto.cantidad}</Text>
               <Text note style={{ marginLeft: 10 }}>
                 $ {ventaSinIva ? Math.round(producto.precio_antes_impuestos * 100) / 100 : producto.precio}
-              </Text>
+              </Text> 
             </View>
           </View>
         </View>
@@ -867,68 +885,15 @@ renderProducto = ({ producto }) => {
             <Icon name="add" style={{ fontSize: 20, color: 'black' }} />
           </TouchableOpacity>
         </View>
-      </View>
-  );
-  
-};
-
-renderContent = () => {
-  if (this.state.isLoading) {
-    return (
-      <View style={{ alignItems: 'center' }}>
-        <ActivityIndicator color='#51747F' />
-        <Text>Cargando...</Text>
-      </View>
-    );
-  }
-
-  if (this.state.iniciarBusqueda) {
-    return (
-      <View style={{ alignItems: 'center' }}>
-        <ActivityIndicator color='#51747F' />
-        <Text>Realizando la búsqueda de productos...</Text>
-      </View>
-    );
-  }
-
-  if (this.state.showUpdate) {
-    return (
-      <View style={{ alignItems: 'center' }}>
-        <Text>Se ha liberado una actualización al aplicativo.</Text>
-        <Button
-          title="Clic para actualizar"
-          onPress={() => this.doUpdate()}
-          style={{ margin: 15, marginTop: 20, backgroundColor: "#2496bc" }}
-        />
-      </View>
-    );
-  }
-
-  if (!this.state.buscadorProductosActivo) {
-    return (
-      <FlatList
-      data={this.state.categoriaDisplayArray}
-      renderItem={this._renderHeader}
-      keyExtractor={(categoria) => categoria.idtipoProducto.toString()}
+      </View> 
+    }
+    keyExtractor={(producto) => producto.idProducto.toString()}
       />
-    );
-  }
-
-  if (this.state.buscadorProductosActivo && !this.state.iniciarBusqueda && this.state.busquedaConcluida) {
-    return (
-      <View>
-        <Text style={{ fontWeight: "600", color: 'white', paddingLeft: 10 }}>
-          {this.state.productosDisplayArray.length} PRODUCTOS ENCONTRADOS...
-        </Text>
-        <FlatList
-          data={this.state.productosDisplayArray}
-          renderItem={this.renderProducto}
-          keyExtractor={(producto) => producto.id.toString()}
-        />
-      </View>
-    );
-  }
-};
+          
+  );
+          }
+          
+}
 
 
 render() {
@@ -1007,7 +972,50 @@ render() {
         <View>
           
         <View>
-    {this.renderContent()}
+      {(this.state.isLoading) &&
+      <View style={{ alignItems: 'center' }}>
+        <ActivityIndicator color='#51747F' />
+        <Text>Cargando...</Text>
+      </View>
+      }
+
+      {(this.state.iniciarBusqueda) &&
+      <View style={{ alignItems: 'center' }}>
+        <ActivityIndicator color='#51747F' />
+        <Text>Realizando la búsqueda de productos...</Text>
+      </View>
+      }
+
+      {(this.state.showUpdate) &&
+      <View style={{ alignItems: 'center' }}>
+        <Text>Se ha liberado una actualización al aplicativo.</Text>
+        <Button
+          title="Clic para actualizar"
+          onPress={() => this.doUpdate()}
+          style={{ margin: 15, marginTop: 20, backgroundColor: "#2496bc" }}
+        />
+      </View>
+      }
+
+    {(!this.state.buscadorProductosActivo) &&
+      <FlatList
+      data={this.state.categoriaDisplayArray}
+      
+      renderItem={ (categoria, index, expanded) => this._renderHeader(categoria, index, expanded)}
+      
+      keyExtractor={(categoria, index, expanded) => categoria.idtipoProducto.toString() + index + expanded}
+      
+      />
+    }
+
+    {(this.state.buscadorProductosActivo && !this.state.iniciarBusqueda && this.state.busquedaConcluida) &&
+      <View>
+        <Text style={{ fontWeight: "600", color: 'white', paddingLeft: 10 }}>
+          {this.state.productosDisplayArray.length} PRODUCTOS ENCONTRADOS...
+        </Text>
+        {this.renderProducto('')}
+      </View>
+    }
           </View>
         </View>
 
