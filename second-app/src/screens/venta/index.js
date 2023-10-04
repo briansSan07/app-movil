@@ -461,14 +461,13 @@ sumaUno = (producto) => {
 
 menosUno = (producto) => {
   let carritoCompras = this.state.carritoCompras;
-
-  let nuevoProductoParaCarrito = carritoCompras.filter(function(data) {return data.id === producto.idProducto;})
+  let nuevoProductoParaCarrito = carritoCompras.filter(function(data) {return data.id === producto.item.idProducto;})
 
   if (nuevoProductoParaCarrito.length > 0) {
       nuevoProductoParaCarrito[0].cantidad--;
       if (nuevoProductoParaCarrito[0].cantidad <= 0) {
           for (let i = 0; i < carritoCompras.length; i++) {
-              if (carritoCompras[i].id === producto.idProducto) {
+              if (carritoCompras[i].id === producto.item.idProducto) {
                   carritoCompras.splice(i, 1)
               }
           }
@@ -512,7 +511,7 @@ mostrarValor(producto){
 
   }
 
-  calculandoCarrito(){
+  calculandoCarrito(producto){
 
 
     //total de productos seleccionados: 
@@ -532,6 +531,7 @@ mostrarValor(producto){
     let ieps = 0;
 
     console.log("-------- calculandoCarrito ------------ " , this.state.ventaSinIva);
+    console.log("************", producto)
     carrito.forEach((producto) => {
 
       console.log("producto: " , producto)
@@ -798,12 +798,12 @@ mostrarValor(producto){
       console.log("Mostrare: " + productosDisplayArray.length + " productos.");
       this.state.productosDisplay= categoria.item.idtipoProducto, this.state.productosDisplayArray = productosDisplayArray;
 
-      {this.state.categoriaShowExpanded[categoria.index]
+      /*{this.state.categoriaShowExpanded[categoria.index]
         ? console.log("vacio")
         : (<View>
           {this.renderContent(" ")}
           </View>)
-        }
+        }*/
 
       
   }
@@ -828,19 +828,19 @@ mostrarValor(producto){
     console.log("onAccordionClose: " );//, {item,index});
     this.state.productosDisplayArray= [], this.state.productosDisplay = null;
 
-    {this.state.categoriaShowExpanded[categoria.index]
-      ? console.log("vacio")
-      : this.renderContent
-      }
+    
   }  
      
   _renderHeader(categoria, index ) {
+
+    const { ventaSinIva } = this.state;
     
     if (!categoria) {
       return null;
     }
 //console.log("categoriaBruta: " + categoria.tipo_producto + " expanded: " + expanded);
     return (
+      <View>
       <View>
       <TouchableOpacity style={{ flexDirection: "row", 
       padding: 10, 
@@ -861,76 +861,75 @@ mostrarValor(producto){
     </TouchableOpacity>
     
     </View>
-    );
+  <View>
+{this.state.categoriaShowExpanded[categoria.index]
+  ? ( 
+  <FlatList 
+data={this.state.productosDisplayArray}
+renderItem={(producto) =>
+  <View style={{ marginLeft: 5, marginRight: 5 }}>
+    <View style={{ flexDirection: "row" }}>
+      <Image
+        style={{ width: 50, height: 50 }}
+        source={{ uri: 'https://atletl.api.concrad.com/' + producto.item.imagen }}
+      />
+      <View style={{ marginLeft: 5 }}>
+        <Text style={{ fontSize: 14 }}>{producto.item.codigo} - {producto.item.nombre}</Text>
+        <View style={{ flexDirection: "row" }}>
+          <Text note>Disp: {producto.item.cantidad}</Text>
+          <Text note style={{ marginLeft: 10 }}>
+            $ {ventaSinIva ? Math.round(producto.item.precio_antes_impuestos * 100) / 100 : producto.item.precio}
+          </Text> 
+        </View>
+      </View>
+      <View style={{flex:1,  flexDirection: "column", alignItems: "flex-end", marginTop: 5}}>
+        <View style={{ flexDirection: "row", alignItems: "flex-end"}}>
+      <TouchableOpacity onPress={() => this.menosUno(producto.item.cantidad)}>
+        <Icon name="remove" style={{ fontSize: 20, color: 'black' }} />
+      </TouchableOpacity>
+
+      <TextInput
+        placeholder= "0"
+        placeholderTextColor="#000000"
+        style={{
+          width: 40,
+          borderColor: "gray",
+          borderWidth: 1,
+          backgroundColor: "#f3f3f3",
+          textAlign: "center"
+        }}
+        onChangeText={(cantidad) => this.onChangeTBox(producto.item.cantidad, cantidad)}
+        keyboardType={"numeric"}
+        value={"" + this.state.carritoCompras.filter(row => row.id == producto.item.idProducto).reduce((cant, row) => cant + row.cantidad, inicial)}
+      />
+      
+      <TouchableOpacity onPress={() => this.sumaUno(producto.item.cantidad)}>
+        <Icon name="add" style={{ fontSize: 20, color: 'black' }} />
+      </TouchableOpacity>
+      </View>
+    </View>
+    </View>
+
+    
+  </View>}
+  keyExtractor={(producto) => producto.idProducto.toString()}
+  /> ): null }
+</View>
+</View>
+
+
+    ); 
+    
   }
 
-renderContent (producto, index) {
-  
-  const productoFiltrado = this.state.productosDisplayArray;
-  const { ventaSinIva } = this.state;
-  console.log("-----------", productoFiltrado)
 
-  return (
-  <FlatList 
-    data={productoFiltrado}
-    renderItem={(producto) =>
-      <View style={{ marginLeft: 5, marginRight: 5 }}>
-        <View style={{ flexDirection: "row" }}>
-          <Image
-            style={{ width: 50, height: 50 }}
-            source={{ uri: 'https://atletl.api.concrad.com/' + producto.imagen }}
-          />
-          <View style={{ marginLeft: 5 }}>
-            <Text style={{ fontSize: 14 }}>{producto.codigo} - {producto.nombre}</Text>
-            <View style={{ flexDirection: "row" }}>
-              <Text note>Disp: {producto.cantidad}</Text>
-              <Text note style={{ marginLeft: 10 }}>
-                $ {ventaSinIva ? Math.round(producto.precio_antes_impuestos * 100) / 100 : producto.precio}
-              </Text> 
-            </View>
-          </View>
-        </View>
-
-        <View style={{ flexDirection: "row", alignItems: "center", marginTop: 5 }}>
-          <TouchableOpacity onPress={() => this.menosUno(producto)}>
-            <Icon name="remove" style={{ fontSize: 20, color: 'black' }} />
-          </TouchableOpacity>
-
-          <TextInput
-            placeholder="0"
-            placeholderTextColor="#000000"
-            style={{
-              width: 40,
-              borderColor: "gray",
-              borderWidth: 1,
-              backgroundColor: "#f3f3f3",
-              marginLeft: 5,
-              marginRight: 5,
-              textAlign: "center"
-            }}
-            onChangeText={(cantidad) => this.onChangeTBox(producto, cantidad)}
-            keyboardType={"numeric"}
-            value={"" + this.state.carritoCompras.filter(row => row.id === producto.idProducto).reduce((cant, row) => cant + row.cantidad, 0)}
-          />
-
-          <TouchableOpacity onPress={() => this.sumaUno(producto)}>
-            <Icon name="add" style={{ fontSize: 20, color: 'black' }} />
-          </TouchableOpacity>
-        </View>
-      </View> }
-      keyExtractor={(producto) => producto.idProducto.toString()}
-      />
-
-  );
-          
-          
-}
 
 
 render() {
 
     const buscadorProductosActivo = this.state.buscadorProductosActivo;
-
+    const productoFiltrado = this.state.productosDisplayArray;
+    const { ventaSinIva } = this.state;
 //    console.log("****** Render ");
     return (
   <SafeAreaView style={{ flex: 1 }}>
@@ -1056,7 +1055,56 @@ render() {
         </Text>
        
       </View>
-      {this.renderContent('')}
+      <FlatList 
+    data={productoFiltrado}
+    renderItem={(producto) =>
+      <View style={{ marginLeft: 5, marginRight: 5 }}>
+        <View style={{ flexDirection: "row" }}>
+          <Image
+            style={{ width: 50, height: 50 }}
+            source={{ uri: 'https://atletl.api.concrad.com/' + producto.item.imagen }}
+          />
+          <View style={{ marginLeft: 5 }}>
+            <Text style={{ fontSize: 14 }}>{producto.item.codigo} - {producto.item.nombre}</Text>
+            <View style={{ flexDirection: "row" }}>
+              <Text note>Disp: {producto.item.cantidad}</Text>
+              <Text note style={{ marginLeft: 10 }}>
+                $ {ventaSinIva ? Math.round(producto.item.precio_antes_impuestos * 100) / 100 : producto.item.precio}
+              </Text> 
+            </View>
+          </View>
+        </View>
+
+        <View style={{ flexDirection: "row", alignItems: "center", marginTop: 5 }}>
+          <TouchableOpacity onPress={() => this.menosUno(producto)}>
+            <Icon name="remove" style={{ fontSize: 20, color: 'black' }} />
+          </TouchableOpacity>
+
+          <TextInput
+            placeholder="0"
+            placeholderTextColor="#000000"
+            style={{
+              width: 40,
+              borderColor: "gray",
+              borderWidth: 1,
+              backgroundColor: "#f3f3f3",
+              marginLeft: 5,
+              marginRight: 5,
+              textAlign: "center"
+            }}
+            onChangeText={(cantidad) => this.onChangeTBox(producto, cantidad)}
+            keyboardType={"numeric"}
+            value={"" + this.state.carritoCompras.filter(row => row.id === producto.item.idProducto).reduce((cant, row) => cant + row.cantidad, 0)}
+          />
+
+          <TouchableOpacity onPress={() => this.sumaUno(producto)}>
+            <Icon name="add" style={{ fontSize: 20, color: 'black' }} />
+          </TouchableOpacity>
+        </View>
+      </View> }
+      keyExtractor={(producto) => producto.idProducto.toString()}
+      />
+
       </View>
     }
           </View>
