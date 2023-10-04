@@ -2,7 +2,7 @@ import React, { Component} from "react";
 import { Updates } from 'expo';
 import {
  View, Switch,Spinner, Image,
-  FlatList, StyleSheet, Dimensions, Text, ActivityIndicator
+  FlatList, StyleSheet, Dimensions, Text, ActivityIndicator, Flash
 } from "react-native";
 
 const deviceHeight = Dimensions.get("window").height;
@@ -59,7 +59,8 @@ if (process.env.NODE_ENV !== 'production') {
 
       categoriaArray: [],
       categoriaDisplayArray: [],
-      categoriaExpanded:0,
+      categoriaExpanded:-1,
+      categoriaShowExpanded: {},
 
       productosArray : [],
       productosDisplayArray : [],
@@ -79,21 +80,16 @@ if (process.env.NODE_ENV !== 'production') {
       ventaSinIva: false,
       showUpdate: false,
       update:null,
-      showProducts: false
+      shouldShow: false
 
     };    
-
-  }
-
-  _onPress = () => {
-    if (this.state.showProducts === false){
-    this.setState({showProducts: true})
-    }
-    else{
-      this.setState({showProducts: false})
-    }
     
+    /*const data = [
+      { tipo: categoriaDisplayArray, contenido: productosDisplayArray, expandido: categoriaShowExpanded}
+    ];*/
+
   }
+
 
   initializeComponent(){
 
@@ -101,7 +97,7 @@ if (process.env.NODE_ENV !== 'production') {
       carritoCompras: [],
       categoriaArray: [],
       categoriaDisplayArray: [],
-      categoriaExpanded: 0,
+      categoriaExpanded: -1,
       generaFactura: false,
       ventaSinIva: false,
       cliente:null
@@ -677,14 +673,14 @@ mostrarValor(producto){
       
           this.setState({
             categoriaDisplayArray:categoriasFinales,
-            categoriaExpanded:"0",
+            categoriaExpanded:"-1",
             productosDisplayArray : productosDisplayArray 
           }, () => {
 //            console.log("this.productosDisplayArray: " , this.state.productosDisplayArray);          
             this.setState({
               iniciarBusqueda:false,
               busquedaConcluida:true,
-              categoriaExpanded:"0"
+              categoriaExpanded:"-1"
             });
           });    
           resolve( { success:true } );
@@ -768,31 +764,50 @@ mostrarValor(producto){
     
   }
 
-  onAccordionOpen(categoria, expanded){
-
-    if (!categoria.item) {
+  onAccordionOpen(categoria, categoriaExpanded){
+    
+    if (!categoria) {
       return null;
     }
 
     console.log("onAccordionOpen: " , (categoria), "index", (categoria.index));
 
-    this.state.categoriaExpanded = categoria.index;
+
+    this.setState((prevState) => ({
+      categoriaExpanded: prevState.categoriaExpanded === categoria.index ? -1 : categoria.index
+    }));
+    this.setState((prevState) => ({
+      categoriaShowExpanded: {
+        ...prevState.categoriaShowExpanded,
+        [categoria.index]: true,
+      },
+    }));
+    console.log("PRUEBAAA", this.state.categoriaExpanded)
+    //this.state.categoriaExpanded = categoria.index;
     const isBusqueda = this.state.busquedaConcluida;
     if(this.state.productosDisplay != categoria.item.idtipoProducto){
       console.log("filtrar productos por: " + categoria.item.idtipoProducto + " this.state.productosDisplay: " + this.state.productosDisplay );
     
       if(isBusqueda ){
-        this.setState({productosDisplay:"0",productosDisplayArray:this.state.productosDisplayArray});  
+        this.state.productosDisplay="-1",this.state.productosDisplayArray=this.state.productosDisplayArray;  
         return true;
       }
       const productosDisplayArray = this.state.productosArray.filter(function (producto) {        
         return  producto.idproductotipo === categoria.item.idtipoProducto;
       });
       console.log("Mostrare: " + productosDisplayArray.length + " productos.");
-      this.setState({productosDisplay: categoria.item.idtipoProducto, productosDisplayArray: productosDisplayArray});
+      this.state.productosDisplay= categoria.item.idtipoProducto, this.state.productosDisplayArray = productosDisplayArray;
 
+      {this.state.categoriaShowExpanded[categoria.index]
+        ? console.log("vacio")
+        : (<View>
+          {this.renderContent(" ")}
+          </View>)
+        }
+
+      
   }
-
+  return this.state.categoriaExpanded;
    /* else {
       console.log("onAccordionClose: " );//, {item,index});
     this.setState({productosDisplayArray:[],productosDisplay:null,categoriaExpanded:0});
@@ -801,12 +816,26 @@ mostrarValor(producto){
 //    this.consultaProductosByTipoProducto(this.state.nivelSocioeconomico,item.idtipoProducto);
   }
 
-  onAccordionClose(producto,index){
+  onAccordionClose(categoria){
+
+    this.setState({ categoriaExpanded: -1 });
+    this.setState((prevState) => ({
+      categoriaShowExpanded: {
+        ...prevState.categoriaShowExpanded,
+        [categoria.index]: false,
+      },
+    }));
     console.log("onAccordionClose: " );//, {item,index});
-    this.setState({productosDisplayArray:[],productosDisplay:null,categoriaExpanded:0});
+    this.state.productosDisplayArray= [], this.state.productosDisplay = null;
+
+    {this.state.categoriaShowExpanded[categoria.index]
+      ? console.log("vacio")
+      : this.renderContent
+      }
   }  
      
-  _renderHeader(categoria, expanded ) {
+  _renderHeader(categoria, index ) {
+    
     if (!categoria) {
       return null;
     }
@@ -818,30 +847,33 @@ mostrarValor(producto){
       justifyContent: "space-between", 
       alignItems: "center", 
       backgroundColor: "#568DAE" }}
-      onPress={(expanded) => {this.onAccordionOpen(categoria, expanded)} }
+      onPress={this.state.categoriaShowExpanded[categoria.index] 
+        ? () => this.onAccordionClose(categoria, index) 
+        : () => this.onAccordionOpen(categoria, index)}
       >
         <Text style={{ fontWeight: "600", color: 'white' }}>
           
           {" "}{categoria.item.tipo_producto}
         </Text>
-        {expanded
+        {this.state.categoriaShowExpanded[categoria.index]
           ? <Icon style={{ fontSize: 18, color: 'white' }} name="remove-circle" />
-          : <Icon style={{ fontSize: 18, color: 'white' }} name="add-circle" />}
+          : <Icon style={{ fontSize: 18, color: 'white' }} name="add-circle"/>}
     </TouchableOpacity>
-
+    
     </View>
     );
   }
 
-renderProducto = ({ producto }) => {
+renderContent (producto, index) {
+  
   const productoFiltrado = this.state.productosDisplayArray;
   const { ventaSinIva } = this.state;
-  console.log("-----------", producto)
-  if(productoFiltrado != null && productoFiltrado.length > 0){
+  console.log("-----------", productoFiltrado)
+
   return (
-    <FlatList
+  <FlatList 
     data={productoFiltrado}
-    renderItem={(producto) => 
+    renderItem={(producto) =>
       <View style={{ marginLeft: 5, marginRight: 5 }}>
         <View style={{ flexDirection: "row" }}>
           <Image
@@ -885,13 +917,12 @@ renderProducto = ({ producto }) => {
             <Icon name="add" style={{ fontSize: 20, color: 'black' }} />
           </TouchableOpacity>
         </View>
-      </View> 
-    }
-    keyExtractor={(producto) => producto.idProducto.toString()}
+      </View> }
+      keyExtractor={(producto) => producto.idProducto.toString()}
       />
-          
+
   );
-          }
+          
           
 }
 
@@ -998,22 +1029,34 @@ render() {
       }
 
     {(!this.state.buscadorProductosActivo) &&
-      <FlatList
-      data={this.state.categoriaDisplayArray}
-      
-      renderItem={ (categoria, index, expanded) => this._renderHeader(categoria, index, expanded)}
-      
-      keyExtractor={(categoria, index, expanded) => categoria.idtipoProducto.toString() + index + expanded}
-      
-      />
+
+        <FlatList
+          data={this.state.categoriaDisplayArray}
+          renderItem={(categoria, index) => this._renderHeader (categoria, index)}
+          keyExtractor={(categoria, index) => categoria.idtipoProducto.toString() + index}
+        />
+
     }
 
     {(this.state.buscadorProductosActivo && !this.state.iniciarBusqueda && this.state.busquedaConcluida) &&
       <View>
+        <View  style={{
+        flex:1,
+        flexDirection: "row",
+        padding: 0,
+        margin: 0,
+        height:41.5,
+        justifyContent: "space-between",
+        alignItems: "center",
+        backgroundColor: "#568DAE",
+        
+      }}>
         <Text style={{ fontWeight: "600", color: 'white', paddingLeft: 10 }}>
           {this.state.productosDisplayArray.length} PRODUCTOS ENCONTRADOS...
         </Text>
-        {this.renderProducto('')}
+       
+      </View>
+      {this.renderContent('')}
       </View>
     }
           </View>
