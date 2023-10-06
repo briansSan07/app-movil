@@ -8,7 +8,7 @@ const localStorage = new LocalStorage();
 class AppConfiguration { 
   
   constructor() {
-      this.debug = true;
+      this.debug = false;
     }
 
 

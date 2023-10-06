@@ -260,7 +260,7 @@ function Rutas() {
                                     options={{
                                       headerShown: false, hidden: true
                                             }} />
-        <Drawer.Screen name="Venta" component={Venta} options={{title: 'Nueva venta'}} />
+        <Drawer.Screen name="Venta" component={Venta} options={{headerShown: false, hidden: true}} />
       </Drawer.Navigator>
   )
 }

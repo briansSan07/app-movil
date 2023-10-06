@@ -369,19 +369,19 @@ if (process.env.NODE_ENV !== 'production') {
     let carritoCompras = [...this.state.carritoCompras];
     console.log("onChangeTBox: [" + cantidad+"]");
 
-    if (cantidad >= producto.cantidad) {
-        console.log("surtir: " + producto.nombre + " para surtir este pedido");
+    if (cantidad >= producto.item.cantidad) {
+        console.log("surtir: " + producto.item.nombre + " para surtir este pedido");
 //        porSurtir.push(producto.nombre)
     }
     if (cantidad === "" || cantidad === " " || cantidad === undefined || cantidad === null || cantidad === "NaN") {
         for (let i = 0; i < carritoCompras.length; i++) {
-            if (carritoCompras[i].id === producto.idProducto) {
+            if (carritoCompras[i].id === producto.item.idProducto) {
                 carritoCompras.splice(i, 1)
                 //console.log("Global:" + carritoCompras.length)
             }
         }
         for (let i = 0; i < this.state.carritoCompras.length; i++) {
-            if (this.state.carritoCompras[i].id === producto.idProducto) {
+            if (this.state.carritoCompras[i].id === producto.item.idProducto) {
                 this.state.carritoCompras.splice(i, 1)
                 //console.log("state:" + this.state.carritoCompras.length)
             }
@@ -390,7 +390,7 @@ if (process.env.NODE_ENV !== 'production') {
     } else {
         //console.log({carritoCompras});
         let nuevoProductoParaCarrito = carritoCompras.filter(function(data) {
-            return data.id === producto.idProducto;
+            return data.id === producto.item.idProducto;
         })
         //console.log("ES ARRAY? " + Array.isArray(nuevoProductoParaCarrito));
         if (nuevoProductoParaCarrito.length > 0) { // si si existe
@@ -399,21 +399,21 @@ if (process.env.NODE_ENV !== 'production') {
         } else {
             //console.log("entre a else");
             nuevoProductoParaCarrito = {
-                id: producto.idProducto,
-                key: '' + producto.idProducto,
-                existencia: producto.cantidad,
+                id: producto.item.idProducto,
+                key: '' + producto.item.idProducto,
+                existencia: producto.item.cantidad,
                 cantidad: parseInt(cantidad),
-                codigo: producto.codigo,
-                nombre: producto.nombre,                
-                precio: producto.precio,
-                precio_antes_impuestos: producto.precio_antes_impuestos,
-                iva: producto.iva,
-                ieps: producto.ieps,
-                tasa_iva: producto.tasa_iva,
-                has_stock: producto.has_stock,
-                id_tasa_cuota_iva: producto.id_tasa_cuota_iva,
-                id_tasa_cuota_ieps: producto.id_tasa_cuota_ieps,
-                img: producto.imagen
+                codigo: producto.item.codigo,
+                nombre: producto.item.nombre,                
+                precio: producto.item.precio,
+                precio_antes_impuestos: producto.item.precio_antes_impuestos,
+                iva: producto.item.iva,
+                ieps: producto.item.ieps,
+                tasa_iva: producto.item.tasa_iva,
+                has_stock: producto.item.has_stock,
+                id_tasa_cuota_iva: producto.item.id_tasa_cuota_iva,
+                id_tasa_cuota_ieps: producto.item.id_tasa_cuota_ieps,
+                img: producto.item.imagen
             };
             carritoCompras.push(nuevoProductoParaCarrito);
         }
@@ -426,32 +426,32 @@ if (process.env.NODE_ENV !== 'production') {
 sumaUno = (producto) => {
 
   let carritoCompras = [...this.state.carritoCompras];
-  if (producto.cantidad <= 0) {
+  if (producto.item.cantidad <= 0) {
       //console.log("surtir: " + producto.nombre + " para surtir este pedido");
 //      porSurtir.push(producto.nombre)
   }
   let nuevoProductoParaCarrito = carritoCompras.filter(function(data) {
-      return data.id === producto.idProducto;
+      return data.id === producto.item.idProducto;
   })
   if (nuevoProductoParaCarrito.length > 0) {
       nuevoProductoParaCarrito[0].cantidad++;
   } else {
       nuevoProductoParaCarrito = {
-          id: producto.idProducto,
-          key: '' + producto.idProducto,
-          codigo: producto.codigo,
-          nombre: producto.nombre,
-          existencia: producto.cantidad,
+          id: producto.item.idProducto,
+          key: '' + producto.item.idProducto,
+          codigo: producto.item.codigo,
+          nombre: producto.item.nombre,
+          existencia: producto.item.cantidad,
           cantidad: 1,
-          precio: producto.precio,
-          precio_antes_impuestos: producto.precio_antes_impuestos,
-          iva: producto.iva,
-          ieps: producto.ieps,
-          tasa_iva: producto.tasa_iva,
-          has_stock: producto.has_stock,
-          id_tasa_cuota_iva: producto.id_tasa_cuota_iva,
-          id_tasa_cuota_ieps: producto.id_tasa_cuota_ieps,
-          img: producto.imagen
+          precio: producto.item.precio,
+          precio_antes_impuestos: producto.item.precio_antes_impuestos,
+          iva: producto.item.iva,
+          ieps: producto.item.ieps,
+          tasa_iva: producto.item.tasa_iva,
+          has_stock: producto.item.has_stock,
+          id_tasa_cuota_iva: producto.item.id_tasa_cuota_iva,
+          id_tasa_cuota_ieps: producto.item.id_tasa_cuota_ieps,
+          img: producto.item.imagen
       };
       carritoCompras.push(nuevoProductoParaCarrito);
   }
@@ -460,6 +460,7 @@ sumaUno = (producto) => {
 }
 
 menosUno = (producto) => {
+  console.log("Change en el carrito con: ", producto)
   let carritoCompras = this.state.carritoCompras;
   let nuevoProductoParaCarrito = carritoCompras.filter(function(data) {return data.id === producto.item.idProducto;})
 
@@ -479,7 +480,7 @@ menosUno = (producto) => {
 }
 
 mostrarValor(producto){
-  let nuevoProductoParaCarrito = carritoCompras.filter (function (data) {return data.id === producto.id; })
+  let nuevoProductoParaCarrito = carritoCompras.filter (function (data) {return data.id === producto.item.id; })
   if(nuevoProductoParaCarrito[0].cantidad>0){
     return "0";
   } else{
@@ -531,7 +532,7 @@ mostrarValor(producto){
     let ieps = 0;
 
     console.log("-------- calculandoCarrito ------------ " , this.state.ventaSinIva);
-    console.log("************", producto)
+
     carrito.forEach((producto) => {
 
       console.log("producto: " , producto)
@@ -782,8 +783,7 @@ mostrarValor(producto){
         [categoria.index]: true,
       },
     }));
-    console.log("PRUEBAAA", this.state.categoriaExpanded)
-    //this.state.categoriaExpanded = categoria.index;
+    
     const isBusqueda = this.state.busquedaConcluida;
     if(this.state.productosDisplay != categoria.item.idtipoProducto){
       console.log("filtrar productos por: " + categoria.item.idtipoProducto + " this.state.productosDisplay: " + this.state.productosDisplay );
@@ -798,22 +798,9 @@ mostrarValor(producto){
       console.log("Mostrare: " + productosDisplayArray.length + " productos.");
       this.state.productosDisplay= categoria.item.idtipoProducto, this.state.productosDisplayArray = productosDisplayArray;
 
-      /*{this.state.categoriaShowExpanded[categoria.index]
-        ? console.log("vacio")
-        : (<View>
-          {this.renderContent(" ")}
-          </View>)
-        }*/
-
       
   }
   return this.state.categoriaExpanded;
-   /* else {
-      console.log("onAccordionClose: " );//, {item,index});
-    this.setState({productosDisplayArray:[],productosDisplay:null,categoriaExpanded:0});
-    }
-    */
-//    this.consultaProductosByTipoProducto(this.state.nivelSocioeconomico,item.idtipoProducto);
   }
 
   onAccordionClose(categoria){
@@ -827,7 +814,6 @@ mostrarValor(producto){
     }));
     console.log("onAccordionClose: " );//, {item,index});
     this.state.productosDisplayArray= [], this.state.productosDisplay = null;
-
     
   }  
      
@@ -884,7 +870,7 @@ renderItem={(producto) =>
       </View>
       <View style={{flex:1,  flexDirection: "column", alignItems: "flex-end", marginTop: 5}}>
         <View style={{ flexDirection: "row", alignItems: "flex-end"}}>
-      <TouchableOpacity onPress={() => this.menosUno(producto.item.cantidad)}>
+      <TouchableOpacity onPress={() => this.menosUno(producto)}>
         <Icon name="remove" style={{ fontSize: 20, color: 'black' }} />
       </TouchableOpacity>
 
@@ -898,12 +884,12 @@ renderItem={(producto) =>
           backgroundColor: "#f3f3f3",
           textAlign: "center"
         }}
-        onChangeText={(cantidad) => this.onChangeTBox(producto.item.cantidad, cantidad)}
+        onChangeText={(cantidad) => this.onChangeTBox(producto, cantidad)}
         keyboardType={"numeric"}
         value={"" + this.state.carritoCompras.filter(row => row.id == producto.item.idProducto).reduce((cant, row) => cant + row.cantidad, inicial)}
       />
       
-      <TouchableOpacity onPress={() => this.sumaUno(producto.item.cantidad)}>
+      <TouchableOpacity onPress={() => this.sumaUno(producto)}>
         <Icon name="add" style={{ fontSize: 20, color: 'black' }} />
       </TouchableOpacity>
       </View>
@@ -912,7 +898,7 @@ renderItem={(producto) =>
 
     
   </View>}
-  keyExtractor={(producto) => producto.idProducto.toString()}
+  
   /> ): null }
 </View>
 </View>
@@ -932,10 +918,28 @@ render() {
     const { ventaSinIva } = this.state;
 //    console.log("****** Render ");
     return (
-  <SafeAreaView style={{ flex: 1 }}>
-    <View style={{ flex: 1}}>
-      <View style={{ height: 115, paddingTop: 10, backgroundColor: "#51747F" }}>
-            <View style={{ flexDirection: "row" }}>
+  <View style={{ flex: 1 }}>
+    
+      <View  style={{ 
+    paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
+    backgroundColor:'#f6f6f6',
+    color:'#000000',
+    marginBottom: Platform.OS === 'ios' ? 0 : 0,
+    height:90,
+    paddingTop: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start', }}>
+        <View style={{flex: 0}}>
+                              <TouchableOpacity
+                                style={{flex: 0,
+                                  padding: 10,}}
+                                onPress={() => this.props.navigation.openDrawer()}>
+                                <Icon name="menu" style={{color:'#2496bc', fontSize: 30}} />
+                              </TouchableOpacity>
+        </View>
+
+            
               
 
 
@@ -956,37 +960,43 @@ render() {
                   <Text style={{ fontSize: 10, color: 'white', marginLeft: 10 }}>Mínimo 3 caracteres.. Da enter para iniciar búsqueda</Text>
                 </View>
     ) : (
-                <View style={{ flex: 3 }}>
+                <View style={{ flex: 3, paddingLeft: 25 }}>
+                  <Text style={{color:'#000000',
+                                textAlign:'center',
+                                fontWeight: 'bold'}}>Nueva Venta</Text>
                   {this.state.cliente != null && (
                     <Text style={{ fontSize: 12, color: 'white', marginLeft: 10 }}>
                       Cliente: {this.state.cliente.clave} - {this.state.cliente.nombre_comercial}
                     </Text>
                   )}
-                  {this.state.cliente == null && <Text style={{ color: 'white', fontSize: 12, marginLeft: 10 }}>Venta al público</Text>}
+                  {this.state.cliente == null && <Text style={{ color: 'black', fontSize: 12, textAlign: 'center' }}>Venta al público</Text>}
                 </View>
     )}
-              <View style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end" }}>
+              <View style={{paddingTop: Platform.OS === 'ios' ? 0 : 10, flex: 1, flexDirection: "column", justifyContent: "flex-end" }}>
+                <View style={{ flexDirection: "row", height: 55 }}>
+
                 <TouchableOpacity
-                  style={{ flex: 0, paddingLeft: 10, paddingRight: 5, paddingTop: 15 }}
+                  style={{ flex: 0, paddingRight: 5, paddingTop: 15 }}
                   onPress={() => this.activarBuscadorProductos()}
                 >
                   {!buscadorProductosActivo ? (
-                    <Icon name="search" style={{ color: 'white' }} />
+                    <Icon name="search" style={{ color: 'black' , fontSize: 22}} />
                   ) : (
-                    <Icon name="close" style={{ color: 'white' }} />
+                    <Icon name="close" style={{ color: 'black' , fontSize: 22}} />
                   )}
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={{ flex: 0, paddingLeft: 10, paddingRight: 5, paddingTop: 15 }}
                   onPress={() => this.mostrarClientes()}
                 >
-                  <Icon name="person-add" style={{ color: 'white' }} />
+                  <Icon name="person-add" style={{ color: 'black' , fontSize: 22}} />
                 </TouchableOpacity>
+
               </View>
             </View>
             {this.state.cliente != null && (
               <View style={{ height: 47, alignItems: "center", flexDirection: "row" }}>
-                <Text style={{ fontSize: 10, paddingBottom: 5, color: 'white', marginLeft: 10 }}>¿Con Factura? </Text>
+                <Text style={{ fontSize: 10, paddingBottom: 5, color: 'black', marginLeft: 10 }}>¿Con Factura? </Text>
                 <Switch
                   style={{ paddingTop: 10 }}
                   value={this.state.generaFactura}
@@ -999,9 +1009,10 @@ render() {
           
         
         
-        <View>
+        
           
         <View>
+          <SafeAreaView style={{ƒlex:1}}>
       {(this.state.isLoading) &&
       <View style={{ alignItems: 'center' }}>
         <ActivityIndicator color='#51747F' />
@@ -1107,33 +1118,47 @@ render() {
 
       </View>
     }
-          </View>
+          </SafeAreaView>
         </View>
 
-        <View >
-          <View style={{backgroundColor: "#51747F"}}>
+        <View  style={{backgroundColor: '#51747F',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center', position: 'absolute', bottom:0 }}>
+          <View style={{flex:1}}>
           <TouchableOpacity
+
+                style={ [styles.footerButton, styles.confirmButton]}
                 disabled={this.state.isLoading}
                 onPress={() => this.pasarDatos()}
-                style={{ paddingTop: 15, alignItems: "center" }}
               >
-                <Icon name="md-cart" style={{ color: 'white', fontSize: 30 }} />
-                <Text style={{ color: 'white' }}>Confirmar</Text>
+                <View style ={{
+                  backgroundColor: '#cb8d12',
+                  borderRadius: 15,
+                  width: 30,
+                  height: 30,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
                 <Text style={{ color: 'white' }}>{this.state.count}</Text>
+                </View>
+                <Icon name="md-cart" style={{ color: 'white', fontSize: 25 }} />
+                <Text style={{ color: 'white' }}>Confirmar</Text>
+                
               </TouchableOpacity>
               </View>
-              <View>
+              <View style={{flex:1}}>
               <TouchableOpacity
+                style={styles.footerButton}
                 disabled={this.state.isLoading}
                 onPress={() => this.pasarDatos()}
-                style={{ backgroundColor: "#51747F", alignItems: "center", paddingTop: 10 }}
+                
               >
                 <Text style={{ color: 'white', fontSize: 18 }}>{this.state.suma}</Text>
               </TouchableOpacity>
             </View>
         </View>
-        </View>
-      </SafeAreaView>
+      </View>
     );
     
   }
@@ -1154,6 +1179,18 @@ const styles = StyleSheet.create({
   mb: {
     marginBottom: 15
   },
+  footerButton: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  confirmButton: {
+    paddingTop: 15,
+  },
+  h3: {
+    color: 'white',
+    fontSize: 20,
+  }
 
 })
 

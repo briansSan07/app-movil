@@ -211,10 +211,6 @@ this.reenviarVenta();
       
   }
 
-
-
-
-
   onChangeCodigoActivacion(inputText){
     this.setState({codigoActivacion: inputText }, () => {
       if(this.debug) console.log("this.state.codigoActivacion: " + this.state.codigoActivacion);
@@ -233,19 +229,6 @@ this.reenviarVenta();
       if(this.debug) console.log("this.state.password: " + this.state.password);
     });
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   validateForm() {
 
@@ -380,22 +363,13 @@ let sourceId = null;
 
 
     if(this.debug) console.log("ingresarApp(" + from + ")");
-    
-
-  
-  
-    
-  
-
-
-
-    appConfiguration.loadKeyConfiguration('id_sucursal')
-    .then((result) => {
-      if(this.debug) console.log('SI EXISTE ROW PARA id_sucursal !!!', result);
+      appConfiguration.loadKeyConfiguration('id_sucursal')
+        .then((result) => {
+          if(this.debug) console.log('SI EXISTE ROW PARA id_sucursal !!!', result);
         
-        if(result.success){
-          const sucursalId = parseInt(result.value);
-          this.setState({sucursalId:sucursalId});
+            if(result.success){
+              const sucursalId = parseInt(result.value);
+              this.setState({sucursalId:sucursalId});
 
           appConfiguration.loadKeyConfiguration('source_id')
           .then((result) => {
@@ -938,29 +912,6 @@ openVideo(){
     const usuarioValido = this.state.usuarioValido;
     
     const deviceWidth = Dimensions.get("window").width;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
