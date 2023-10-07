@@ -8,11 +8,11 @@ import {
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
 
-import { AccordionList } from 'accordion-collapse-react-native';
+
 import Constants from 'expo-constants';
 import { Button, ListItem } from '@rneui/themed';
 import {TextInput, AppRegistry,Navigator,SafeAreaView, Alert} from "react-native";
-import NumberFormat from 'react-number-format';
+import {NumericFormat} from 'react-number-format';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const CatalogosModel = require ('../../lib/model/CatalogosModel');
@@ -61,6 +61,7 @@ if (process.env.NODE_ENV !== 'production') {
       categoriaDisplayArray: [],
       categoriaExpanded:-1,
       categoriaShowExpanded: {},
+      listaAbierta: -1,
 
       productosArray : [],
       productosDisplayArray : [],
@@ -691,7 +692,6 @@ mostrarValor(producto){
       });
     }
 
-    
 
     mostrarClientes(){
       this.props.navigation.navigate("AgregarCliente",
@@ -771,18 +771,17 @@ mostrarValor(producto){
       return null;
     }
 
+    if (this.state.listaAbierta !== -1) {
+      this.onAccordionClose(this.state.listaAbierta);
+//      this.onAccordionClose(this.state.categoriaExpanded:)
+    }
+
+    this.setState({ listaAbierta: categoria.index})
+
     console.log("onAccordionOpen: " , (categoria), "index", (categoria.index));
 
 
-    this.setState((prevState) => ({
-      categoriaExpanded: prevState.categoriaExpanded === categoria.index ? -1 : categoria.index
-    }));
-    this.setState((prevState) => ({
-      categoriaShowExpanded: {
-        ...prevState.categoriaShowExpanded,
-        [categoria.index]: true,
-      },
-    }));
+    
     
     const isBusqueda = this.state.busquedaConcluida;
     if(this.state.productosDisplay != categoria.item.idtipoProducto){
@@ -805,13 +804,9 @@ mostrarValor(producto){
 
   onAccordionClose(categoria){
 
-    this.setState({ categoriaExpanded: -1 });
-    this.setState((prevState) => ({
-      categoriaShowExpanded: {
-        ...prevState.categoriaShowExpanded,
-        [categoria.index]: false,
-      },
-    }));
+    
+    this.setState({ listaAbierta: -1 });
+
     console.log("onAccordionClose: " );//, {item,index});
     this.state.productosDisplayArray= [], this.state.productosDisplay = null;
     
@@ -833,7 +828,7 @@ mostrarValor(producto){
       justifyContent: "space-between", 
       alignItems: "center", 
       backgroundColor: "#568DAE" }}
-      onPress={this.state.categoriaShowExpanded[categoria.index] 
+      onPress={this.state.listaAbierta == categoria.index 
         ? () => this.onAccordionClose(categoria, index) 
         : () => this.onAccordionOpen(categoria, index)}
       >
@@ -841,14 +836,16 @@ mostrarValor(producto){
           
           {" "}{categoria.item.tipo_producto}
         </Text>
-        {this.state.categoriaShowExpanded[categoria.index]
+        {this.state.listaAbierta == categoria.index
           ? <Icon style={{ fontSize: 18, color: 'white' }} name="remove-circle" />
           : <Icon style={{ fontSize: 18, color: 'white' }} name="add-circle"/>}
     </TouchableOpacity>
     
     </View>
   <View>
-{this.state.categoriaShowExpanded[categoria.index]
+
+
+{this.state.listaAbierta == categoria.index
   ? ( 
   <FlatList 
 data={this.state.productosDisplayArray}
@@ -946,7 +943,7 @@ render() {
     {buscadorProductosActivo ? (
                 <View style={{ flex: 3 }}>
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Icon active name="search" style={{ color: 'white', marginLeft: 10 }} />
+                    <Icon active name="search" style={{ color: 'black', marginLeft: 10 }} />
                     <TextInput
                       placeholder="Producto"
                       autoFocus={true}
@@ -954,10 +951,10 @@ render() {
                       onBlur={this.realizarBusqueda.bind(this)}
                       blurOnSubmit={true}
                       value={"" + this.state.busqueda}
-                      style={{ color: 'white', flex: 1 }}
+                      style={{ color: 'black', flex: 1 }}
                     />
                   </View>
-                  <Text style={{ fontSize: 10, color: 'white', marginLeft: 10 }}>Mínimo 3 caracteres.. Da enter para iniciar búsqueda</Text>
+                  <Text style={{ fontSize: 10, color: 'black', marginLeft: 10 }}>Mínimo 3 caracteres.. Da enter para iniciar búsqueda</Text>
                 </View>
     ) : (
                 <View style={{ flex: 3, paddingLeft: 25 }}>
@@ -965,7 +962,7 @@ render() {
                                 textAlign:'center',
                                 fontWeight: 'bold'}}>Nueva Venta</Text>
                   {this.state.cliente != null && (
-                    <Text style={{ fontSize: 12, color: 'white', marginLeft: 10 }}>
+                    <Text style={{ fontSize: 12, color: 'black', marginLeft: 10 }}>
                       Cliente: {this.state.cliente.clave} - {this.state.cliente.nombre_comercial}
                     </Text>
                   )}
@@ -1011,8 +1008,8 @@ render() {
         
         
           
-        <View>
-          <SafeAreaView style={{ƒlex:1}}>
+        <View style={{flex:10}}>
+          
       {(this.state.isLoading) &&
       <View style={{ alignItems: 'center' }}>
         <ActivityIndicator color='#51747F' />
@@ -1049,6 +1046,7 @@ render() {
     }
 
     {(this.state.buscadorProductosActivo && !this.state.iniciarBusqueda && this.state.busquedaConcluida) &&
+    
       <View>
         <View  style={{
         flex:1,
@@ -1118,13 +1116,13 @@ render() {
 
       </View>
     }
-          </SafeAreaView>
+          
         </View>
 
         <View  style={{backgroundColor: '#51747F',
                         flexDirection: 'row',
                         alignItems: 'center',
-                        justifyContent: 'center', position: 'absolute', bottom:0 }}>
+                        justifyContent: 'center', bottom:0, flex:1 }}>
           <View style={{flex:1}}>
           <TouchableOpacity
 
@@ -1132,17 +1130,24 @@ render() {
                 disabled={this.state.isLoading}
                 onPress={() => this.pasarDatos()}
               >
+                <View style ={{position: 'relative'}}>
+                <Icon name="md-cart" style={{ color: 'white', fontSize: 25 }} />
+                 {this.state.count != 0 &&
                 <View style ={{
                   backgroundColor: '#cb8d12',
-                  borderRadius: 15,
-                  width: 30,
-                  height: 30,
+                  borderRadius: 10,
+                  width: 20,
+                  height: 20,
+                  top: -5,
+                  flex: 0,
                   alignItems: 'center',
-                  justifyContent: 'center',
+                  position: 'absolute',
+                  marginLeft: 20
                 }}>
                 <Text style={{ color: 'white' }}>{this.state.count}</Text>
                 </View>
-                <Icon name="md-cart" style={{ color: 'white', fontSize: 25 }} />
+}
+                </View>
                 <Text style={{ color: 'white' }}>Confirmar</Text>
                 
               </TouchableOpacity>
@@ -1154,7 +1159,17 @@ render() {
                 onPress={() => this.pasarDatos()}
                 
               >
-                <Text style={{ color: 'white', fontSize: 18 }}>{this.state.suma}</Text>
+                <NumericFormat
+            value={Math.abs(this.state.suma)}
+            displayType={'text'}
+            thousandSeparator={true}
+            prefix={'$'}
+            fixedDecimalScale={true}
+            decimalScale={2}
+            renderText={value=> 
+              <Text style={styles.h3}>{value}</Text>
+            }
+          />
               </TouchableOpacity>
             </View>
         </View>
@@ -1180,12 +1195,12 @@ const styles = StyleSheet.create({
     marginBottom: 15
   },
   footerButton: {
-    flex: 1,
+    flex: 0,
     alignItems: 'center',
     paddingVertical: 10,
   },
   confirmButton: {
-    paddingTop: 15,
+    paddingTop: 10,
   },
   h3: {
     color: 'white',
