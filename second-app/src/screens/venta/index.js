@@ -5,6 +5,8 @@ import {
   FlatList, StyleSheet, Dimensions, Text, ActivityIndicator, Flash
 } from "react-native";
 
+import { ScrollView } from 'react-native-virtualized-view'
+
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
 
@@ -60,7 +62,7 @@ if (process.env.NODE_ENV !== 'production') {
       categoriaArray: [],
       categoriaDisplayArray: [],
       categoriaExpanded:-1,
-      categoriaShowExpanded: {},
+      categoriaShow: null,
       listaAbierta: -1,
 
       productosArray : [],
@@ -694,7 +696,7 @@ mostrarValor(producto){
 
 
     mostrarClientes(){
-      this.props.navigation.navigate("AgregarCliente",
+      this.props.navigation.navigate("Cliente",
       {origen:"VENTA",
         onGoBack: (cliente) => this.asignarCliente(cliente),
       });
@@ -765,6 +767,20 @@ mostrarValor(producto){
     
   }
 
+
+  // Función para desplazar la pantalla al índice especificado
+  /*scrollToIndex = (categoria) => {
+
+    console.log("111-------", categoria.index)
+    if (this.scrollViewRef) {
+      // Calcula la posición de desplazamiento en función del índice
+      const position = categoria.index * 1; // Reemplaza ITEM_HEIGHT con la altura de tus elementos
+      // Usa ScrollView's scrollTo para desplazar la pantalla
+      this.scrollViewRef.scrollTo({ x: 0, y: position, animated: true });
+    }
+  };
+*/
+
   onAccordionOpen(categoria, categoriaExpanded){
     
     if (!categoria) {
@@ -776,7 +792,22 @@ mostrarValor(producto){
 //      this.onAccordionClose(this.state.categoriaExpanded:)
     }
 
+    /*const element = categoria.getElementById('categoria.index');
+    if (element){
+      element.scrollIntoView({ behavior: 'smooth'});
+    }
+    */
+
+    if (this.scrollViewRef) {
+      // Calcula la posición de desplazamiento en función del índice
+      const position = categoria.index * 1; // Reemplaza ITEM_HEIGHT con la altura de tus elementos
+      // Usa ScrollView's scrollTo para desplazar la pantalla
+      this.scrollViewRef.scrollTo({ x: 0, y: position, animated: true });
+    }
+
     this.setState({ listaAbierta: categoria.index})
+
+
 
     console.log("onAccordionOpen: " , (categoria), "index", (categoria.index));
 
@@ -799,7 +830,7 @@ mostrarValor(producto){
 
       
   }
-  return this.state.categoriaExpanded;
+
   }
 
   onAccordionClose(categoria){
@@ -814,6 +845,9 @@ mostrarValor(producto){
      
   _renderHeader(categoria, index ) {
 
+
+
+
     const { ventaSinIva } = this.state;
     
     if (!categoria) {
@@ -822,6 +856,7 @@ mostrarValor(producto){
 //console.log("categoriaBruta: " + categoria.tipo_producto + " expanded: " + expanded);
     return (
       <View>
+        
       <View>
       <TouchableOpacity style={{ flexDirection: "row", 
       padding: 10, 
@@ -829,8 +864,8 @@ mostrarValor(producto){
       alignItems: "center", 
       backgroundColor: "#568DAE" }}
       onPress={this.state.listaAbierta == categoria.index 
-        ? () => this.onAccordionClose(categoria, index) 
-        : () => this.onAccordionOpen(categoria, index)}
+        ? () => {this.onAccordionClose(categoria, index) }
+        : () => {this.onAccordionOpen(categoria, index)}}
       >
         <Text style={{ fontWeight: "600", color: 'white' }}>
           
@@ -842,7 +877,8 @@ mostrarValor(producto){
     </TouchableOpacity>
     
     </View>
-  <View>
+    
+    <View>
 
 
 {this.state.listaAbierta == categoria.index
@@ -1036,12 +1072,15 @@ render() {
       }
 
     {(!this.state.buscadorProductosActivo) &&
-
+      <ScrollView innerref={(ref) => (this.scrollViewRef = ref)}
+      showsVerticalScrollIndicator={true}>
         <FlatList
           data={this.state.categoriaDisplayArray}
           renderItem={(categoria, index) => this._renderHeader (categoria, index)}
           keyExtractor={(categoria, index) => categoria.idtipoProducto.toString() + index}
         />
+        </ScrollView>
+
 
     }
 
@@ -1117,7 +1156,7 @@ render() {
       </View>
     }
           
-        </View>
+        </View> 
 
         <View  style={{backgroundColor: '#51747F',
                         flexDirection: 'row',
@@ -1134,7 +1173,7 @@ render() {
                 <Icon name="md-cart" style={{ color: 'white', fontSize: 25 }} />
                  {this.state.count != 0 &&
                 <View style ={{
-                  backgroundColor: '#cb8d12',
+                  backgroundColor: '#33BFAA',
                   borderRadius: 10,
                   width: 20,
                   height: 20,

@@ -129,11 +129,9 @@ class AppConfiguration {
         let promises = [];
         localStorage.getConnection().transaction((tx) => {
             if(sourceId){
-                console.log("no")
                 promises.push(this._saveConfigurationKey(tx,"source_id",sourceId));
             }
             if(config){
-                console.log("sigue");
                 promises.push(this._saveConfigurationKey(tx,"usuario",usuario));
                 promises.push(this._saveConfigurationKey(tx,"id_sucursal",config.id_sucursal));
                 promises.push(this._saveConfigurationKey(tx,"sucursal",config.sucursal));

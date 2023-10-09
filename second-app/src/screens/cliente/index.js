@@ -2,8 +2,9 @@ import 'react-native-gesture-handler';
 import React, { Component} from "react";
 import {
   Container,  Header,  Title,  Content,  Button,  Icon,  ListItem,  Text,  Thumbnail,  Left,  Body,
-  Right,  Item,  Footer,  FooterTab,  Badge,  Accordion,  View,  Input,  List,  Toast,  H1,  H2,  H3, H4, CheckBox,Picker,Spinner
+  Right,  Item,  Footer,  FooterTab,  Badge,  Accordion,  View,  Input,  List,Spinner, TouchableOpacity
 } from "react-native";
+import {Picker} from '@react-native-picker/picker';
 import {TextInput, AppRegistry,Navigator,SafeAreaView } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack'
 import {  createDrawerNavigator } from '@react-navigation/drawer';
@@ -339,35 +340,35 @@ export default class Cliente extends Component {
 
     const buscadorActivo = this.state.buscadorActivo;
     return (
-      <Container style={styles.container}>
-        <Header iosBarStyle={"dark-content"} style={{ ...globalStyles.header , height:90,paddingTop:10 }} searchBar rounded>
+      <View style={styles.container}>
+        <View iosBarStyle={"dark-content"} style={{ ...globalStyles.header , height:90,paddingTop:10 }} searchBar rounded>
           
         {(this.state.origen=="MENU" && 
-          <Left style={{flex: 0}}>
-            <Button
-              transparent
+          <View style={{flex: 0}}>
+            <TouchableOpacity
+              
               onPress={() => this.props.navigation.openDrawer()}>
               <Icon name="menu" style={globalStyles.headerButton} />
-            </Button>
-          </Left>
+            </TouchableOpacity>
+          </View>
         )}
         {(this.state.origen=="VENTA" && 
         
-        <Left>
-            <Button transparent onPress={() => this.props.navigation.goBack()}>
+        <View>
+            <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
               <Icon name="arrow-back"  style={globalStyles.headerButton} />
-            </Button>
-          </Left>
+            </TouchableOpacity>
+          </View>
         )}
 
 
 
         {
           buscadorActivo &&
-          <Body style={{flex: 3}}>
-          <Item >
-              <Icon active name="search" style={globalStyles.headerButton} />
-              <Input placeholder = "Nombre del cliente"
+          <View style={{flex: 3}}>
+          <View >
+              <Icon  name="search" style={globalStyles.headerButton} />
+              <TextInput placeholder = "Nombre del cliente"
                   autoFocus = {true}
                   onChangeText = {(busqueda) => this.onChangeSeachBox(busqueda)}
                   onBlur={ this.realizarBusqueda.bind(this)}
@@ -375,27 +376,26 @@ export default class Cliente extends Component {
                   value = { "" + this.state.busqueda }
               
               />
-          </Item>
+          </View>
           <Text style={{fontSize:10}}>Mínimo 3 caracteres. Da enter para iniciar búsqueda</Text>
-          </Body>
+          </View>
 
         }
         {
           !buscadorActivo &&
-          <Body style={{flex: 0,alignContent:"center",paddingTop:10}}>
-            <Title style={globalStyles.headerTitle}>
+          <View style={{flex: 0,alignContent:"center",paddingTop:10}}>
+            <Text style={globalStyles.headerTitle}>
             {this.state.origen == "MENU" && "Clientes"}
             {this.state.origen == "VENTA" && "Agregar cliente"}            
-            </Title>
+            </Text>
             <View style={{flex:0,flexDirection:"row",paddingTop:2}}>
 
                               <Picker
+                                
                                 key={"edo"}
                                 mode="dropdown"
-                                iosIcon={<Icon name="arrow-down" />}
+                                
                                 placeholder="Ver por estado..."
-                                placeholderStyle={{ color: "#000000" }}
-                                placeholderIconColor="#000000"
                                 style={{borderWidth:1,borderLeftColor:"#000000",borderBottomColor:"#000000",borderTopColor:"#000000",borderRightColor:"#000000",width:200,paddingTop:0,height:35 }} 
                                 selectedValue={ this.state.estado}
                                 onValueChange={(value) => {this.filtrarClienteEstado(value)} }
@@ -410,11 +410,11 @@ export default class Cliente extends Component {
             </View>                              
 
 
-          </Body>
+          </View>
         }
 
-          <Right style={{flex: 1}}>
-            <Button transparent
+          <View style={{flex: 1}}>
+            <TouchableOpacity
                 onPress={() => this.activarBuscadorClientes() }
             >
               {
@@ -425,17 +425,17 @@ export default class Cliente extends Component {
                 buscadorActivo &&
                 <Icon name="close" style={globalStyles.headerButton}/>
               }            
-            </Button>
+            </TouchableOpacity>
 
             {this.state.origen == "MENU" && 
-              <Button transparent>
+              <TouchableOpacity>
                 <Icon name="person-add" style={globalStyles.headerButton}/>
-              </Button>
+              </TouchableOpacity>
             }
 
-          </Right>          
-        </Header>
-        <Content>
+          </View>          
+        </View>
+        <View>
           <SafeAreaView style={{flex: 1}}>   
 
           
@@ -458,32 +458,32 @@ export default class Cliente extends Component {
           }
           
 
-          <List >
+          <View >
           {
             this.state.clientesDisplayArray.map((cliente) => {
               return (
                 
-                <ListItem thumbnail key={cliente.key} style={[
+                <TouchableOpacity  style={[
                   (this.state.clienteSelected != null && this.state.clienteSelected.key == cliente.key) ? styles.itemSelected : styles.itemFree
                  ,{paddingLeft:0,marginLeft:0} 
                 ]}
                 onPress={() => {this.seleccionarCliente(cliente);}}
                 >
           {this.state.origen == "VENTA" && 
-                  <Left style={{padding:0,marginLeft:0}}>
-                    <Button transparent
+                  <View style={{padding:0,marginLeft:0}}>
+                    <TouchableOpacity 
                           onPress={() => {this.seleccionarCliente(cliente);}}
                     >
                       {
                         (this.state.clienteSelected != null && this.state.clienteSelected.key == cliente.key) ? <Icon name="ios-checkbox-outline" style={globalStyles.headerButton}/> : <Icon name="square-outline" style={globalStyles.headerButton}/>
                       }
                         
-                    </Button>
-                  </Left>
+                    </TouchableOpacity>
+                  </View>
           }
 
                   
-                  <Body style={{marginLeft:0}}>
+                  <TouchableOpacity style={{marginLeft:0}}>
                     <Text style={{fontWeight:"bold"}}>{cliente.clave} - {cliente.nombre_comercial}</Text>
                     {(cliente.rfc != null && cliente.rfc != "") && 
                     <Text >RFC: {cliente.rfc}</Text>}
@@ -497,45 +497,45 @@ export default class Cliente extends Component {
                       Cel: <Text >{cliente.celular}</Text>
                       </Text>
                       }
-                  </Body>
-                  <Right style={{marginLeft:0,marginRight:0,flex:0,flexDirection: 'row',width:80}}>
+                  </TouchableOpacity>
+                  <View style={{marginLeft:0,marginRight:0,flex:0,flexDirection: 'row',width:80}}>
                     
-                      <Button transparent
+                      <TouchableOpacity
                             onPress={() => {this.verCliente(cliente);}}
                       >
                           <Icon name="contact" style={globalStyles.headerButton}/>
-                      </Button>
+                      </TouchableOpacity>
 
                     
-                  </Right>
-                </ListItem>
+                  </View>
+                </TouchableOpacity>
               );
             })
           }
 
-          </List>
+          </View>
 
           </SafeAreaView>
-        </Content>
+        </View>
 {this.state.origen == "VENTA" &&
         
-         <Footer >
-          <FooterTab style={{backgroundColor: "#51747F"}}>
-            <Button
-            disabled = {this.state.clienteSelected == null}
+         <View >
+          <View style={{backgroundColor: "#51747F"}}>
+            <TouchableOpacity
+          //---------------------  disabled = {this.state.clienteSelected == null}
               
              // onPress={() => this.toggleTab3()}
              onPress={() => this.agregarCliente()}
             >
               
               <Text style={{color: 'white'}}>Agregar a la Venta</Text>
-            </Button>
+            </TouchableOpacity>
             
-          </FooterTab>
-        </Footer>
+          </View>
+        </View>
 }
 
-      </Container>
+      </View>
     );
   }
 }

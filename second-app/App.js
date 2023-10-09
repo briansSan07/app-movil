@@ -1,5 +1,6 @@
 import 'react-native-gesture-handler';
 
+import  AppLoading  from 'expo-app-loading';
 import * as Font from 'expo-font';
 import * as gluestack from '@gluestack-ui/themed';
 import { ScrollView, Text,StyleSheet, TouchableNativeFeedback, View, Button, Image } from 'react-native';
@@ -44,6 +45,7 @@ const login = new Login();
 
 import isObject from 'isobject';
 import Constants from 'expo-constants';
+import { DrawerLayout, gestureHandlerRootHOC } from 'react-native-gesture-handler';
 
 
 
@@ -247,7 +249,7 @@ const Stack = createStackNavigator();
 function Rutas() {
   return(
       <Drawer.Navigator
-      initialRouteName = "Venta"
+      initialRouteName = "Login"
       screenOptions={{
             activeTintColor: "#e91e63"
       }}
@@ -258,8 +260,10 @@ function Rutas() {
         <Drawer.Screen name="Cliente" component={Cliente} />
         <Drawer.Screen name="Login" component={Login} 
                                     options={{
-                                      headerShown: false, hidden: true
-                                            }} />
+                                      headerShown: false, hidden: true, swipeEnabled: false
+                                            }}
+                                             
+                                       />
         <Drawer.Screen name="Venta" component={Venta} options={{headerShown: false, hidden: true}} />
       </Drawer.Navigator>
   )
@@ -402,6 +406,10 @@ export default class App extends React.Component {
   }
 
   render() {
+    /*if (!this.state.isReady) {
+      return <AppLoading />;
+    }*/
+
     return(
     <NavigationContainer>
       <Stack.Navigator>
@@ -413,7 +421,6 @@ export default class App extends React.Component {
       />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="SettingScreen" component={SettingScreen} />
-      <Stack.Screen name="Cliente" component={Cliente} />
       <Stack.Screen name="AgregarCliente" component={Cliente} />
       <Stack.Screen name="ClienteDetalle" component={ClienteDetalle} />
       <Stack.Screen name="Venta" component={Venta} />

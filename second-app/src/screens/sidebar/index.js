@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { Image,SafeAreaView, FlatList, Text, View, TouchableHighlight, Dimensions, Platform, StyleSheet, TouchableOpacity } from "react-native";
+import { Image,SafeAreaView, FlatList, Text, View,
+   Dimensions, Platform, StyleSheet, TouchableOpacity } from "react-native";
 
 
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -239,14 +240,14 @@ export default class SideBar extends Component {
 
 
             <FlatList
-            contentContainerStyle={{flex:1}}
+            contentContainerStyle={{flex:1, marginLeft:20}}
             data={datas}
             renderItem={({item}) => {
               return (
               <TouchableOpacity
                 style={{alignItems: 'center',
                 flexDirection:'row',
-                marginTop: 5}}
+                marginBottom: 20}}
                 onPress={() => {
                   this.props.navigation.closeDrawer();
                   console.log("****** this.state.uniqueValue: " , global.ventaUnique);
@@ -257,7 +258,7 @@ export default class SideBar extends Component {
               >
                 <Icon
                     name={item.icon}
-                    style={{ color: "#777", fontSize: 26, width: 30 }}
+                    style={{ color: "#33BFAA", fontSize: 26, width: 30 }}
                   />
                 <Text style={styles.text}>{item.name}</Text>
                 {item.types &&
@@ -292,20 +293,21 @@ const styles = StyleSheet.create({
     height: windowHeight / 3.5,
     width: null,
     position: "relative",
-    marginBottom: 10
+    marginBottom: 5
   },
   drawerImage: {
     position: "absolute",
-    left: Platform.OS === "android" ? windowWidth / 10 : windowWidth / 9,
+    left: Platform.OS === "android" ? windowWidth / 13 : windowWidth / 9,
     top: Platform.OS === "android" ? windowHeight / 13 : windowHeight / 12,
-    width: 210,
-    height: 120,
+    width: 200,
+    height: 150,
     resizeMode: "cover"
   },
   text: {
     fontWeight: Platform.OS === "ios" ? "500" : "400",
     fontSize: 16,
-    marginLeft: 20
+    marginLeft: 20,
+    color: '#420EBA'
   },
   badgeText: {
     fontSize: Platform.OS === "ios" ? 13 : 11,
