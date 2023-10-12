@@ -1,23 +1,34 @@
 import 'react-native-gesture-handler';
 import React, { Component} from "react";
 import {
-  Container,  Header,  Title,  Content,  Button,  Icon,  ListItem,  Text,  Thumbnail,  Left,  Body,
-  Right,  Item,  Footer,  FooterTab,  Badge,  Accordion,  View,  Input,  List,Spinner, TouchableOpacity
+  Container,  Header,  Title,  Content,  Button,  ListItem,  Text,  Thumbnail,  Left,  Body,
+  Right,  Item,  Footer,  Dimensions, Platform, FooterTab,  Badge,  Accordion,  View,  Input,  List,
+  ActivityIndicator, TouchableOpacity, StyleSheet
 } from "react-native";
 import {Picker} from '@react-native-picker/picker';
 import {TextInput, AppRegistry,Navigator,SafeAreaView } from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack'
+import { useNavigation, useRoute } from '@react-navigation/native';
 import {  createDrawerNavigator } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer, createAppContainer, useNavigation } from '@react-navigation/native';
+import { NavigationContainer, createAppContainer} from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 
-import CatalogosModel from '../../lib/model/CatalogosModel';
-import ClienteModel from '../../lib/model/ClienteModel';
+const deviceHeight = Dimensions.get("window").height;
+import Constants from 'expo-constants';
+import { ScrollView } from 'react-native-gesture-handler';
 
 
-import styles from "./styles";
-import globalStyles from "./../styles";
+const Stack = createNativeStackNavigator();
+
+const Separator = () => <View style={styles.separator} />;
+
+const CatalogosModel = require ('../../lib/model/CatalogosModel');
+
+const ClienteModel = require ('../../lib/model/ClienteModel');
+
+const catalogosModel = new CatalogosModel();
+const clienteModel = new ClienteModel();
 
 
 var inicial=" ";
@@ -29,24 +40,23 @@ export default class Cliente extends Component {
 
   constructor(props) {    
     super(props)
-    this.state = {
-      info: null
-    }
+
 //    console.log("* props en Venta-index:  " , props.navigation.state.params);
     
-    const origen = this.props.route.params.origen;
+const {route} = this.props;
+this.origen = route.params.origen;
 
-    console.log("origen:" , origen);
 
-    if(origen == undefined){
-      origen="MENU";
+   console.log("origen:" , this.origen);
+
+    if(this.origen == undefined){
+      this.origen="MENU";
     }
-    console.log("origen:" , origen);
-
-
+    console.log("origen:" , this.origen);
+ 
     this.state = {
       isLoading: true, 
-      origen: origen,
+      origen: this.origen,
       prevOrigen: '',
       clientesArray: [],
       clientesDisplayArray: [],      
@@ -77,11 +87,14 @@ export default class Cliente extends Component {
 
   componentDidUpdate(){
 
-    let origen = this.props.navigation.getParam('origen');
+
+    const { route } = this.props;
+    this.origen = route.params.origen; 
+    
 //    console.log("componentDidUpdate - origen:" , origen ,  " prevOrigen: ", this.state.prevOrigen );
 
-    if(origen != this.state.prevOrigen){
-      this.setState({origen: origen, prevOrigen: origen });
+    if(this.origen != this.state.prevOrigen){
+      this.setState({origen: this.origen, prevOrigen: this.origen });
     }
 
     console.log("Finish componentDidUpdate ");
@@ -91,7 +104,7 @@ export default class Cliente extends Component {
 
   consultarEstados(){
     if (global.estados == null) {
-      CatalogosModel.consultarEstados()
+      catalogosModel.consultarEstados()
       .then((result) => {
 //        console.log("Resultado de consultarMetodosPago:" , result.metodosPagoList);
 
@@ -115,7 +128,7 @@ export default class Cliente extends Component {
 
 
   consultarClientes(){
-    ClienteModel.consultarClientes()
+    clienteModel.consultarClientes()
     .then((result) => {
 //      console.log("Resultado de onsultarClientes:" , result.clientesList);
       this.setState({
@@ -138,8 +151,14 @@ export default class Cliente extends Component {
     console.log("seleccionarCliente: ");
   }
   agregarCliente(){
+    const {route, navigation} = this.props;
+
+
     console.log("cliente seleccionado: ", this.state.clienteSelected);
-    this.props.navigation.state.params.onGoBack(this.state.clienteSelected);
+    const onGoBack = route.params.onGoBack
+    if (onGoBack){
+      onGoBack(this.state.clienteSelected);
+    }
     this.props.navigation.goBack();
   }
 
@@ -243,7 +262,7 @@ export default class Cliente extends Component {
         query = query.toUpperCase().trim().replace(" ","%");
 
         console.log("Buscando clientes por: " , query);
-        ClienteModel.consultarClientesByNombre("%" + query + "%" )
+        clienteModel.consultarClientesByNombre("%" + query + "%" )
         .then((result) => {
     //      console.log("Resultado de onsultarClientes:" , result.clientesList);
           this.setState({
@@ -299,7 +318,7 @@ export default class Cliente extends Component {
           });
         }
         else{
-          ClienteModel.consultarClientesByEstado(estado)
+          clienteModel.consultarClientesByEstado(estado)
           .then((result) => {
       //      console.log("Resultado de onsultarClientes:" , result.clientesList);
             this.setState({
@@ -336,26 +355,27 @@ export default class Cliente extends Component {
         return finded
   }
 
+  
   render() {
 
     const buscadorActivo = this.state.buscadorActivo;
     return (
       <View style={styles.container}>
-        <View iosBarStyle={"dark-content"} style={{ ...globalStyles.header , height:90,paddingTop:10 }} searchBar rounded>
+        <View style={{ ...globalStyles.header, height:110, paddingTop:40}} >
           
         {(this.state.origen=="MENU" && 
-          <View style={{flex: 0}}>
-            <TouchableOpacity
+          <View style={{flex: 3,}}>
+            <TouchableOpacity style={{paddingLeft:10}}
               
               onPress={() => this.props.navigation.openDrawer()}>
-              <Icon name="menu" style={globalStyles.headerButton} />
+              <Icon name="menu" style={{color:'#2496bc', fontSize: 30}} />
             </TouchableOpacity>
           </View>
         )}
         {(this.state.origen=="VENTA" && 
         
-        <View>
-            <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
+        <View style={{flex:3, paddingLeft:10}}>
+            <TouchableOpacity style={{flex:0}}onPress={() => this.props.navigation.goBack()}>
               <Icon name="arrow-back"  style={globalStyles.headerButton} />
             </TouchableOpacity>
           </View>
@@ -383,20 +403,23 @@ export default class Cliente extends Component {
         }
         {
           !buscadorActivo &&
-          <View style={{flex: 0,alignContent:"center",paddingTop:10}}>
+          <View style={{flex: 8,alignContent:"center", paddingTop: 10, paddingBottom: 5}}>
             <Text style={globalStyles.headerTitle}>
             {this.state.origen == "MENU" && "Clientes"}
             {this.state.origen == "VENTA" && "Agregar cliente"}            
             </Text>
-            <View style={{flex:0,flexDirection:"row",paddingTop:2}}>
+            <View style={{flex:1,flexDirection:"row", paddingBottom: 0, borderWidth:1, justifyContent: 'center', alignSelf:'stretch',
+                          borderLeftColor:"#000000",borderBottomColor:"#000000",
+                          borderTopColor:"#000000",borderRightColor:"#000000", 
+                          alignItems: 'center', borderRadius:20 }}>
 
                               <Picker
                                 
-                                key={"edo"}
+                                key={'edo'}
                                 mode="dropdown"
                                 
-                                placeholder="Ver por estado..."
-                                style={{borderWidth:1,borderLeftColor:"#000000",borderBottomColor:"#000000",borderTopColor:"#000000",borderRightColor:"#000000",width:200,paddingTop:0,height:35 }} 
+                                placeholder="Ver por estado"
+                                style={{ width:225,paddingTop:0}} 
                                 selectedValue={ this.state.estado}
                                 onValueChange={(value) => {this.filtrarClienteEstado(value)} }
                               >
@@ -413,8 +436,8 @@ export default class Cliente extends Component {
           </View>
         }
 
-          <View style={{flex: 1}}>
-            <TouchableOpacity
+          <View style={{flex: 3, alignItems: 'flex-end', paddingRight:18, flexDirection:'row', justifyContent:'flex-end'}}>
+            <TouchableOpacity style={{paddingRight:10}}
                 onPress={() => this.activarBuscadorClientes() }
             >
               {
@@ -435,47 +458,53 @@ export default class Cliente extends Component {
 
           </View>          
         </View>
-        <View>
-          <SafeAreaView style={{flex: 1}}>   
+        <View style={{flex: 10}}>
+          <SafeAreaView style={{flex: 10}}>   
 
           
         {
         this.state.isLoading &&
 
         <View style={{alignItems:'center'}}>
-          <Spinner color='#51747F' />
+          <ActivityIndicator color='#51747F' />
           <Text style={{alignItems:'center'}}>Cargando...</Text>
         </View>  
         }
 
           
           {this.state.clientesDisplayArray.length == 0 && 
-          <View style={{alignContent:"center",alignItems:"center",paddingTop:30}}>
+          
+          <View style={{alignContent:"center",alignItems:"center",paddingTop:30, flex: 1, flexDirection: 'column'}}>
               <Text style={{fontSize:20}}>La busqueda esta vacía.</Text>
           <Text>
-            Favor hacer uso de uno de los filtros superiores.</Text>
+            Favor hacer uso de uno de los filtros superiores.
+            </Text>
           </View>
           }
           
 
           <View >
+            <ScrollView>
           {
             this.state.clientesDisplayArray.map((cliente) => {
               return (
-                
+                <View>
                 <TouchableOpacity  style={[
-                  (this.state.clienteSelected != null && this.state.clienteSelected.key == cliente.key) ? styles.itemSelected : styles.itemFree
-                 ,{paddingLeft:0,marginLeft:0} 
+                  (this.state.clienteSelected != null && this.state.clienteSelected.key == cliente.key) 
+                  ? styles.itemSelected 
+                  : styles.itemFree ,{paddingLeft:0,marginLeft:0} 
                 ]}
                 onPress={() => {this.seleccionarCliente(cliente);}}
                 >
           {this.state.origen == "VENTA" && 
-                  <View style={{padding:0,marginLeft:0}}>
+                  <View style={{justifyContent:'center', flex:1, alignItems:'center'}}>
                     <TouchableOpacity 
                           onPress={() => {this.seleccionarCliente(cliente);}}
                     >
                       {
-                        (this.state.clienteSelected != null && this.state.clienteSelected.key == cliente.key) ? <Icon name="ios-checkbox-outline" style={globalStyles.headerButton}/> : <Icon name="square-outline" style={globalStyles.headerButton}/>
+                        (this.state.clienteSelected != null && this.state.clienteSelected.key == cliente.key) 
+                        ? <Icon name="checkbox-outline" style={globalStyles.headerButton}/> 
+                        : <Icon name="square-outline" style={globalStyles.headerButton}/>
                       }
                         
                     </TouchableOpacity>
@@ -483,53 +512,55 @@ export default class Cliente extends Component {
           }
 
                   
-                  <TouchableOpacity style={{marginLeft:0}}>
+                  <TouchableOpacity style={{flex:3}}>
                     <Text style={{fontWeight:"bold"}}>{cliente.clave} - {cliente.nombre_comercial}</Text>
                     {(cliente.rfc != null && cliente.rfc != "") && 
                     <Text >RFC: {cliente.rfc}</Text>}
                     {(cliente.telefono != null && cliente.telefono != "") && 
-                    <Text note>
+                    <Text style={{color:'gray'}}>
                       Teléfono: <Text >{cliente.telefono} </Text>
                     </Text>
                     }
                     {(cliente.celular != null && cliente.celular != "") && 
-                      <Text note> 
+                      <Text style={{color:'gray'}}> 
                       Cel: <Text >{cliente.celular}</Text>
                       </Text>
                       }
                   </TouchableOpacity>
-                  <View style={{marginLeft:0,marginRight:0,flex:0,flexDirection: 'row',width:80}}>
+                  <View style={{marginLeft:0,marginRight:0,flex:1,width:80, alignItems:'center', justifyContent:'center'}}>
                     
                       <TouchableOpacity
                             onPress={() => {this.verCliente(cliente);}}
                       >
-                          <Icon name="contact" style={globalStyles.headerButton}/>
+                          <Icon name="person-circle-outline" style={globalStyles.headerButton}/>
                       </TouchableOpacity>
 
                     
                   </View>
+                  
                 </TouchableOpacity>
+                <Separator />
+                </View>
               );
             })
           }
-
+        </ScrollView>
           </View>
 
           </SafeAreaView>
         </View>
 {this.state.origen == "VENTA" &&
         
-         <View >
-          <View style={{backgroundColor: "#51747F"}}>
-            <TouchableOpacity
-          //---------------------  disabled = {this.state.clienteSelected == null}
+         <View style={{ 
+          flexDirection: 'row', alignItems: 'center',
+          justifyContent: 'center', bottom:0, flex:0}}>
+          <View style={{backgroundColor: "#51747F", flex: 1, position: 'relative'}}>
+            <Button title='Agregar a la venta' disabled = {this.state.clienteSelected == null}
               
              // onPress={() => this.toggleTab3()}
              onPress={() => this.agregarCliente()}
-            >
+            />
               
-              <Text style={{color: 'white'}}>Agregar a la Venta</Text>
-            </TouchableOpacity>
             
           </View>
         </View>
@@ -539,3 +570,78 @@ export default class Cliente extends Component {
     );
   }
 }
+
+
+const styles = StyleSheet.create({
+
+  container: {
+    backgroundColor: "#fff", flex: 1
+  },
+  itemSelected: {
+    backgroundColor:"lightgray",   
+    flexDirection: 'row' 
+  },
+  itemFree:{
+    backgroundColor:"white",    
+    flexDirection: 'row'
+  },
+  separator:{
+    marginVertical: 8,
+    borderBottomColor: '#737373',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+
+})
+
+const globalStyles = StyleSheet.create({
+    container: {
+      backgroundColor: "#FFF", flex: 1
+    },
+    text: {
+      alignSelf: "center",
+      marginBottom: 7
+    },
+    mb: {
+      marginBottom: 15
+    },
+    header: {
+      paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
+      backgroundColor:'#f6f6f6',
+      color:'#000000',
+      marginBottom: Platform.OS === 'ios' ? 0 : 0,
+      height:90,
+      flexDirection: 'row',
+      
+      alignItems: 'center',
+      justifyContent: 'flex-start', 
+      paddingTop: 35,
+    },
+    headerRight: {
+      paddingTop: Platform.OS === 'ios' ? 0 : 10
+    },
+    headerButton: {
+      color:'#2496bc',
+      fontSize: 25
+    },
+    headerTitle: {
+      color:'#000000',
+      textAlign:'center',
+      fontWeight: 'bold',
+    },
+    TouchableOpacityStyle: {
+      position: 'absolute',
+      width: 50,
+      height: 50,
+      alignItems: 'center',
+      justifyContent: 'center',
+      right: 20,
+      bottom: 110,
+    },
+    FloatingButtonStyle: {
+  //    resizeMode: 'contain',
+      width: 50,
+      height: 50,
+      //backgroundColor:'black'
+    },
+  }
+)

@@ -4,12 +4,15 @@ import {
  View, Switch,Spinner, Image,
   FlatList, StyleSheet, Dimensions, Text, ActivityIndicator, Flash
 } from "react-native";
-
+import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from 'react-native-virtualized-view'
 
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
 
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+const Stack = createNativeStackNavigator();
 
 import Constants from 'expo-constants';
 import { Button, ListItem } from '@rneui/themed';
@@ -696,7 +699,8 @@ mostrarValor(producto){
 
 
     mostrarClientes(){
-      this.props.navigation.navigate("Cliente",
+      const { navigation } = this.props;
+      navigation.navigate("Cliente",
       {origen:"VENTA",
         onGoBack: (cliente) => this.asignarCliente(cliente),
       });

@@ -51,188 +51,6 @@ import { DrawerLayout, gestureHandlerRootHOC } from 'react-native-gesture-handle
 
 
 
-function HomeScreen({ navigation, route }) {
-  React.useEffect(() => {
-    if (route.params?.post) {
-        <Button
-        title="Actualizar el titulo"
-        onPress={() => navigation.setOptions({ title: 'Actualizado! '})}
-        />
-    }
-  }, [route.params?.post]);
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Pantalla de Inicio</Text>
-      <Button
-      title="Crear post"
-      onPress={() => navigation.navigate('CreatePost')}
-      />
-      <Text style={{ margin: 10 }}>Post: {route.params?.post}</Text>
-
-      <Button 
-            title="¿Qué es Concrad?"
-            icon={{
-              name: 'arrow-right',
-              type: 'font-awesome',
-              size: 15,
-              color: 'white',
-            }}
-            iconRight
-            iconContainerStyle={{ marginLeft: 10 }}
-            titleStyle={{ fontWeight: '700' }}
-            buttonStyle={{
-              backgroundColor: 'rgba(92, 99,216, 1)',
-              borderColor: 'transparent',
-              borderWidth: 0,
-              borderRadius: 30,
-            }}
-            containerStyle={{
-              width: 200,
-              marginHorizontal: 50,
-              marginVertical: 10,
-            }}
-          
-            onPress={() => navigation.navigate('Login')
-            }/>
-    </View>
-  );
-}
-
-function CreatePostScreen({ navigation, route }) {
-  const [postText, setPostText] = React.useState('');
-  
-  return(
-    <>
-      <TextInput
-      multiline
-      placeholder="Que piensas?"
-      style={{ height: 200, padding: 10, backgroundColor: 'white'}}
-      value={postText}
-      onChangeText={setPostText}
-      />
-      <Button
-      title="Hecho"
-      onPress={() => {
-      navigation.navigate({
-        name: 'Home',
-        params: { post: postText },
-        merge: true,
-        });
-      }}
-      />
-    </>
-  );
-}
-
-function DetailsScreen({ route, navigation }) {
-  //const { itemId, otherParam } = route.params;
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Pantalla de detalles</Text>
-      <Button
-        title="Ve a los detalles... de nuevo"
-        onPress={() => navigation.push('Detalles', {
-          itemId: Math.floor(Math.random() * 100),
-        })
-      }
-      />
-      <Button title="Regresa al inicio" onPress={() => navigation.navigate('Inicio')} />
-      <Button title="Regresa" onPress={() => navigation.goBack()} />
-    </View>
-  );
-}
-
-/*const Stack = createNativeStackNavigator();
-
-function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: '#f4511e',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        }
-      }}
-      >
-        <Stack.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{ headerTitle: (props) => <LogoTitle {...props} /> }}
-        />
-    </Stack.Navigator>
-  </NavigationContainer>
-  );
-}
-
-function LogoTitle() {
-  return (
-    <Image
-      style={{ width: 50, height: 50 }}
-      source={require("./assets/icon.png")}
-    />
-  );
-}
-
-function StackScreen(){
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{ 
-          title: 'Mi inicio',
-          headerStyle: {
-          backgroundColor: '#f4511e',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          }, 
-        }}    
-      />
-      <Stack.Screen
-      name="Profile"
-      component={ProfileScreen}
-      options={({ route }) => ({ title: route.params.name })}
-      />
-    </Stack.Navigator>
-  );
-}
-
-export default App;
-
-*/
-
-                                ///--------APPPP
-
-/*export default class App extends React.Component {
-  constructor() {
-    super(props);
-    this.state = {
-      isReady: false,
-      isActivated:false
-    };
-    this.debug = true;
-  }
-}
-*/
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
-})
-
-
-
 
 
 
@@ -248,23 +66,22 @@ const Stack = createStackNavigator();
 
 function Rutas() {
   return(
-      <Drawer.Navigator
+      <Drawer.Navigator backBehavior="history"
       initialRouteName = "Login"
       screenOptions={{
             activeTintColor: "#e91e63"
       }}
       drawerContent={(props) =><SideBar {...props} />}
         >
-        <Drawer.Screen name="HomeScreen" component={HomeScreen} />
-        <Drawer.Screen name="SettingScreen" component={SettingScreen} />
-        <Drawer.Screen name="Cliente" component={Cliente} />
+        <Drawer.Screen name="Cliente" component={Cliente} options={{headerShown: false}} />
         <Drawer.Screen name="Login" component={Login} 
                                     options={{
                                       headerShown: false, hidden: true, swipeEnabled: false
                                             }}
                                              
                                        />
-        <Drawer.Screen name="Venta" component={Venta} options={{headerShown: false, hidden: true}} />
+        <Drawer.Screen name="Venta" component={Venta} options={{headerShown: false}} />
+       
       </Drawer.Navigator>
   )
 }
@@ -421,8 +238,8 @@ export default class App extends React.Component {
       />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="SettingScreen" component={SettingScreen} />
-      <Stack.Screen name="AgregarCliente" component={Cliente} />
-      <Stack.Screen name="ClienteDetalle" component={ClienteDetalle} />
+      <Stack.Screen name="Cliente" component={Cliente} />
+      <Stack.Screen name="ClienteDetalle" component={ClienteDetalle} options={{headerShown: false}}/>
       <Stack.Screen name="Venta" component={Venta} />
       <Stack.Screen name="ConfirmacionVenta" component={ConfirmacionVenta} />
       <Stack.Screen name="Pagando" component={Pagando} />
@@ -440,3 +257,11 @@ export default class App extends React.Component {
 }
 
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
+})
