@@ -29,6 +29,8 @@ let porSurtir = [];
 let textPersistence = "";
 
 
+
+
 class ClienteDetalle extends Component {
 
   constructor(props) {    
@@ -58,6 +60,8 @@ class ClienteDetalle extends Component {
     console.log("-----> clienteDetalle: ",this.state.cliente);
     this.consultarClienteById();
     this.setState({isLoading:false});
+
+
   }
 
   consultarClienteById(){

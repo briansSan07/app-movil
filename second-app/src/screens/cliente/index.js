@@ -387,7 +387,7 @@ this.origen = route.params.origen;
           buscadorActivo &&
           <View style={{flex: 3}}>
           <View >
-              <Icon  name="search" style={globalStyles.headerButton} />
+              
               <TextInput placeholder = "Nombre del cliente"
                   autoFocus = {true}
                   onChangeText = {(busqueda) => this.onChangeSeachBox(busqueda)}

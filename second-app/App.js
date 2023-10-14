@@ -48,44 +48,11 @@ import Constants from 'expo-constants';
 import { DrawerLayout, gestureHandlerRootHOC } from 'react-native-gesture-handler';
 
 
-
-
-
-
-
-
 ////AQUI INICIA LA APP
 
 const Drawer = createDrawerNavigator();
 
 const Stack = createStackNavigator();
-
-
-
-
-
-function Rutas() {
-  return(
-      <Drawer.Navigator backBehavior="history"
-      initialRouteName = "Login"
-      screenOptions={{
-            activeTintColor: "#e91e63"
-      }}
-      drawerContent={(props) =><SideBar {...props} />}
-        >
-        <Drawer.Screen name="Cliente" component={Cliente} options={{headerShown: false}} />
-        <Drawer.Screen name="Login" component={Login} 
-                                    options={{
-                                      headerShown: false, hidden: true, swipeEnabled: false
-                                            }}
-                                             
-                                       />
-        <Drawer.Screen name="Venta" component={Venta} options={{headerShown: false}} />
-       
-      </Drawer.Navigator>
-  )
-}
-
 
 
 export default class App extends React.Component {
@@ -222,6 +189,29 @@ export default class App extends React.Component {
 
   }
 
+  Rutas() {
+    return(
+        <Drawer.Navigator backBehavior="history"
+        initialRouteName = "Login"
+        screenOptions={{
+              activeTintColor: "#e91e63"
+        }}
+        drawerContent={(props) =><SideBar {...props} />}
+          >
+          <Drawer.Screen name="Cliente" component={Cliente} options={{headerShown: false}} />
+          <Drawer.Screen name="Login" component={Login} 
+                                      options={{
+                                        headerShown: false, hidden: true, swipeEnabled: false
+                                              }}
+                                               
+                                         />
+          <Drawer.Screen name="Venta" component={Venta} options={{headerShown: false}} />
+         
+        </Drawer.Navigator>
+    )
+  }
+  
+
   render() {
     /*if (!this.state.isReady) {
       return <AppLoading />;
@@ -232,7 +222,7 @@ export default class App extends React.Component {
       <Stack.Navigator>
       <Stack.Screen
       name="Ruta"
-      component={Rutas}
+      component={this.Rutas}
       options={{ headerShown: false, title: ''
       }}
       />
@@ -241,7 +231,7 @@ export default class App extends React.Component {
       <Stack.Screen name="Cliente" component={Cliente} />
       <Stack.Screen name="ClienteDetalle" component={ClienteDetalle} options={{headerShown: false}}/>
       <Stack.Screen name="Venta" component={Venta} />
-      <Stack.Screen name="ConfirmacionVenta" component={ConfirmacionVenta} />
+      <Stack.Screen name="ConfirmacionVenta" component={ConfirmacionVenta} options={{headerShown: false}} />
       <Stack.Screen name="Pagando" component={Pagando} />
       <Stack.Screen name="Pagada" component={Pagada} />
       <Stack.Screen name="BluetoothList" component={BluetoothList} />

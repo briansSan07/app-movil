@@ -1,31 +1,26 @@
 import * as SQLite from "expo-sqlite";
-import { useEffect } from "react";
-import React, {Component} from "react";
 
-
-
-//const db = SQLite.openDatabase("version2.db");
-class LocalStorage{
+class LocalStorage {
   
-    constructor() {
+  constructor() {
     this.db = null; //SQLite.openDatabase("version2.db");
     this.lastUpdated = null;
     this.debug = true;
-    }
+  }
 //db.transaction(callback, error, success)
 //tx.executeSql(sqlStatement, arguments, success, error)
 
+  getConnection() {
+    this.db = SQLite.openDatabase("version2.db");
+    return this.db;
+  }
 
-    getConnection() {
-      this.db = SQLite.openDatabase("version2.db");
-      //console.log(db);
-      return this.db;
-    }
 
-    
+
 
     existLocalDatabase() {
-      console.log("...existLocalDatabase()");
+//      console.log("...existLocalDatabase()");
+
       let result = {};
       return new Promise((resolve, reject) => {
         if(this.db == null){ this.getConnection();}
@@ -72,6 +67,7 @@ class LocalStorage{
       })
     }
 
+
     createLocalDatabase() {
 
       console.log("...createLocalDatabase()");
@@ -80,9 +76,7 @@ class LocalStorage{
       return new Promise((resolve, reject) => {
 
         let promises = [];
-        if(this.db === null){ 
-          this.getConnection();
-        }
+        if(this.db == null){ this.getConnection();}
         this.db.transaction(tx => {
           promises.push(this._createTipoProducto(tx));
           promises.push(this._createNivelSocioeconomico(tx));
@@ -102,19 +96,16 @@ class LocalStorage{
           promises.push(this._createSyntransaction(tx));
 
           Promise.all(promises)
-          .then( () => {
+          .then( (success) => {
+
             result = {type : 'resolve', success: true};
-            resolve({ success: true });
-          })
-          .catch((error) => {
+          }), (error) => {
 //            console.log({error});
             result = {type : 'reject', success: false, error: error};
-            reject({ success: false, error: error });
-          });
+          }
 
-        }, (error) => {
-          result = { type: 'reject', success: false, error: error };
-          reject({success:false, error:error})
+        }, function(error) {
+          reject({success:false,error:error})
         }, () => {
 //          console.log('Transaction de inicialización exitosa...');
           if(result.type == 'resolve'){
@@ -126,7 +117,7 @@ class LocalStorage{
     }
 
     initializeLocalDatabase() {
-      console.log("...initializeLocalDatabase()");
+//      console.log("...initializeLocalDatabase()");
 
       let result = {};
       return new Promise((resolve, reject) => {
@@ -165,10 +156,9 @@ class LocalStorage{
     loadLastUpdate(){
 
     }
-
     saveLastUpdate(update){
 
-      console.log("saveLastUpdate: " , {update});
+//      console.log("saveLastUpdate: " , {update});
 
       if(this.lastUpdated == null){
         this.lastUpdated = update;
@@ -178,21 +168,21 @@ class LocalStorage{
       }
     }
 
+
+
     _createTipoProducto(tx){
       return tx.executeSql(
 //        'DELETE FROM TipoProducto',
 
-        `CREATE TABLE IF NOT EXISTS TipoProducto (idtipoProducto INTEGER PRIMARY KEY NOT NULL, tipo_producto VARCHAR(100), orden INT, has_stock INT, created_at TEXT, updated_at TEXT)`
+        'CREATE TABLE IF NOT EXISTS TipoProducto (idtipoProducto INTEGER PRIMARY KEY NOT NULL, tipo_producto VARCHAR(100), orden INT, has_stock INT, created_at TEXT, updated_at TEXT)'
       );
     }    
-
     _createNivelSocioeconomico(tx){
       return tx.executeSql(
 //        'DELETE FROM NivelSocioeconomico',        
         'CREATE TABLE IF NOT EXISTS NivelSocioeconomico (id INTEGER PRIMARY KEY NOT NULL, nivel_socioeconomico VARCHAR(100), orden INT, precio_publico INT, status INT, created_at TEXT, updated_at TEXT)'
       );
     }
-
     _createProducto(tx){
       return tx.executeSql(
 //        'DELETE FROM Producto',
@@ -205,7 +195,6 @@ class LocalStorage{
         updated_at TEXT)`
       );
     }
-
     _createProductoPrecio(tx){
       return tx.executeSql(
 //        'DELETE FROM ProductoServicioPrecio
@@ -221,7 +210,6 @@ class LocalStorage{
           updated_at DATETIME)`
       );
     }
-
     _createClientes(tx){
       return tx.executeSql(
 //        'DELETE FROM Clientes',        
@@ -236,6 +224,8 @@ class LocalStorage{
                                               colonia VARCHAR(100), 
                                               id_municipio INT, 
                                               id_estado INT,
+                                              latitude VARCHAR(20),
+                                              longitude VARCHAR(20),                                              
                                               codigo_postal INT, 
                                               genera_factura INT, 
                                               telefono VARCHAR(20), 
@@ -252,7 +242,6 @@ class LocalStorage{
 //saldo_favor  DECIMAL(18, 4) NULL,
       
     }
-
     _createTventa(tx){
 
 
@@ -297,7 +286,6 @@ id_sync_status
                                              )`
       );
     }
-
     _createDetalleventa(tx){
       return tx.executeSql(
 //        'DELETE FROM t_venta_detalle',
@@ -314,52 +302,43 @@ id_sync_status
                                                      ieps DECIMAL(18, 4) NULL)`
       );
     }
-
     _createVentaPago(tx){
       return tx.executeSql(
 //        'DELETE FROM t_venta_pago',
         'CREATE TABLE IF NOT EXISTS t_venta_pago (id INTEGER PRIMARY KEY AUTOINCREMENT, id_venta INT NULL, importe DECIMAL(18, 4) NULL, id_metodo_pago VARCHAR(5) NULL, efectivo DECIMAL(18, 4) NULL, cambio DECIMAL(18, 4) NULL, id_banco INT NULL, tipo_tarjeta VARCHAR(50) NULL, autorizacion VARCHAR(20) NULL, ultimos_digitos VARCHAR(10) NULL, dias_credito INT NULL)'
       );
     }
-
     _createConfiguracion(tx){
-      console.log("entra aca?...")
-        return tx.executeSql(
+      return tx.executeSql(
 //        'DELETE FROM c_configuracion',
         'CREATE TABLE IF NOT EXISTS c_configuracion (id INTEGER PRIMARY KEY AUTOINCREMENT, key VARCHAR(50), value VARCHAR(50))'
       );
     }
-
     _createMetodopago(tx){
       return tx.executeSql(
         'CREATE TABLE IF NOT EXISTS metodoPago (id INTEGER PRIMARY KEY NOT NULL, metodo_pago VARCHAR(50), clave VARCHAR(50), is_venta INT, is_pago_credito INT, created_at VARCHAR(100), update_at VARCHAR(100))'
       );
     }
-
     _createBanco(tx){
       return tx.executeSql(
         'CREATE TABLE IF NOT EXISTS banco (id SMALLINT PRIMARY KEY NOT NULL, nombre_corto VARCHAR(50), orden SMALLINT, id_status SMALLINT, created_at VARCHAR(100), update_at VARCHAR(100))'
       );
     }
-
     _createUsuario(tx){
       return tx.executeSql(
         'CREATE TABLE IF NOT EXISTS t_usuario (id_usuario INTEGER PRIMARY KEY NOT NULL, username VARCHAR(50), password VARCHAR(50), id_rol SMALLINT, autorizar_descuento SMALLINT, created_at VARCHAR(100), updated_at DATETIME)'
       );
     }
-
     _createEstados(tx){
       return tx.executeSql(
         'CREATE TABLE IF NOT EXISTS dom_estado (id_estado SMALLINT PRIMARY KEY NOT NULL, nombre VARCHAR(250), created_at DATETIME, updated_at DATETIME)'
       );
     }
-
     _createMunicipios(tx){
       return tx.executeSql(
         'CREATE TABLE IF NOT EXISTS dom_municipio (id_municipio SMALLINT PRIMARY KEY NOT NULL, nombre VARCHAR(250), clave_mun SMALLINT, id_estado SMALLINT, created_at DATETIME, updated_at DATETIME)'
       );
     }
-
     _createImpuestoTasaCuota(tx){
       return tx.executeSql(
 /*
@@ -377,17 +356,19 @@ id_sync_status
           )`
       );
     }
-
     _createSyntransaction(tx){
       return tx.executeSql('CREATE TABLE IF NOT EXISTS syn_transaction (id INTEGER PRIMARY KEY AUTOINCREMENT, transaction_type_id INT, transaction_status_id INT, id_transaction_server INT, sended_datetime INT)');
     }
+
 
     _inicializarFolio(tx){
 //      tx.executeSql('INSERT INTO c_configuracion ( key, value) VALUES(?,?)',["proceso_2_serie","V"]);
 //      tx.executeSql('INSERT INTO c_configuracion ( key, value) VALUES(?,?)',["proceso_2_folio","1"]);
       tx.executeSql('INSERT INTO c_configuracion ( key, value) VALUES(?,?)',["token",""]);
       tx.executeSql('INSERT INTO c_configuracion ( key, value) VALUES(?,?)',["isActivado",0]);
-    }         
+    }    
+
+        
 
     fillCatalogos(remoteData){
 
@@ -456,7 +437,7 @@ id_sync_status
     }
 
     _saveLastUpdate(tx,lastUpdate){
-      console.log("entra aca?")
+
 
       tx.executeSql('UPDATE c_configuracion SET value = ? WHERE KEY = ?',[lastUpdate,"lastUpdate"],
       function(tx, resultSet) {
@@ -509,7 +490,6 @@ id_sync_status
 
       }
     }
-
     _fillNivelSocioeconomico(tx,dto){
       for(let i=0;i<dto.length;i++){
 
@@ -531,7 +511,6 @@ id_sync_status
       
       }
     }
-
     _fillProducto(tx,dtoList){
 
       for(let i=0;i<dtoList.length;i++){
@@ -563,6 +542,7 @@ id_sync_status
 
       }
     }
+
     
     _fillProductoPrecio(tx,dtoList){
 
@@ -755,7 +735,8 @@ id_sync_status
 
 
       }
-    }
+  }
+
 
     _fillUsuario(tx,dto){
       // console.log(dto[0].metodo_pago)
@@ -787,9 +768,10 @@ id_sync_status
 
 
       }
-    }
+  }
 
-    _fillEstados(tx,dto){
+     
+  _fillEstados(tx,dto){
     // console.log(dto[0].metodo_pago)
     for(let i=0;i<dto.length;i++){
 
@@ -813,9 +795,9 @@ id_sync_status
         console.log('dom_estado-update-error: ' + error.message);
       });
     }
-    }
+  }
 
-    _fillMunicipios(tx,dto){
+  _fillMunicipios(tx,dto){
     // console.log(dto[0].metodo_pago)
     for(let i=0;i<dto.length;i++){
 
@@ -839,7 +821,8 @@ id_sync_status
         console.log('dom_municipio-update-error: ' + error.message);
       });
     }
-    }
+  }
+
 
     _fillImpuestoTasaCuota(tx,dto){
       // console.log(dto[0].metodo_pago)
@@ -895,27 +878,25 @@ id_sync_status
       })
     }
 
+
     _verifyTipoProducto(tx){
       tx.executeSql(
         'select count(*) as cuantos from TipoProducto', [], (_, { rows }) =>
         console.log(JSON.stringify(rows))
       );
     }
-    
     _verifyNivelSocioeconomico(tx){
       tx.executeSql(
         'select count(*) as cuantos from NivelSocioeconomico', [], (_, { rows }) =>
         console.log(JSON.stringify(rows))
       );
     }
-    
     _verifyProducto(tx){
       tx.executeSql(
         'select count(*) as cuantos from Producto', [], (_, { rows }) =>
         console.log(JSON.stringify(rows))
       );
     }
-    
     _verifyProductoPrecio(tx){
       tx.executeSql(
         'select count(*) as cuantos from ProductoServicioPrecio', [], (_, { rows }) =>
@@ -927,16 +908,14 @@ id_sync_status
       tx.executeSql(
         'select count(*) as cuantos from Clientes', [], (_, { rows }) =>
         console.log(JSON.stringify(rows))
-      ); 
+      );    
     }
-    
     _verifyMetodoPago(tx){
       tx.executeSql(
         'select count(*) as cuantos from metodoPago', [], (_, { rows }) =>
         console.log(JSON.stringify(rows))
       );    
     }
-    
     _verifyConfiguracion(tx){
 
       console.log("Verificando configuracion")
@@ -945,7 +924,6 @@ id_sync_status
         console.log(rows)
       );
     }
-    
     _verifyImpuestoTasaCuota(tx){
       tx.executeSql(
         'select * from c_impuesto_tasa_cuota', [], (_, { rows }) =>
@@ -956,6 +934,9 @@ id_sync_status
 /**
  * 
  */
+
+
+
 
 }
 

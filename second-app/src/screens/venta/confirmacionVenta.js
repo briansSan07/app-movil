@@ -1,15 +1,18 @@
 import React, { Component } from "react";
 import {
-  Container,  Header,  Title, Subtitle,  Content,  Button,  Icon,  ListItem,
+  Container,  Header,  Title, Subtitle,  Content,  Button,   ListItem,
   Text,  Thumbnail,  Left,  Body,  Right,  Item,  Footer,  FooterTab,
-  Badge,  Accordion,  View,  Input,  List,  Toast,  H1,  H2,  H3, Switch
+  Badge,  Accordion,  View,  Input,  List,  Toast,  H1,  H2,  H3, Switch, Dimensions, StyleSheet, TouchableOpacity, FlatList, Image
 } from "react-native";
 import { Col, Row, Grid } from 'react-native-easy-grid';
-import NumberFormat from 'react-number-format';
-
+import {NumericFormat} from 'react-number-format';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { useRoute } from "@react-navigation/native";
+import Constants from 'expo-constants';
 //import styles from "./styles";
-import globalStyles from "../styles";
-
+const deviceHeight = Dimensions.get("window").height;
+const deviceWidth = Dimensions.get("window").width;
+const Separator = () => <View style={styles.separator} />;
 import {TextInput,SafeAreaView} from "react-native";
 
 
@@ -18,15 +21,15 @@ var inicial=" ";
 class ConfirmacionVenta extends Component {
   constructor(props) {
     super(props);
-
+    
 
 //    carritoCompras: , 
 
     this.state = {
-    carrito: this.props.navigation.getParam('carrito'), 
-    cliente: this.props.navigation.getParam('cliente'), 
-    generaFactura:this.props.navigation.getParam('generaFactura'), 
-    ventaSinIva:this.props.navigation.getParam('ventaSinIva'), 
+    carrito: this.props.route.params.carrito,
+    cliente: this.props.route.params.cliente,
+    generaFactura: this.props.route.params.generaFactura,
+    ventaSinIva: this.props.route.params.ventaSinIva,
     count: 0, 
     suma:0, 
     subtotal:0 , 
@@ -49,6 +52,7 @@ class ConfirmacionVenta extends Component {
   }
 
   onChangeTBox(producto, cantidad){
+
     let carritoCompras = [...this.state.carrito];
     if(cantidad===" "||cantidad===undefined||cantidad === null|| cantidad==="NaN"){
        for(let i=0;i<this.state.carrito.length;i++){
@@ -69,7 +73,7 @@ class ConfirmacionVenta extends Component {
       })
       console.log("carritoCompras: " , {carritoCompras});
     }else{
-    let nuevoProductoParaCarrito = this.state.carrito.filter (function (data) {return data.id === producto.id; })
+    let nuevoProductoParaCarrito = this.state.carrito.filter (function (item) {return item.id === producto.id; })
       nuevoProductoParaCarrito[0].cantidad = parseInt(cantidad);
     }
     this.setState({carrito: carritoCompras},() => {this.calculandoCarrito()});
@@ -77,7 +81,7 @@ class ConfirmacionVenta extends Component {
 
   sumaUno(producto) {
         let carritoCompras = [...this.state.carrito];
-        let nuevoProductoParaCarrito = carritoCompras.filter (function (data) {return data.id === producto.id; })
+        let nuevoProductoParaCarrito = carritoCompras.filter (function (item) {return item.id === producto.id; })
         if (nuevoProductoParaCarrito.length > 0) {
         nuevoProductoParaCarrito[0].cantidad ++;
         }
@@ -87,7 +91,7 @@ class ConfirmacionVenta extends Component {
  
     menosUno(producto) {
       let carritoCompras = [...this.state.carrito];
-      let nuevoProductoParaCarrito = carritoCompras.filter(function(data) {return data.id === producto.id;})
+      let nuevoProductoParaCarrito = carritoCompras.filter(function(item) {return item.id === producto.id;})
       if (nuevoProductoParaCarrito.length > 0) {
           nuevoProductoParaCarrito[0].cantidad--;
           if (nuevoProductoParaCarrito[0].cantidad === 0) {
@@ -148,6 +152,7 @@ class ConfirmacionVenta extends Component {
       }
   
       console.log("------ CONSOLIDADO: ",{count, subtotal, suma, iva, ieps, total });
+      console.log("----------------------", this.state.carrito)
   
       this.setState({
         count: count,
@@ -202,28 +207,40 @@ pasarDatos(){
     const ventaSinIva = this.state.ventaSinIva;
   
     return (
-      <Container >
-        <Header iosBarStyle={"dark-content"} style={{ ...globalStyles.header , height:95,paddingTop:0 }} >
-          <Left>
-            <Button transparent onPress={() => this.props.navigation.goBack()}>
-              <Icon name="arrow-back"  style={globalStyles.headerButton} />
-            </Button>
-          </Left>
-          <Body style={{flex: 2}}>
-          <Title style={globalStyles.headerTitle} >Detalle de la venta</Title>
+      <View style={{flex:1}}>
+        <View  style={{ 
+    paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
+    backgroundColor:'#f6f6f6',
+    color:'#000000',
+    marginBottom: Platform.OS === 'ios' ? 0 : 0,
+    height:90,
+    paddingTop: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start', }}>
+        <View style={{flex: 1}}>
+                              <TouchableOpacity
+                                style={{flex: 0,
+                                  padding: 10,}}
+                                onPress={() => this.props.navigation.goBack()}>
+                                <Icon name="arrow-back" style={{color:'#2496bc', fontSize: 30}} />
+                              </TouchableOpacity>
+        </View>
+          <View style={{flex: 1, paddingLeft: 20,flexDirection:'column'}}>
+          <Text style={globalStyles.headerTitle} >Detalle de la venta</Text>
           {
            this.state.cliente != null && (
             
               
-            <Subtitle ><Text style={{fontSize:12}}>Cliente: { this.state.cliente.clave } - {this.state.cliente.nombre_comercial}</Text></Subtitle>
+            <Text style={{fontSize:12, textAlign: 'left', paddingLeft:7}}>Cliente: { this.state.cliente.clave } - {this.state.cliente.nombre_comercial}</Text>
               
             )
           
           }
-          { this.state.cliente == null && <Subtitle><Text>Venta al público</Text></Subtitle>}
+          { this.state.cliente == null && <Text style ={{textAlign:'left', paddingLeft:7}}>Venta al público</Text>}
           
-          </Body>
-          <Right>
+          </View>
+          <View style={{flex:1}}>
             { this.state.cliente != null && 
               <View style={{ alignItems:"center" }}>
                 
@@ -231,92 +248,211 @@ pasarDatos(){
                 <Switch style={{paddingTop:10}} value={this.state.generaFactura} onValueChange={(checked) => this.paraFactura(checked) } />   
               </View>
             }
-          </Right>
-        </Header>
-
-        <Content>
+          </View>
+        </View>
+            <Separator/>
+        <View style={{flex:1}}>
           <SafeAreaView style={{flex: 1}}>
-            <List
-            dataArray={this.state.carrito}
-            renderRow={data =>
-              <ListItem thumbnail style={{marginLeft:5,marginRight:5}}>
-                <Left>
-                  <Thumbnail square source={{uri:'https://atletl.api.concrad.com/'+data.img}} />
-                </Left>
-                <Body style={{marginLeft:5,paddingTop:10,paddingBottom:10}}>
-                  <Text style={{fontSize:14}}>
-                    {data.codigo} - {data.nombre}                    
-                  </Text>
-
-                  <Grid>
-                    
-                    <Col style={{ backgroundColor:'#fff', height: 27 }}>
-                    <Text note>Disp: {data.existencia}</Text> 
-                    </Col>
-                    <Col style={{ backgroundColor:'#fff', height: 27 }}>
-                    <Text note>$ {ventaSinIva ? Math.round(data.precio_antes_impuestos*100)/100 : data.precio}</Text> 
-                    </Col>
-                    <Col style={{ backgroundColor:'#fff', width:93, height: 27, flex:0, flexDirection:'row' }}>
-                      <Button transparent small style={{paddingTop:0,paddingBottom:0}} onPress={()=> this.menosUno(data)}>
-                        <Icon name="remove" style={{...globalStyles.headerButton,marginLeft:8,marginRight:8}} />
-                      </Button>
-                          <TextInput   
-                              placeholder="0"
-                              placeholderTextColor="#000000"
-                              style={{width:40, borderColor: "gray", borderWidth: 1,  backgroundColor: "#f3f3f3"}}
-                              onChangeText={(cantidad) => this.onChangeTBox(data,cantidad)}
-                              keyboardType={"numeric"}
-                              //value={ "" + this.state.carritoCompras.filter(row => row.id == producto.idProducto).reduce((cant,row) => cant + row.cantidad,inicial) }
-                              value={ "" + this.state.carrito.filter(row => row.id == data.id).reduce((cant,row) => cant + row.cantidad,inicial) }
-                          />
-                        <Button transparent small style={{paddingTop:0,paddingBottom:0}} onPress={()=> this.sumaUno(data)}>
-                        <Icon name="add" style={{...globalStyles.headerButton,marginLeft:8,marginRight:10}} />
-                      </Button>
-                    </Col>
-                    
-                  </Grid>
-
-                </Body>
-                
-              </ListItem>}
-            />
-          </SafeAreaView>
-        </Content>
-
-        <Footer>
-          <FooterTab style={{backgroundColor: "#51747F"}}>
-            <Button
-              onPress={() => this.pasarDatos()}
-              disabled={this.state.carrito.length == 0} 
-              style={{paddingTop:15}}
-              
-              badge
-
-            >
-              <Badge style={{ backgroundColor: "#cb8d12" }}>
-                <Text>{this.state.count}</Text>
-              </Badge>
-              <Icon style={{color: 'white'}} name="md-cash" />              
-              <Text style={{color: 'white'}}  > 
-                Pagar            
-              </Text>
 
             
+              <FlatList 
+              data={this.state.carrito}
+              renderItem={({item}) =>
 
-            </Button>
-            <Button
-            disabled={this.state.carrito.length == 0} 
-              onPress={() => this.pasarDatos()}
-            >
+                <View style={{ marginLeft: 5, marginRight: 5 }}>
+                  <View style={{ flexDirection: "row" }}>
+                    <Image
+                      style={{ width: 50, height: 50 }}
+                      source={{ uri: 'https://atletl.api.concrad.com/' + item.img }}
 
-            <NumberFormat value={Math.abs(this.state.suma)} displayType={'text'} thousandSeparator={true} prefix={'$'} fixedDecimalScale={true} decimalScale={2} renderText={value => <H3 style={{color: 'white'}}>{value}</H3> } />
+                    
+                    />
+                    <View style={{ marginLeft: 5 }}>
+                      <Text style={{ fontSize: 14 }}>{item.codigo} - {item.nombre}</Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <Text note>Disp: {item.existencia}</Text>
+                        <Text note style={{ marginLeft: 10 }}>
+                          $ {ventaSinIva ? Math.round(item.precio_antes_impuestos * 100) / 100 : item.precio}
+                        </Text> 
+                      </View>
+                    </View>
+                    <View style={{flex:1,  flexDirection: "column", alignItems: "flex-end", marginTop: 5}}>
+                      <View style={{ flexDirection: "row", alignItems: "flex-end"}}>
+                    <TouchableOpacity onPress={() => this.menosUno(item)}>
+                      <Icon name="remove" style={{ fontSize: 20, color: 'black' }} />
+                    </TouchableOpacity>
 
-          </Button>
-          </FooterTab>
-        </Footer>
-      </Container>
+                    <TextInput
+                      placeholder= "0"
+                      placeholderTextColor="#000000"
+                      style={{
+                        width: 40,
+                        borderColor: "gray",
+                        borderWidth: 1,
+                        backgroundColor: "#f3f3f3",
+                        textAlign: "center"
+                        
+                      }}
+                      onChangeText={(cantidad) => this.onChangeTBox(item, cantidad)}
+                      keyboardType={"numeric"}
+                      value={ "" + this.state.carrito.filter(row => row.id == item.id).reduce((cant, row) => cant + row.cantidad, inicial)}
+                    />
+                    
+                    <TouchableOpacity onPress={() => this.sumaUno(item)}>
+                      <Icon name="add" style={{ fontSize: 20, color: 'black' }} />
+                    </TouchableOpacity>
+                    </View>
+                  </View>
+                  </View>
+
+                  <Separator/>
+                </View>}
+                keyExtractor = {(item) => item.idProducto}
+                />
+            
+          </SafeAreaView>
+        </View>
+
+        <View  style={{backgroundColor: '#51747F',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center', bottom:0, flex:0 }}>
+          <View style={{flex:1}}>
+          <TouchableOpacity
+
+                style={ [styles.footerButton, styles.confirmButton]}
+                disabled={this.state.carrito.length == 0}
+                onPress={() => this.pasarDatos()}
+              >
+                <View style ={{position: 'relative'}}>
+                <Icon name="md-cash" style={{ color: 'white', fontSize: 25 }} />
+                 {this.state.count != 0 &&
+                <View style ={{
+                  backgroundColor: '#33BFAA',
+                  borderRadius: 10,
+                  width: 20,
+                  height: 20,
+                  top: -5,
+                  flex: 0,
+                  alignItems: 'center',
+                  position: 'absolute',
+                  marginLeft: 20
+                }}>
+                <Text style={{ color: 'white' }}>{this.state.count}</Text>
+                </View>
+}
+                </View>
+                <Text style={{ color: 'white' }}>Pagar</Text>
+                
+              </TouchableOpacity>
+              </View>
+              <View style={{flex:1}}>
+              <TouchableOpacity
+                style={styles.footerButton}
+                disabled={this.state.carrito.length==0}
+                onPress={() => this.pasarDatos()}
+                
+              >
+                <NumericFormat
+            value={Math.abs(this.state.suma)}
+            displayType={'text'}
+            thousandSeparator={true}
+            prefix={'$'}
+            fixedDecimalScale={true}
+            decimalScale={2}
+            renderText={value=> 
+              <Text style={styles.h3}>{value}</Text>
+            }
+          />
+              </TouchableOpacity>
+            </View>
+        </View>
+
+
+
+      </View>
     );
   }
 }
 
 export default ConfirmacionVenta;
+
+
+const styles = StyleSheet.create({
+
+  container: {
+    backgroundColor: "#FFF"
+  },
+  text: {
+    alignSelf: "center",
+    marginBottom: 7
+  },
+  mb: {
+    marginBottom: 15
+  },
+  footerButton: {
+    flex: 0,
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  confirmButton: {
+    paddingTop: 10,
+  },
+  h3: {
+    color: 'white',
+    fontSize: 20,
+  },
+  separator:{
+    marginVertical: 8,
+    borderBottomColor: '#737373',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  }
+
+})
+
+
+const globalStyles = StyleSheet.create({
+container: {
+  backgroundColor: "#FFF"
+},
+text: {
+  alignSelf: "center",
+  marginBottom: 7
+},
+mb: {
+  marginBottom: 15
+},
+header: {
+  paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
+  backgroundColor:'#f6f6f6',
+  color:'#000000',
+  marginBottom: Platform.OS === 'ios' ? 0 : 0,
+  height:90
+},
+headerRight: {
+  paddingTop: Platform.OS === 'ios' ? 0 : 10
+},
+headerButton: {
+  color:'#2496bc'
+},
+headerTitle: {
+  color:'#000000',
+  textAlign:'left',
+  fontWeight: 'bold'
+},
+TouchableOpacityStyle: {
+  position: 'absolute',
+  width: 50,
+  height: 50,
+  alignItems: 'center',
+  justifyContent: 'center',
+  right: 20,
+  bottom: 110,
+},
+FloatingButtonStyle: {
+//    resizeMode: 'contain',
+  width: 50,
+  height: 50,
+  //backgroundColor:'black'
+},
+})
