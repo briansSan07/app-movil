@@ -31,6 +31,8 @@ import VideoIndex from './src/screens/public/VideoIndex';
 
 import ConfirmacionVenta from './src/screens/venta/confirmacionVenta';
 import Pagando from './src/screens/venta/pagar/pagando';
+
+
 import Pagada from './src/screens/venta/pagar/pagada';
 
 const LocalStorage = require ('./src/lib/database/LocalStorage');
@@ -42,6 +44,7 @@ const concradServer = new ConcradServer();
 const localStorage = new LocalStorage();
 const appConfiguration = new AppConfiguration();
 const login = new Login();
+
 
 import isObject from 'isobject';
 import Constants from 'expo-constants';
@@ -232,7 +235,7 @@ export default class App extends React.Component {
       <Stack.Screen name="ClienteDetalle" component={ClienteDetalle} options={{headerShown: false}}/>
       <Stack.Screen name="Venta" component={Venta} />
       <Stack.Screen name="ConfirmacionVenta" component={ConfirmacionVenta} options={{headerShown: false}} />
-      <Stack.Screen name="Pagando" component={Pagando} />
+      <Stack.Screen name="Pagando" component={Pagando} options={{headerShown: false}} />
       <Stack.Screen name="Pagada" component={Pagada} />
       <Stack.Screen name="BluetoothList" component={BluetoothList} />
       <Stack.Screen name="VideoIndex" component={VideoIndex} options={{title: '¿Qué es Concrad?'}} />

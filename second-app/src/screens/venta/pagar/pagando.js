@@ -1,32 +1,36 @@
 import React, { Component } from "react";
-import { Container, Header, Title, Content, Button, Icon, Form, Body,   Footer,
-  Picker, DatePicker, FooterTab, H3, List, ListItem, InputGroup, Separator,  
+import { Container, Header, Title, Content, Button, Form, Body,   Footer,
+   DatePicker, FooterTab, H3, List, ListItem, InputGroup,  
   Left, Right, Label, Item, H1, View,  Input, Text,  H2 
 } from "react-native";
-import { Image, TextInput, TouchableOpacity, TouchableHighlight, Animated, Dimensions,Platform,SafeAreaView} from "react-native"
+import { Picker } from "@react-native-picker/picker";
+import Icon from 'react-native-vector-icons/Ionicons';
+import { Image, TextInput, TouchableOpacity, Animated, Dimensions,Platform,SafeAreaView, StyleSheet} from "react-native"
 import { SwipeListView } from 'react-native-swipe-list-view';
+import { NumericFormat } from 'react-number-format';
 import moment from "moment";
-
+import Constants from 'expo-constants';
+//import styles from "./styles";
+const deviceHeight = Dimensions.get("window").height;
+const deviceWidth = Dimensions.get("window").width;
 
 import NumberFormat from 'react-number-format';
 import CatalogosModel from '../../../lib/model/CatalogosModel';
 const VentaModel = require ("../../../lib/model/VentaModel");
 
 const ventaModel = new VentaModel();
+const Separator = () => <View style={styles.separator} />;
 
-import styles from "./styles";
-import globalStyles from "../../styles";
 
-class Efectivo extends Component {
+class Pagando extends Component {
   constructor(props) {
     super(props);
 
-    const {navigation}= this.props;
     
     global.flatListIndex = 0;
     this.state = {
       
-      carrito: navigation.getParam('carrito'),
+      carrito: this.props.route.params.carrito,
       metodosPago: [],
       bancos: global.bancos,
       total:0, 
@@ -34,9 +38,9 @@ class Efectivo extends Component {
       cambio:0, 
       pagos:[],
       rowMap:null,
-      cliente: navigation.getParam('cliente'), 
-      generaFactura: navigation.getParam('generaFactura'), 
-      ventaSinIva: navigation.getParam('ventaSinIva'), 
+      cliente: this.props.route.params.cliente, 
+      generaFactura: this.props.route.params.generaFactura, 
+      ventaSinIva: this.props.route.params.ventaSinIva, 
       maxDate:null
   
     };
@@ -416,37 +420,57 @@ onSwipeValueChange = (swipeData) => {
     return (
 
 
-      <Container >
+      <View style={{flex:1}}>
+        <View  style={{ 
+          paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
+          backgroundColor:'#f6f6f6',
+          flex: 0,
+          color:'#000000',
+          marginBottom: Platform.OS === 'ios' ? 0 : 0,
+          height:90,
+          paddingTop: 30,
+          flexDirection: 'row',
+          alignItems: 'center',
+          }}>
+          <View style={{flex: 1, paddingLeft:10}}>
+            <TouchableOpacity
+              style={{flex: 0}}
+              onPress={() => this.props.navigation.goBack()}>
+              <Icon name="arrow-back" style={{color:'#2496bc', fontSize: 30}} />
+            </TouchableOpacity>
+          </View>
+          <View style={{flex: 2, alignItems:'flex-start', paddingLeft:30}}>
+            <Text style={globalStyles.headerTitle} >Pago de venta</Text>
+          </View>
+        </View>
 
-        <Header iosBarStyle={"dark-content"} style={globalStyles.header} >
-          <Left>
-            <Button transparent onPress={() => this.props.navigation.goBack()}>
-              <Icon name="arrow-back"  style={globalStyles.headerButton} />
-            </Button>
-          </Left>
-          <Body style={{flex: 2}}>
-          <Title style={globalStyles.headerTitle} >Pago de venta</Title>
-          </Body>
-          <Right />
-        </Header>
 
 
-      <Content>
-        <SafeAreaView padder style={{flex: 1}}>
+      <View style={{flex:1}}>
+        <SafeAreaView  style={{flex: 1}}>
 
-        <List>
-            <ListItem itemHeader first >
-              <Body>
-                <H1>Total a pagar: </H1>
-              </Body>
-              <Right style={{flex:1}}>
-                <NumberFormat value={this.state.total} displayType={'text'} thousandSeparator={true} prefix={'$'} fixedDecimalScale={true} decimalScale={2} renderText={value => <H2>{value}</H2>} />
-              </Right>
-            </ListItem>
-        </List>
-
+        <View style={{flex:0, flexDirection:'row', backgroundColor:'white'}}>
+            
+              <View style={{flex:1}}>
+                <Text>Total a pagar: </Text>
+              </View>
+              <View style={{flex:1, alignItems:'flex-end'}}>
+               <NumericFormat
+                value={Math.abs(this.state.total)}
+                displayType={'text'}
+                thousandSeparator={true}
+                prefix={'$'}
+                fixedDecimalScale={true}
+                decimalScale={2}
+                renderText={value=> 
+                  <Text style={styles.h3}>{value}</Text>
+                } />
+              </View>
+            
+        </View>
+        <Separator/>
         <SwipeListView
-            useFlatList
+            
             data={this.state.pagos}
             key={"slv_0"}
             renderItem={ (data, rowMap) => {
@@ -456,7 +480,7 @@ onSwipeValueChange = (swipeData) => {
 //              console.log("renderItem (data.item.key): " , data);
               return (
               <View key={"v_" + data.item.key}>
-              <TouchableHighlight
+              <View
 								onPress={ _ => console.log('You touched me') }
 								style={styles.rowFront}
                 underlayColor={'#fff'}
@@ -464,18 +488,16 @@ onSwipeValueChange = (swipeData) => {
 							>
                 <View key={"vi_" + data.item.key} style={[styles.rowFront,{flex:1,flexDirection:"row",backgroundColor:"#ffffff",}]} >
                 
-                    <Left>
+                    <View style={{flex:1}}>
                       <Text>Forma de pago:</Text>
-                    </Left>                    
-                    <Right style={{flex:1,backgroundColor:"#ffffff", height:40}}>
-                      <InputGroup >
+                    </View>                    
+                    <View style={{flex:1,backgroundColor:"#ffffff", height:40}}>
                               <Picker
                                 key={"p_" + data.item.key}
                                 mode="dropdown"
-                                iosIcon={<Icon name="arrow-down" />}
+                                
                                 placeholder="Selecciona..."
-                                placeholderStyle={{ color: "#000000" }}
-                                placeholderIconColor="#000000"                                
+                                style={{ color: "#000000" }}                              
                                 selectedValue={data.item.formaPago}
                                 onValueChange={(value) => {this.onFormaPagoChange(value,data.item.key)} }
                               >                                
@@ -485,17 +507,16 @@ onSwipeValueChange = (swipeData) => {
                                   })
                                 }
                               </Picker>
-                      </InputGroup> 
-                    </Right>  
+                    </View>  
                 </View>
-              </TouchableHighlight>
+              </View>
                       {
-                      data.item.formaPago == "1" &&
-                      <ListItem style={{backgroundColor:"#ffffff"}} >                      
-                        <Body>
+                      data.item.formaPago == "1" && (
+                      <View style={{backgroundColor:"#ffffff"}} >                      
+                        <View>
                           <Text>Importe recibido:</Text>
-                        </Body>
-                        <Right style={{flex:1}}>
+                        </View>
+                        <View style={{flex:1}}>
                           <TextInput   
                             placeholder=""
                             placeholderTextColor="#000000"
@@ -504,17 +525,17 @@ onSwipeValueChange = (swipeData) => {
                             onChangeText={(cantidad) => this.onImporteEfectivoTBox(cantidad,data.item.key)}
                             keyboardType={"numeric"}
                           /> 
-                        </Right>
-                        </ListItem>                      
-                      }
+                        </View>
+                        </View>                      
+                      )}
                       {
-                      (data.item.formaPago == "2" || data.item.formaPago == "3") && // Tarjeta de Crédito || Tarjeta de Débito
+                      (data.item.formaPago == "2" || data.item.formaPago == "3") && (// Tarjeta de Crédito || Tarjeta de Débito
                       <View style={{paddingTop:3,paddingBottom:3,backgroundColor:"#ffffff"}}>
-                      <ListItem style={{paddingTop:3,paddingBottom:3}}>   
-                      <Body>
+                      <View style={{paddingTop:3,paddingBottom:3}}>   
+                      <View>
                           <Text>No. de autorización:</Text>
-                        </Body>
-                        <Right style={{flex:1}}>
+                        </View>
+                        <View style={{flex:1}}>
                           <TextInput   
                             placeholder=""
                             placeholderTextColor="#000000"
@@ -523,13 +544,13 @@ onSwipeValueChange = (swipeData) => {
                             onChangeText={(autorizacion) => this.onAutorizacionTBox(autorizacion,data.item.key)}
                             keyboardType={"numeric"}
                           /> 
-                        </Right>
-                      </ListItem>                      
-                      <ListItem style={{paddingTop:5,paddingBottom:5}}>
-                      <Body>
+                        </View>
+                      </View>                      
+                      <View style={{paddingTop:5,paddingBottom:5}}>
+                      <View>
                           <Text>Importe pagado:</Text>
-                        </Body>
-                        <Right style={{flex:1}}>
+                        </View>
+                        <View style={{flex:1}}>
                           <TextInput   
                             placeholder=""
                             placeholderTextColor="#000000"
@@ -538,26 +559,25 @@ onSwipeValueChange = (swipeData) => {
                             onChangeText={(cantidad) => this.onImportePagadoTBox(cantidad,data.item.key)}
                             keyboardType={"numeric"}
                           /> 
-                        </Right>
-                        </ListItem>
+                        </View>
+                        </View>
                       </View>
-                      }
+                      )}
                       {
-                      data.item.formaPago == "4" && // Cheque
+                      data.item.formaPago == "4" && (// Cheque
                       <View style={{paddingTop:3,paddingBottom:3,backgroundColor:"#ffffff"}}>
-                      <ListItem style={{paddingTop:3,paddingBottom:3}}>   
-                      <Body>
+                      <View style={{paddingTop:3,paddingBottom:3}}>   
+                      <View>
                           <Text>Banco:</Text>
-                        </Body>
-                        <Right style={{flex:1}}>
-                        <InputGroup >
+                        </View>
+                        <View style={{flex:1}}>
+                        
                         <Picker
                           mode="dropdown"
-                          iosIcon={<Icon name="arrow-down" />}
+                          
                           placeholder="Selecciona..."
-                          placeholderStyle={{ color: "#bbbbbb" }}
-                          placeholderIconColor="#007aff"
-                          style={{ width: 200 }}
+                          
+                          style={{ width: 200, color: "#bbbbbb" }}
                           selectedValue={data.item.idBanco}
                           onValueChange={(value) => {this.onBancoChange(value,data.item.key)} }
                         >
@@ -567,14 +587,14 @@ onSwipeValueChange = (swipeData) => {
                           })
                           }
                         </Picker>
-                        </InputGroup>
-                        </Right>
-                      </ListItem>    
-                      <ListItem style={{paddingTop:3,paddingBottom:3}}>   
-                      <Body>
+                        
+                        </View>
+                      </View>    
+                      <View style={{paddingTop:3,paddingBottom:3}}>   
+                      <View>
                           <Text>No. de cheque:</Text>
-                        </Body>
-                        <Right style={{flex:1}}>
+                        </View>
+                        <View style={{flex:1}}>
                           <TextInput   
                             placeholder=""
                             placeholderTextColor="#000000"
@@ -582,13 +602,13 @@ onSwipeValueChange = (swipeData) => {
                             onChangeText={(autorizacion) => this.onAutorizacionTBox(autorizacion,data.item.key)}
                             keyboardType={"numeric"}
                           /> 
-                        </Right>
-                      </ListItem>                      
-                      <ListItem style={{paddingTop:5,paddingBottom:5}}>
-                      <Body>
+                        </View>
+                      </View>                      
+                      <View style={{paddingTop:5,paddingBottom:5}}>
+                      <View>
                           <Text>Importe del cheque:</Text>
-                        </Body>
-                        <Right style={{flex:1}}>
+                        </View>
+                        <View style={{flex:1}}>
                           <TextInput   
                             placeholder=""
                             placeholderTextColor="#000000"
@@ -597,18 +617,18 @@ onSwipeValueChange = (swipeData) => {
                             value={data.item.importe}
                             keyboardType={"numeric"}
                           /> 
-                        </Right>
-                        </ListItem>
+                        </View>
+                        </View>
                       </View>
-                      }
+                      )}
                       {
-                      data.item.formaPago == "5" && // Credito
+                      data.item.formaPago == "5" && (// Credito
                       <View style={{paddingTop:3,paddingBottom:3,backgroundColor:"#ffffff"}}>
-                      <ListItem style={{backgroundColor:"#ffffff"}}>
-                      <Body>
+                      <View style={{backgroundColor:"#ffffff"}}>
+                      <View>
                           <Text>Importe a crédito:</Text>
-                        </Body>
-                        <Right style={{flex:1}}>
+                        </View>
+                        <View style={{flex:1}}>
                           <TextInput   
                             placeholder=""
                             placeholderTextColor="#000000"
@@ -617,13 +637,13 @@ onSwipeValueChange = (swipeData) => {
                             value={data.item.importe}
                             keyboardType={"numeric"}
                           /> 
-                        </Right>
-                        </ListItem>
-                        <ListItem style={{paddingTop:3,paddingBottom:3}}>   
-                        <Body>
+                        </View>
+                        </View>
+                        <View style={{paddingTop:3,paddingBottom:3}}>   
+                        <View>
                             <Text>Fecha programada de pago:</Text>
-                          </Body>
-                          <Right style={{flex:1}}>
+                          </View>
+                          <View style={{flex:1}}>
                           <DatePicker
                             defaultDate={new Date()}
                             minimumDate={new Date()}
@@ -640,18 +660,18 @@ onSwipeValueChange = (swipeData) => {
                             disabled={false}
                           />
 
-                          </Right>
-                        </ListItem> 
+                          </View>
+                        </View> 
                         </View>
-                      }
+                      )}
                       {
-                      data.item.formaPago == "7" && // Transferencia
+                      data.item.formaPago == "7" && (// Transferencia
                       <View style={{paddingTop:3,paddingBottom:3,backgroundColor:"#ffffff"}}>
-                      <ListItem style={{paddingTop:3,paddingBottom:3}}>   
-                      <Body>
+                      <View style={{paddingTop:3,paddingBottom:3}}>   
+                      <View>
                           <Text>Fecha de transferencia:</Text>
-                        </Body>
-                        <Right style={{flex:1}}>
+                        </View>
+                        <View style={{flex:1}}>
                         <DatePicker
                           defaultDate={new Date()}
                           minimumDate={new Date()}
@@ -668,13 +688,13 @@ onSwipeValueChange = (swipeData) => {
                           disabled={false}
                         />
 
-                        </Right>
-                      </ListItem>                      
-                      <ListItem style={{paddingTop:5,paddingBottom:5}}>
-                      <Body>
+                        </View>
+                      </View>                      
+                      <View style={{paddingTop:5,paddingBottom:5}}>
+                      <View>
                           <Text>Importe:</Text>
-                        </Body>
-                        <Right style={{flex:1}}>
+                        </View>
+                        <View style={{flex:1}}>
                           <TextInput   
                             placeholder=""
                             placeholderTextColor="#000000"
@@ -683,11 +703,11 @@ onSwipeValueChange = (swipeData) => {
                             value={data.item.importe}
                             keyboardType={"numeric"}
                           /> 
-                        </Right>
-                        </ListItem>
+                        </View>
+                        </View>
                       </View>
                      
-                      }    
+                      )}    
 
 
 
@@ -724,50 +744,220 @@ onSwipeValueChange = (swipeData) => {
 
         />
 
-          <List>
-            <ListItem footer bordered>
-              <Body>
-                <H2>{cambioLabel}: </H2>
-              </Body>
-              <Right style={{flex:1}}>
-                <NumberFormat value={Math.abs(this.state.cambio)} displayType={'text'} thousandSeparator={true} prefix={'$'} fixedDecimalScale={true} decimalScale={2} renderText={value => <H2 style={this.getCambioStyle(this.state.cambio)}>{value}</H2>} />
-              </Right>
-            </ListItem>
-          </List>
+          <View>
+            <View>
+              <View>
+                <Text>{cambioLabel}: </Text>
+              </View>
+              <View style={{flex:1}}>
+                <NumericFormat
+                value={Math.abs(this.state.cambio)}
+                displayType={'text'}
+                thousandSeparator={true}
+                prefix={'$'}
+                fixedDecimalScale={true}
+                decimalScale={2}
+                renderText={value=> 
+                  <Text style={this.getCambioStyle(this.state.cambio)}>{value}</Text>
+                } />
+                
+              </View>
+            </View>
+          </View>
         </SafeAreaView>
 
-      </Content>
+      </View>
 
-        <Footer>
-          <FooterTab style={{backgroundColor: "#51747F"}}>
-            
-            <Button onPress={() => this.guardarVenta()}
-            style={{alignContent:"center"}}
-            disabled={this.state.cambio>0 || global.onSavingSale}
+        <View  style={{backgroundColor: '#51747F',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center', bottom:0, flex:0 }}>
+          <View style={{flex:1}}>
+            <TouchableOpacity
+
+                style={ [styles.footerButton, styles.confirmButton]}
+                disabled={this.state.cambio>0 || global.onSavingSale}
+                onPress={() => this.guardarVenta()}
+              >
+                <View style ={{position: 'relative'}}>
+                <Text style={{ color: 'white'}} >
+                  Guardar  </Text>
+                </View>
+                
+            </TouchableOpacity>
+          </View>
+          <View style={{flex:1}}>
+            <TouchableOpacity
+              style={styles.footerButton}
+              disabled={this.state.cambio<=0}
+              onPress={() => this.agregarOtroPago()}
+                
             >
-            
-            <H3 style={{color: 'white'}}>Guardar</H3>
-          </Button>
-          <Button 
-            activeOpacity={0.7}
-            disabled={this.state.cambio<=0}
-            onPress={() => this.agregarOtroPago()}
-            >
+              <View style ={{position: 'relative'}}>
+              <Icon name="md-add" style={{ color: 'white', fontSize: 25 }} />
+              </View>
+              <Text style={{ color: 'white' }}>Agregar forma de pago</Text>
+              </TouchableOpacity>
+            </View>
+        </View>
 
-              <Icon style={{color: 'white'}} name="md-add" />
-              
-              <Text style={{color: 'white'}}  > 
-                Agregar forma de pago
-              </Text>
 
-          </Button>     
-          </FooterTab>
-       
-        </Footer>
-
-      </Container>
+      </View>
     );
   }
 }
 
-export default Efectivo;
+export default Pagando;
+
+const styles = StyleSheet.create({
+
+  container: {
+		backgroundColor: 'white',
+		flex: 1
+	},
+	standalone: {
+		marginTop: 30,
+		marginBottom: 30,
+	},
+	standaloneRowFront: {
+		alignItems: 'center',
+		backgroundColor: '#CCC',
+		justifyContent: 'center',
+		height: 50,
+	},
+	standaloneRowBack: {
+		alignItems: 'center',
+		backgroundColor: '#8BC645',
+		flex: 1,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		padding: 15
+	},
+	backTextWhite: {
+		color: '#FFF'
+	},
+	rowFront: {
+		alignItems: 'center',
+//		backgroundColor: '#CCC',
+//		borderBottomColor: 'black',
+		borderBottomWidth: 0,
+		justifyContent: 'center',
+		height: 40,
+	},
+	rowBack: {
+		alignItems: 'center',
+//		backgroundColor: '#DDD',
+		flex: 1,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		paddingLeft: 15,
+	},
+	backRightBtn: {
+		alignItems: 'center',
+		bottom: 0,
+		justifyContent: 'center',
+		position: 'absolute',
+		top: 0,
+		width: 75
+	},
+	backRightBtnLeft: {
+		backgroundColor: '#2496bc',
+		right: 75
+	},
+	backRightBtnRight: {
+		backgroundColor: '#ee0000',
+		right: 0
+	},
+	controls: {
+		alignItems: 'center',
+		marginBottom: 30
+	},
+	switchContainer: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		marginBottom: 5
+	},
+	switch: {
+		alignItems: 'center',
+		borderWidth: 0,
+		borderColor: 'black',
+		paddingVertical: 10,
+		width: Dimensions.get('window').width / 4,
+	},
+	trash: {
+		height: 25,
+		width: 25,
+	},
+  h3: {
+    color: 'black',
+    fontSize: 15,
+  },
+  separator:{
+    marginVertical: 8,
+    borderBottomColor: '#737373',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  text: {
+    alignSelf: "center",
+    marginBottom: 7
+  },
+  mb: {
+    marginBottom: 15
+  },
+  footerButton: {
+    flex: 0,
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  confirmButton: {
+    paddingTop: 10,
+  },
+
+})
+
+
+const globalStyles = StyleSheet.create({
+container: {
+  backgroundColor: "#FFF"
+},
+text: {
+  alignSelf: "center",
+  marginBottom: 7
+},
+mb: {
+  marginBottom: 15
+},
+header: {
+  paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
+  backgroundColor:'#f6f6f6',
+  color:'#000000',
+  marginBottom: Platform.OS === 'ios' ? 0 : 0,
+  height:90
+},
+headerRight: {
+  paddingTop: Platform.OS === 'ios' ? 0 : 10
+},
+headerButton: {
+  color:'#2496bc'
+},
+headerTitle: {
+  color:'#000000',
+  textAlign:'left',
+  fontWeight: 'bold'
+},
+TouchableOpacityStyle: {
+  position: 'absolute',
+  width: 50,
+  height: 50,
+  alignItems: 'center',
+  justifyContent: 'center',
+  right: 20,
+  bottom: 110,
+},
+FloatingButtonStyle: {
+//    resizeMode: 'contain',
+  width: 50,
+  height: 50,
+  //backgroundColor:'black'
+},
+})
