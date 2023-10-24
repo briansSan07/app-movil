@@ -1,14 +1,17 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import { Container, Header, Title, Content, Button, Form, Body,   Footer,
-   DatePicker, FooterTab, H3, List, ListItem, InputGroup,  
+    FooterTab, H3, List, ListItem, InputGroup,  
   Left, Right, Label, Item, H1, View,  Input, Text,  H2 
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
+import daysjs, { Dayjs } from 'dayjs'
+dayjs.locale('es');
+import {Picker} from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Image, TextInput, TouchableOpacity, Animated, Dimensions,Platform,SafeAreaView, StyleSheet} from "react-native"
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { NumericFormat } from 'react-number-format';
 import moment from "moment";
+
 import Constants from 'expo-constants';
 //import styles from "./styles";
 const deviceHeight = Dimensions.get("window").height;
@@ -16,6 +19,12 @@ const deviceWidth = Dimensions.get("window").width;
 
 import NumberFormat from 'react-number-format';
 import CatalogosModel from '../../../lib/model/CatalogosModel';
+import { FlatList, TouchableWithoutFeedback } from "react-native-gesture-handler";
+//import DateTimePicker from "@react-native-community/datetimepicker";
+import  DateTimePicker, {DateType}  from 'react-native-ui-datepicker'
+import RNDateTimePicker from "@react-native-community/datetimepicker";
+import DatePicker from '@dietime/react-native-date-picker';
+import dayjs from "dayjs";
 const VentaModel = require ("../../../lib/model/VentaModel");
 
 const ventaModel = new VentaModel();
@@ -29,7 +38,7 @@ class Pagando extends Component {
     
     global.flatListIndex = 0;
     this.state = {
-      
+      fechaSeleccionada: new Date(),
       carrito: this.props.route.params.carrito,
       metodosPago: [],
       bancos: global.bancos,
@@ -41,9 +50,11 @@ class Pagando extends Component {
       cliente: this.props.route.params.cliente, 
       generaFactura: this.props.route.params.generaFactura, 
       ventaSinIva: this.props.route.params.ventaSinIva, 
-      maxDate:null
-  
+      date: new Date()
     };
+
+    this.state.fechaSeleccionada.setDate(this.state.fechaSeleccionada.getDate());
+
 
 //    console.log("global.carrito en EFECTIVO: " , global.carrito);
 //    console.log("global.pagos en EFECTIVO: " , global.pagos);
@@ -235,11 +246,13 @@ getCambioStyle(cambio){
 
   if(cambio > 0) {
     return {
-      color: 'red'
+      color: 'red',
+      fontSize: 20
     }
    } else {
      return {
-      color: 'green'
+      color: 'green',
+      fontSize: 20
      }
    }
 
@@ -307,24 +320,28 @@ onAutorizacionTBox(autorizacion,key){
   this.setState({pagos:pagos})
 }
 
-onFechaTBox(fecha,key){
+onFechaTBox (fecha,key) {
+  
   console.log("onFechaTBox: ",{fecha, key});
   const pagos = this.state.pagos;
-  let fechaFormat = moment(fecha).format("DD/MM/YYYY");                
+  let fechaFormat = dayjs(fecha).format("DD/MM/YYYY");             
   console.log("fechaFormat: ",fechaFormat);
   const index = pagos.findIndex( pago => pago.key == key);
   pagos[index].autorizacion = fechaFormat;
   this.setState({pagos:pagos})
+  
 }
 
 onFechaCreditoTBox(fecha,key){
+  
   console.log("onFechaCreditoTBox: ",{fecha, key});
   const pagos = this.state.pagos;
-  let fechaFormat = moment(fecha).format("DD/MM/YYYY");                
+  let fechaFormat = dayjs(fecha).format("DD/MM/YYYY");                
   console.log("fechaFormat: ",fechaFormat);
   const index = pagos.findIndex( pago => pago.key == key);
   pagos[index].autorizacion = fechaFormat;
   this.setState({pagos:pagos})
+
 }
 
 
@@ -411,7 +428,7 @@ onSwipeValueChange = (swipeData) => {
 
   render() {
 
-    const cambioLabel = (this.state.cambio > 0) ? 'Por pagar' : 'Cambio';
+    const cambioLabel = (this.state.cambio > 0) ? 'Por pagar' : (this.state.cambio === 0) ? 'Sin cambio' : 'Cambio';
 
     const pagos = this.state.pagos;
 
@@ -446,15 +463,15 @@ onSwipeValueChange = (swipeData) => {
 
 
 
-      <View style={{flex:1}}>
+      <View style={{flex:1, backgroundColor:'white'}}>
         <SafeAreaView  style={{flex: 1}}>
 
-        <View style={{flex:0, flexDirection:'row', backgroundColor:'white'}}>
+        <View style={{flex:0, flexDirection:'row', backgroundColor:'white', paddingTop:10}}>
             
-              <View style={{flex:1}}>
-                <Text>Total a pagar: </Text>
+              <View style={{flex:2, paddingLeft:10}}>
+                <Text style={{fontSize:20}}>Total a pagar: </Text>
               </View>
-              <View style={{flex:1, alignItems:'flex-end'}}>
+              <View style={{flex:1, alignItems:'flex-end', paddingRight:10}}>
                <NumericFormat
                 value={Math.abs(this.state.total)}
                 displayType={'text'}
@@ -470,34 +487,34 @@ onSwipeValueChange = (swipeData) => {
         </View>
         <Separator/>
         <SwipeListView
-            
+            useFlatList
             data={this.state.pagos}
             key={"slv_0"}
             renderItem={ (data, rowMap) => {
               if(this.state.rowMap == null){
                 setTimeout(() => { this.setState({rowMap}) } , 100);
               }
-//              console.log("renderItem (data.item.key): " , data);
+              console.log("renderItem (data.item.key): " , data.item.formaPago);
               return (
               <View key={"v_" + data.item.key}>
-              <View
+              <TouchableOpacity
 								onPress={ _ => console.log('You touched me') }
 								style={styles.rowFront}
                 underlayColor={'#fff'}
                 key={"th_" + data.item.key}
 							>
-                <View key={"vi_" + data.item.key} style={[styles.rowFront,{flex:1,flexDirection:"row",backgroundColor:"#ffffff",}]} >
+                <View key={"vi_" + data.item.key} style={[styles.rowFront,{flexDirection:"row",backgroundColor:"#ffffff",}]} >
                 
                     <View style={{flex:1}}>
                       <Text>Forma de pago:</Text>
                     </View>                    
-                    <View style={{flex:1,backgroundColor:"#ffffff", height:40}}>
+                    <View style={{flex:1,backgroundColor:"#ffffff", height:60}}>
                               <Picker
                                 key={"p_" + data.item.key}
                                 mode="dropdown"
-                                
+
                                 placeholder="Selecciona..."
-                                style={{ color: "#000000" }}                              
+                                style={{ color: "#000000"}}                              
                                 selectedValue={data.item.formaPago}
                                 onValueChange={(value) => {this.onFormaPagoChange(value,data.item.key)} }
                               >                                
@@ -506,17 +523,22 @@ onSwipeValueChange = (swipeData) => {
                                       return <Picker.Item label={metodoPago.metodo_pago} value={""+metodoPago.id} key={"pi_"+metodoPago.id} />
                                   })
                                 }
+
+
                               </Picker>
                     </View>  
                 </View>
-              </View>
+              </TouchableOpacity>
+              
                       {
                       data.item.formaPago == "1" && (
-                      <View style={{backgroundColor:"#ffffff"}} >                      
-                        <View>
+                      
+                      <View style={{backgroundColor:"#ffffff", flexDirection: 'row', paddingTop:3, paddingBottom:10}} >    
+                                        
+                        <View style={{flex:1, paddingLeft: 15}}>
                           <Text>Importe recibido:</Text>
                         </View>
-                        <View style={{flex:1}}>
+                        <View style={{flex:1, alignItems:'flex-end', paddingRight:10}}>
                           <TextInput   
                             placeholder=""
                             placeholderTextColor="#000000"
@@ -526,16 +548,18 @@ onSwipeValueChange = (swipeData) => {
                             keyboardType={"numeric"}
                           /> 
                         </View>
-                        </View>                      
+                        <Separator/>  
+                        </View>
+             
                       )}
                       {
                       (data.item.formaPago == "2" || data.item.formaPago == "3") && (// Tarjeta de Crédito || Tarjeta de Débito
                       <View style={{paddingTop:3,paddingBottom:3,backgroundColor:"#ffffff"}}>
-                      <View style={{paddingTop:3,paddingBottom:3}}>   
-                      <View>
+                      <View style={{paddingTop:3,paddingBottom:3, flexDirection:'row'}}>   
+                      <View style={{flex:2, paddingLeft:10}}>
                           <Text>No. de autorización:</Text>
                         </View>
-                        <View style={{flex:1}}>
+                        <View style={{flex:1, alignItems:'flex-end', marginRight:10}}>
                           <TextInput   
                             placeholder=""
                             placeholderTextColor="#000000"
@@ -545,12 +569,13 @@ onSwipeValueChange = (swipeData) => {
                             keyboardType={"numeric"}
                           /> 
                         </View>
-                      </View>                      
-                      <View style={{paddingTop:5,paddingBottom:5}}>
-                      <View>
+                      </View>    
+                      <Separator/>                  
+                      <View style={{paddingTop:5,paddingBottom:5, flexDirection:'row'}}>
+                      <View style={{flex:2, paddingLeft:10}}>
                           <Text>Importe pagado:</Text>
                         </View>
-                        <View style={{flex:1}}>
+                        <View style={{flex:1,  alignItems:'flex-end', marginRight:10}}>
                           <TextInput   
                             placeholder=""
                             placeholderTextColor="#000000"
@@ -561,23 +586,24 @@ onSwipeValueChange = (swipeData) => {
                           /> 
                         </View>
                         </View>
+                        <Separator/>   
                       </View>
                       )}
                       {
                       data.item.formaPago == "4" && (// Cheque
                       <View style={{paddingTop:3,paddingBottom:3,backgroundColor:"#ffffff"}}>
-                      <View style={{paddingTop:3,paddingBottom:3}}>   
-                      <View>
+                      <View style={[styles.rowFront,{flexDirection:"row",backgroundColor:"#ffffff",}]}>   
+                      <View style={{flex:2, paddingLeft:10}}>
                           <Text>Banco:</Text>
                         </View>
-                        <View style={{flex:1}}>
+                        <View style={{flex:1, alignItems:'flex-end', flex:1,backgroundColor:"#ffffff", height:60}}>
                         
                         <Picker
                           mode="dropdown"
                           
                           placeholder="Selecciona..."
                           
-                          style={{ width: 200, color: "#bbbbbb" }}
+                          style={{color: "black", width:200, alignItems:'flex-end' }}
                           selectedValue={data.item.idBanco}
                           onValueChange={(value) => {this.onBancoChange(value,data.item.key)} }
                         >
@@ -586,15 +612,17 @@ onSwipeValueChange = (swipeData) => {
                               return <Picker.Item label={banco.nombre_corto} value={""+banco.id} key={""+banco.id} /> 
                           })
                           }
-                        </Picker>
-                        
+
+                        </Picker>                 
                         </View>
+                        
                       </View>    
-                      <View style={{paddingTop:3,paddingBottom:3}}>   
-                      <View>
+                      <Separator/>  
+                      <View style={{paddingTop:3,paddingBottom:3, flexDirection: 'row'}}>   
+                      <View style={{flex:2, paddingLeft:15}}>
                           <Text>No. de cheque:</Text>
                         </View>
-                        <View style={{flex:1}}>
+                        <View style={{flex:1, alignItems:'flex-end', paddingRight:10}}>
                           <TextInput   
                             placeholder=""
                             placeholderTextColor="#000000"
@@ -603,12 +631,13 @@ onSwipeValueChange = (swipeData) => {
                             keyboardType={"numeric"}
                           /> 
                         </View>
-                      </View>                      
-                      <View style={{paddingTop:5,paddingBottom:5}}>
-                      <View>
+                      </View>   
+                      <Separator/>                     
+                      <View style={{paddingTop:5,paddingBottom:5, flexDirection: 'row'}}>
+                      <View style={{flex:2, paddingLeft:15}}>
                           <Text>Importe del cheque:</Text>
                         </View>
-                        <View style={{flex:1}}>
+                        <View style={{flex:1, alignItems:'flex-end', paddingRight:10}}>
                           <TextInput   
                             placeholder=""
                             placeholderTextColor="#000000"
@@ -619,18 +648,45 @@ onSwipeValueChange = (swipeData) => {
                           /> 
                         </View>
                         </View>
+                        <Separator/>  
                       </View>
                       )}
                       {
                       data.item.formaPago == "5" && (// Credito
                       <View style={{paddingTop:3,paddingBottom:3,backgroundColor:"#ffffff"}}>
-                      <View style={{backgroundColor:"#ffffff"}}>
-                      <View>
+                      
+                        <View style={{paddingTop:3,paddingBottom:3}}>   
+                        <View style={{flex:2, paddingLeft:10}}>
+                            <Text>Fecha programada de pago:   </Text>
+                          </View>
+                          <View style={{flex:1}}>
+                            
+                          <DateTimePicker
+                          style={{width:200}}
+                          value={this.state.date}
+                          mode="date"
+                          minimumDate={this.state.fechaSeleccionada}
+                          maximumDate={this.state.maxCreditoDate}
+                          format="dd-mm-yyyy"
+
+                          locale={'es'}
+                        
+                          
+                          placeHolderText="Selecciona una fecha"
+                          textStyle={{ color: "green" }}
+                          placeHolderTextStyle={{ color: "#bbbbbb" }}
+                          onValueChange={(fecha) => this.onFechaCreditoTBox(fecha,data.item.key)}
+                         
+                        />
+                          </View>
+                        </View> 
+                        <View style={{paddingTop:5,paddingBottom:10, flexDirection:'row'}}>
+                      <View style={{flex:2, paddingLeft:10}}>
                           <Text>Importe a crédito:</Text>
                         </View>
                         <View style={{flex:1}}>
                           <TextInput   
-                            placeholder=""
+                            placeholder=" "
                             placeholderTextColor="#000000"
                             style={{ width:100 ,height: 40, borderColor: "gray", borderWidth: 1,  backgroundColor: "#f3f3f3"}}
                             onChangeText={(cantidad) => this.onImportePagadoTBox(cantidad,data.item.key)}
@@ -639,62 +695,41 @@ onSwipeValueChange = (swipeData) => {
                           /> 
                         </View>
                         </View>
-                        <View style={{paddingTop:3,paddingBottom:3}}>   
-                        <View>
-                            <Text>Fecha programada de pago:</Text>
-                          </View>
-                          <View style={{flex:1}}>
-                          <DatePicker
-                            defaultDate={new Date()}
-                            minimumDate={new Date()}
-                            maximumDate={this.state.maxCreditoDate}
-                            locale={"es"}
-                            timeZoneOffsetInMinutes={undefined}
-                            modalTransparent={false}
-                            animationType={"fade"}
-                            androidMode={"default"}
-                            placeHolderText="Selecciona una fecha"
-                            textStyle={{ color: "green" }}
-                            placeHolderTextStyle={{ color: "#bbbbbb" }}
-                            onDateChange={(fecha) => this.onFechaCreditoTBox(fecha,data.item.key)}
-                            disabled={false}
-                          />
-
-                          </View>
-                        </View> 
                         </View>
                       )}
                       {
                       data.item.formaPago == "7" && (// Transferencia
                       <View style={{paddingTop:3,paddingBottom:3,backgroundColor:"#ffffff"}}>
                       <View style={{paddingTop:3,paddingBottom:3}}>   
-                      <View>
+                      <View style={{flex:2, paddingLeft:10}}>
                           <Text>Fecha de transferencia:</Text>
                         </View>
-                        <View style={{flex:1}}>
-                        <DatePicker
-                          defaultDate={new Date()}
-                          minimumDate={new Date()}
+                        <View style={{flex:5}}>
+                        <DateTimePicker
+                          style={{width:200}}
+                          value={this.state.date}
+                          mode="date"
+                          minimumDate={this.state.fechaSeleccionada}
                           maximumDate={this.state.maxDate}
+                          format="dd-mm-yyyy"
+
                           locale={"es"}
-                          timeZoneOffsetInMinutes={undefined}
-                          modalTransparent={false}
-                          animationType={"fade"}
-                          androidMode={"default"}
+                        
+                          
                           placeHolderText="Selecciona una fecha"
                           textStyle={{ color: "green" }}
                           placeHolderTextStyle={{ color: "#bbbbbb" }}
-                          onDateChange={(fecha) => this.onFechaTBox(fecha,data.item.key)}
-                          disabled={false}
+                          onValueChange={(fecha) => this.onFechaTBox(fecha,data.item.key)}
+                         
                         />
 
                         </View>
                       </View>                      
-                      <View style={{paddingTop:5,paddingBottom:5}}>
-                      <View>
+                      <View style={{paddingTop:5,paddingBottom:10, flexDirection:'row'}}>
+                      <View style={{flex:1, paddingLeft:10}}>
                           <Text>Importe:</Text>
                         </View>
-                        <View style={{flex:1}}>
+                        <View style={{flex:1, alignItems:'flex-end', paddingRight: 10}}>
                           <TextInput   
                             placeholder=""
                             placeholderTextColor="#000000"
@@ -743,13 +778,14 @@ onSwipeValueChange = (swipeData) => {
 
 
         />
+      <Separator/>
 
-          <View>
-            <View>
-              <View>
-                <Text>{cambioLabel}: </Text>
+        
+            <View style={{flex:1, flexDirection: 'row'}}>
+              <View style={{flex:2, paddingLeft:10}}>
+                <Text style={{fontSize:20}}>{cambioLabel}: </Text>
               </View>
-              <View style={{flex:1}}>
+              <View style={{flex:1, alignItems:'flex-end', paddingRight:10}}>
                 <NumericFormat
                 value={Math.abs(this.state.cambio)}
                 displayType={'text'}
@@ -762,10 +798,14 @@ onSwipeValueChange = (swipeData) => {
                 } />
                 
               </View>
+              
             </View>
-          </View>
+             
+           
+            
+           
         </SafeAreaView>
-
+      
       </View>
 
         <View  style={{backgroundColor: '#51747F',
@@ -774,7 +814,7 @@ onSwipeValueChange = (swipeData) => {
                         justifyContent: 'center', bottom:0, flex:0 }}>
           <View style={{flex:1}}>
             <TouchableOpacity
-
+                
                 style={ [styles.footerButton, styles.confirmButton]}
                 disabled={this.state.cambio>0 || global.onSavingSale}
                 onPress={() => this.guardarVenta()}
@@ -788,6 +828,7 @@ onSwipeValueChange = (swipeData) => {
           </View>
           <View style={{flex:1}}>
             <TouchableOpacity
+            
               style={styles.footerButton}
               disabled={this.state.cambio<=0}
               onPress={() => this.agregarOtroPago()}
@@ -806,6 +847,7 @@ onSwipeValueChange = (swipeData) => {
     );
   }
 }
+
 
 export default Pagando;
 
@@ -890,12 +932,12 @@ const styles = StyleSheet.create({
 	},
   h3: {
     color: 'black',
-    fontSize: 15,
+    fontSize: 20,
   },
   separator:{
     marginVertical: 8,
     borderBottomColor: '#737373',
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth
   },
   text: {
     alignSelf: "center",
@@ -905,7 +947,7 @@ const styles = StyleSheet.create({
     marginBottom: 15
   },
   footerButton: {
-    flex: 0,
+    flex:0,
     alignItems: 'center',
     paddingVertical: 10,
   },

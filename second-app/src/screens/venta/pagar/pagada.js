@@ -1,22 +1,29 @@
 import React, { Component } from "react";
-import {Platform,SafeAreaView} from 'react-native';
-import { Container, Header, Title, Content, Button, Icon, Form, Body,   Footer,
+import {SafeAreaView} from 'react-native';
+import { Container, Header, Title, Content, Button, Form, Body,   Footer,
   FooterTab, H3,
-  ListItem, Separator,
-Left, Right, Label, Item, H1, View,  Input, Text,  H2, Spinner } from "react-native";
+  ListItem, StyleSheet,
+Left, Right, Label, Item, H1, View,  Input, Text,  H2, Spinner, Platform, Dimensions } from "react-native";
 import {Picker, TextInput} from "react-native"
+
+import Icon from 'react-native-vector-icons/Ionicons';
 const SyncronizeTransaction = require ('../../../lib/syncronization/SyncronizeTransaction');
 const syncronizeTransaction = new SyncronizeTransaction();
 const AppConfiguration = require ('../../../lib/model/AppConfiguration');
 const appConfiguration = new AppConfiguration();
+const Separator = () => <View style={styles.separator} />;
 //import styles from "./styles";
+import Constants from 'expo-constants';
+//import styles from "./styles";
+const deviceHeight = Dimensions.get("window").height;
+const deviceWidth = Dimensions.get("window").width;
 
 import {BluetoothManager,BluetoothEscposPrinter,BluetoothTscPrinter} from 'tp-react-native-bluetooth-printer';
 
 const VentaModel = require ('../../../lib/model/VentaModel');
 
-import styles from "./../styles";
-import globalStyles from "./../../styles";
+
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const ventaModel = new VentaModel();
 
@@ -26,8 +33,9 @@ class Pagada extends React.Component {
     super(props);
 
     this.state = {      
-      folio: this.props.navigation.getParam('folio'),
-      idVenta: this.props.navigation.getParam('idVenta'),
+      
+      folio: this.props.route.params.folio,
+      idVenta: this.props.route.params.idVenta,
 
       connecting:false,
       printer: null,
@@ -598,51 +606,61 @@ conectarDispositivo(attemps = 0){
 
   render() {
     return (
-<Container style={styles.container}>
-
-        <Header iosBarStyle={"dark-content"} style={globalStyles.header} searchBar rounded>        
-          <Left/>
-          <Body style={{flex: 1}}>
-          <Title style={globalStyles.headerTitle} >Venta exitosa </Title>
-          </Body>
-          <Right />
-        </Header>
+<View style={styles.container}>
 
 
-        <Content padder>
-        <SafeAreaView style={{flex: 1}}>
+        <View  style={{ 
+          paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
+          backgroundColor:'#f6f6f6',
+          flex: 0,
+          color:'#000000',
+          marginBottom: Platform.OS === 'ios' ? 0 : 0,
+          height:90,
+          paddingTop: 30,
+          flexDirection: 'row',
+          alignItems: 'center',
+          }}>
+          <View style={{flex: 1, alignItems:'center'}}>
+            <Text style={globalStyles.headerTitle} >Venta exitosa</Text>
+          </View>
+        </View>
 
-          <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems:'center',marginTop:20}}>
+        <View style={{flex:2}}>
+        <SafeAreaView style={{flex: 2}}>
+
+          <View style={{justifyContent: 'center', alignItems:'center',marginTop:20}}>
             <Text>La venta se ha guardado exitosamente. </Text>
           </View>
-          <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems:'center',margin:20}}>
+          <View style={{justifyContent: 'center', alignItems:'center',margin:20}}>
             <Text > Folio: </Text>
             <Text style={{fontWeight:'bold',fontSize:20}}>{this.state.folio}</Text> 
           </View>
 
-          <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems:'center'}}>
-              <Button primary style={{marginRight:10,backgroundColor: "#568DAE"}}
+          <View style={{justifyContent: 'center', alignItems:'center'}}>
+              <TouchableOpacity style={{ marginRight:10,backgroundColor: "#568DAE", 
+              flexDirection:'row', alignItems:'center', justifyContent:'center', width:100, height:50}}
               onPress={() => {  this.imprimirTicket(0) }}
               >
-                  <Icon name='md-print' />
-                  <Text>Imprimir</Text>
-              </Button>
+                  <Icon style={{flex:1, fontSize:20, paddingLeft:5}} name='md-print' />
+                  <Text style={{flex:2}}>Imprimir</Text>
+              </TouchableOpacity>
 
 { false &&
-              <Button primary style={{ marginLeft:10,backgroundColor: "#568DAE"}}>
-                  <Icon name='ios-send' />
-                  <Text>Enviar</Text>
-              </Button>
+              <TouchableOpacity style={{ marginLeft:10,backgroundColor: "#568DAE"}}>
+                  <Icon style={{flex:1, fontSize:20, paddingLeft:5}} name='ios-send' />
+                  <Text style={{flex:2}}>Enviar</Text>
+              </TouchableOpacity>
               }
           </View>
           
-          <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems:'center',marginTop:20}}>
-              <Button primary style={{backgroundColor: "#568DAE"}}
+          <View style={{flexDirection: 'column', justifyContent: 'center', alignItems:'center',marginTop:20}}>
+              <TouchableOpacity style={{backgroundColor: "#568DAE", flexDirection:'row', alignItems:'center',
+              justifyContent:'center', width:140, height:50}}
               onPress={() => {  this.nuevaVenta() }}
               >
-                  <Icon name='ios-add' />
-                  <Text>Nueva Venta</Text>
-              </Button>
+                  <Icon style={{flex:1, fontSize:20, paddingLeft:5}} name='ios-add' />
+                  <Text style={{flex:2}}>Nueva Venta</Text>
+              </TouchableOpacity>
           </View>
           
                 {
@@ -651,32 +669,184 @@ conectarDispositivo(attemps = 0){
                     <Spinner color='#51747F' />
                     <Text>Conectando con {this.state.printer.name}...</Text>
 
-                    <Button primary style={{backgroundColor: "#CC0000"}}
+                    <TouchableOpacity style={{backgroundColor: "#CC0000", flexDirection:'row', alignItems:'center',
+                    justifyContent:'center', width:80, height:50}}
                       onPress={() => {  this.disconnectDevice() }}
                       >
-                          <Icon name='ios-close' />
-                          <Text>Cancelar</Text>
-                      </Button>
+                          <Icon style={{flex:1, fontSize:20, paddingLeft:5}} name='ios-close' />
+                          <Text style={{flex:2}}>Cancelar</Text>
+                      </TouchableOpacity>
                     </View>
                 }
                 {
                     this.state.printer != null &&
                     <View style={{alignItems:'center'}}>
-                    <Button primary style={{backgroundColor: "#ffd700",marginTop:50}}
+                    <TouchableOpacity style={{backgroundColor: "#ffd700",marginTop:50, flexDirection:'row', alignItems:'center',
+                    justifyContent:'center', width:80, height:50}}
                       onPress={() => {  this.disconnectDevice() }}
                       >
-                          <Icon name='ios-bluetooth' />
-                          <Text>Desconectar dispositivo</Text>
-                      </Button>
+                          <Icon style={{flex:1, fontSize:20, paddingLeft:5}} name='ios-bluetooth' />
+                          <Text style={{flex:2}}>Desconectar dispositivo</Text>
+                      </TouchableOpacity>
                     </View>
                 }      
                 </SafeAreaView>            
-        </Content>
+        </View>
 
 
-      </Container>
+      </View>
     );
   }
 }
 
 export default Pagada;
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#FFF",
+    flex:1
+  },
+  text: {
+    alignSelf: "center",
+    marginBottom: 7
+  },
+  mb: {
+    marginBottom: 15
+  },
+	standalone: {
+		marginTop: 30,
+		marginBottom: 30,
+	},
+	standaloneRowFront: {
+		alignItems: 'center',
+		backgroundColor: '#CCC',
+		justifyContent: 'center',
+		height: 50,
+	},
+	standaloneRowBack: {
+		alignItems: 'center',
+		backgroundColor: '#8BC645',
+		flex: 1,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		padding: 15
+	},
+	backTextWhite: {
+		color: '#FFF'
+	},
+	rowFront: {
+		alignItems: 'center',
+//		backgroundColor: '#CCC',
+//		borderBottomColor: 'black',
+		borderBottomWidth: 0,
+		justifyContent: 'center',
+		height: 40,
+	},
+	rowBack: {
+		alignItems: 'center',
+//		backgroundColor: '#DDD',
+		flex: 1,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		paddingLeft: 15,
+	},
+	backRightBtn: {
+		alignItems: 'center',
+		bottom: 0,
+		justifyContent: 'center',
+		position: 'absolute',
+		top: 0,
+		width: 75
+	},
+	backRightBtnLeft: {
+		backgroundColor: '#2496bc',
+		right: 75
+	},
+	backRightBtnRight: {
+		backgroundColor: '#ee0000',
+		right: 0
+	},
+	controls: {
+		alignItems: 'center',
+		marginBottom: 30
+	},
+	switchContainer: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		marginBottom: 5
+	},
+	switch: {
+		alignItems: 'center',
+		borderWidth: 0,
+		borderColor: 'black',
+		paddingVertical: 10,
+		width: Dimensions.get('window').width / 4,
+	},
+	trash: {
+		height: 25,
+		width: 25,
+	},
+  h3: {
+    color: 'black',
+    fontSize: 20,
+  },
+  separator:{
+    marginVertical: 8,
+    borderBottomColor: '#737373',
+    borderBottomWidth: StyleSheet.hairlineWidth
+  },
+  footerButton: {
+    flex:0,
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  confirmButton: {
+    paddingTop: 10,
+  },
+
+})
+
+
+const globalStyles = StyleSheet.create({
+  container: {
+    backgroundColor: "#FFF"
+  },
+  text: {
+    alignSelf: "center",
+    marginBottom: 7
+  },
+  mb: {
+    marginBottom: 15
+  },
+  header: {
+    paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
+    backgroundColor:'#f6f6f6',
+    color:'#000000',
+    marginBottom: Platform.OS === 'ios' ? 0 : 0,
+    height:90
+  },
+  headerRight: {
+    paddingTop: Platform.OS === 'ios' ? 0 : 10
+  },
+  headerButton: {
+    color:'#2496bc'
+  },
+  headerTitle: {
+    color:'#000000',
+    textAlign:'center'
+  },
+  TouchableOpacityStyle: {
+    position: 'absolute',
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    right: 20,
+    bottom: 110,
+  },
+  FloatingButtonStyle: {
+//    resizeMode: 'contain',
+    width: 50,
+    height: 50,
+    //backgroundColor:'black'
+  },})

@@ -1,7 +1,9 @@
-const LocalStorage = require ('../database/LocalStorage');
+import React from 'react';
 
+const LocalStorage = require ('../database/LocalStorage');
 const localStorage = new LocalStorage();
-import DateUtils from './../../lib/utils/dateUtils';
+const DateUtils = require ('./../../lib/utils/dateUtils');
+const dateUtils = new DateUtils();
 
 //import Controltransferencia from '../syncronization/SyncronizeTransaction'
 
@@ -58,7 +60,7 @@ class VentaModel  {
           console.log("obtenerSiguienteFolio:" , result);
 
           folioFormat = (result.serie + "" + result.folio.toString().padStart(5, "0"));
-          
+          console.log("El formato del folio: ", folioFormat)
           this.insertVenta(folioFormat , result.folio, venta, pagos)
           .then((result) => {
             console.log("insertVenta:" , result);
@@ -130,6 +132,7 @@ class VentaModel  {
           serie = rows._array[0].value;
           this.consultaFolio(tx)
           .then((resultFolio) => {
+            console.log("consultaFolio2 then: " , resultFolio);
             folio = (resultFolio.folio + 1);
             transactionResult = { type:'resolve', success:true, serie, folio };
           })
@@ -162,7 +165,7 @@ class VentaModel  {
         'select value from c_configuracion where [key] = ?', ['proceso_2_folio'], 
         (tx, { rows }) => { //THEN
           folio = parseInt(rows._array[0].value);
-//          console.log("consultaFolio then: " , folio);
+          console.log("consultaFolio then: " , folio);
           resolve({folio});
         }, function (tx,error) { //CATCH
           console.log("consultaFolio error:"  ,{error})
@@ -174,11 +177,11 @@ class VentaModel  {
 
   
   insertVenta(folioVenta , folio, venta, pagos){
-
     return new Promise((resolve, reject) => {
 
-      let fecha=DateUtils.fechaFormat(new Date());
+      let fecha=dateUtils.fechaFormat(new Date());
 //      let fecha=(f.getDate() +  "/" + f.getMonth() + "/" + f.getFullYear())
+      console.log("formatoFecha : ", fecha)
       let transactionResult = {};
       localStorage.getConnection().transaction(tx => {
 
@@ -548,7 +551,7 @@ class VentaModel  {
   updateStatusVenta(idVenta, status){
     return new Promise((resolve, reject) => {
 
-      let fecha=DateUtils.fechaFormat(new Date());
+      let fecha=dateUtils.fechaFormat(new Date());
 //      let fecha=(f.getDate() +  "/" + f.getMonth() + "/" + f.getFullYear())
       let transactionResult = {};
       localStorage.getConnection().transaction(tx => {
@@ -581,7 +584,7 @@ class VentaModel  {
   updateStatusTransaccionVenta(idVenta, status, idTransaccion){
     return new Promise((resolve, reject) => {
 
-      let fecha=DateUtils.fechaFormat(new Date());
+      let fecha=dateUtils.fechaFormat(new Date());
 //      let fecha=(f.getDate() +  "/" + f.getMonth() + "/" + f.getFullYear())
       let transactionResult = {};
       localStorage.getConnection().transaction(tx => {

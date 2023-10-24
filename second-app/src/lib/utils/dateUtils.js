@@ -1,4 +1,6 @@
-export default class DateUtils {
+import React from "react";
+
+class DateUtils {
 
     fechaFormat(date,separator = ' ') {
 
@@ -20,4 +22,4 @@ export default class DateUtils {
     }
 }
 
-
+module.exports = DateUtils;
