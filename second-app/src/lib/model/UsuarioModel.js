@@ -4,7 +4,7 @@ const localStorage = new LocalStorage();
 
 class UsuarioModel {
   
-  constructor() {
+    constructor() {
     }
 
 
@@ -54,7 +54,7 @@ class UsuarioModel {
         
         return new Promise((resolve, reject) => {
 
-            this.loadKeyConfiguration('isActivado')
+            this.loadKeyConfiguration('isActivado------SI ENTRAAAAAAAAAAAAAAAA')
             .then((result) => {
                 console.log('SI EXISTE ROW PARA isActivado !!!', result);
                 if(result.success){

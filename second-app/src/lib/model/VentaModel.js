@@ -60,7 +60,7 @@ class VentaModel  {
           console.log("obtenerSiguienteFolio:" , result);
 
           folioFormat = (result.serie + "" + result.folio.toString().padStart(5, "0"));
-          console.log("El formato del folio: ", folioFormat)
+
           this.insertVenta(folioFormat , result.folio, venta, pagos)
           .then((result) => {
             console.log("insertVenta:" , result);
@@ -132,7 +132,6 @@ class VentaModel  {
           serie = rows._array[0].value;
           this.consultaFolio(tx)
           .then((resultFolio) => {
-            console.log("consultaFolio2 then: " , resultFolio);
             folio = (resultFolio.folio + 1);
             transactionResult = { type:'resolve', success:true, serie, folio };
           })

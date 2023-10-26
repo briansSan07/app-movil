@@ -4,6 +4,7 @@ import { Image,SafeAreaView, FlatList, Text, View,
 
 
 import Icon from 'react-native-vector-icons/Ionicons';
+import BluetoothList from "../bluetooth";
 //import { TouchableOpacity } from "react-native-gesture-handler";
 
 
@@ -30,6 +31,12 @@ const datas = [
     key: "2",
   //  bg: "#477EEA",
   // types: "11"
+  },
+  {
+    name: "BluetoothList",
+    route: "BluetoothList",
+    icon: "cart",
+    key: "3",
   }
 /*  ,
   {

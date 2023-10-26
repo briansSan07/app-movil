@@ -17,8 +17,16 @@ import Constants from 'expo-constants';
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
 
+const LocalStorage = require ('../../../lib/database/LocalStorage');
+const ConcradServer = require ('../../../lib/remote/ConcradServer');
+
+
+const concradServer = new ConcradServer();
+const localStorage = new LocalStorage();
+
+
 import NumberFormat from 'react-number-format';
-import CatalogosModel from '../../../lib/model/CatalogosModel';
+
 import { FlatList, TouchableWithoutFeedback } from "react-native-gesture-handler";
 //import DateTimePicker from "@react-native-community/datetimepicker";
 import  DateTimePicker, {DateType}  from 'react-native-ui-datepicker'
@@ -26,8 +34,9 @@ import RNDateTimePicker from "@react-native-community/datetimepicker";
 import DatePicker from '@dietime/react-native-date-picker';
 import dayjs from "dayjs";
 const VentaModel = require ("../../../lib/model/VentaModel");
-
+const CatalogosModel = require ("../../../lib/model/CatalogosModel");
 const ventaModel = new VentaModel();
+const catalogosModel = new CatalogosModel();
 const Separator = () => <View style={styles.separator} />;
 
 
@@ -69,7 +78,7 @@ class Pagando extends Component {
 
   consultaBancos(){
     if (global.bancos == null || global.bancos == undefined) {
-      CatalogosModel.consultarBancos()
+      catalogosModel.consultarBancos()
       .then((result) => {
         console.log("Resultado de consultarBancos:" , result.bancosList.length);
         global.bancos = result.bancosList;
@@ -119,6 +128,8 @@ console.log("-GUARDARVENTA- : " ,{
   "global.sourceId": global.sourceId}
   );
   
+
+
 
       ventaModel.salvarVenta(
         this.state.ventaSinIva,
@@ -816,7 +827,7 @@ onSwipeValueChange = (swipeData) => {
             <TouchableOpacity
                 
                 style={ [styles.footerButton, styles.confirmButton]}
-                disabled={this.state.cambio>0 || global.onSavingSale}
+                //disabled={this.state.cambio>0 || global.onSavingSale}
                 onPress={() => this.guardarVenta()}
               >
                 <View style ={{position: 'relative'}}>

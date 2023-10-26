@@ -1,17 +1,19 @@
 import React, { Component} from "react";
 import {
-  Container,  Header,  Title,  Content,  Button,  Icon,  ListItem,  Text,  Thumbnail,  Left,  Body,
+  Container,  Header,  Title,  Content,  Button,  ListItem,  Text,  Thumbnail,  Left,  Body,
   Right,  Item,  Footer,  FooterTab,  Badge,  Accordion,  View,  Input,  List,  Toast,  H1,  H2,  H3, H4, CheckBox,
-  Spinner, Separator
+  Spinner, StyleSheet, Platform, Dimensions
 } from "react-native";
 import { SafeAreaView } from 'react-native';
 
+import Icon from 'react-native-vector-icons/Ionicons';
+const deviceHeight = Dimensions.get("window").height;
+import Constants from 'expo-constants';
+
 import {BluetoothManager, BluetoothEscposPrinter} from "tp-react-native-bluetooth-printer";
-
-
-import styles from "./styles";
-import globalStyles from "../styles";
+const Separator = () => <View style={styles.separator} />;
 import isObject from 'isobject';
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default class BluetoothList extends Component {
     _listeners = [];
@@ -19,8 +21,8 @@ export default class BluetoothList extends Component {
     constructor(props) {
         super(props);
 
-        let origen = this.props.navigation.getParam('origen');
-        let paired = this.props.navigation.getParam('paired');
+        let origen = this.props.route.params.origen;
+        let paired = this.props.route.params.paired;
         
         console.log("paired en constructor de bluetooth... " , paired);
         if(paired == undefined || paired == null){
@@ -108,55 +110,53 @@ export default class BluetoothList extends Component {
     render() {
 
         return (
-            <Container style={styles.container}>
-              <Header iosBarStyle={"dark-content"} style={{ ...globalStyles.header , height:90,paddingTop:10 }} searchBar rounded>
+            <View style={styles.container}>
+              <View style={{ ...globalStyles.header, height:110, paddingTop:40 }}>
                 
               {(this.state.origen=="MENU" && 
-                <Left style={{flex: 0}}>
-                  <Button
-                    transparent
-                    onPress={() => this.props.navigation.openDrawer()}>
-                    <Icon name="menu" style={globalStyles.headerButton} />
-                  </Button>
-                </Left>
+                <View style={{flex: 3,}}>
+                <TouchableOpacity style={{paddingLeft:10}}
+                  
+                  onPress={() => this.props.navigation.openDrawer()}>
+                  <Icon name="menu" style={{color:'#2496bc', fontSize: 30}} />
+                </TouchableOpacity>
+                </View>
               )}
               {(this.state.origen=="VENTA" && 
               
-              <Left>
-                  <Button transparent onPress={() => this.props.navigation.goBack()}>
-                    <Icon name="arrow-back"  style={globalStyles.headerButton} />
-                  </Button>
-                </Left>
+              <View style={{flex:3, paddingLeft:10}}>
+              <TouchableOpacity style={{flex:0}}onPress={() => this.props.navigation.goBack()}>
+                <Icon name="arrow-back"  style={globalStyles.headerButton} />
+              </TouchableOpacity>
+            </View>
               )}
-      
-      
-      
-              
-              
-                <Body style={{flex: 1,alignContent:"center"}}>
-                <Title style={{...globalStyles.headerTitle}}>
+  
+                <View style={{flex: 5,alignItems:"flex-end", justifyContent:"center", paddingRight:10}}>
+                <Text style={{...globalStyles.headerTitle}}>
                 {this.state.origen == "MENU" && "Listado de impresoras"}
                 {this.state.origen == "VENTA" && "Seleccionar Impresora"}            
-                  </Title>
-                </Body>
-                       
-              </Header>
-              <Content>
+                  </Text>
+                </View>
+                   
+              </View>
+
+
+              <View style={{flex:1}}>
                 <SafeAreaView style={{flex: 1}}>
 
       
                 
                 {this.state.origen == "VENTA" && (this.state.paired.length > 0) && 
-                <View>
+                <View style={{flex:1}}>
                     <Text style={{paddingTop:10}}>Estas conectado a varios dispositivos, favor de seleccionar la impresora.</Text>
                     
-                    <Separator bordered>
+                    <Separator/>
                     <Text>Dispositivos conectados</Text>
-                    </Separator>
+                    <Separator/>
 
 
 
-                  <List>
+                  <View>
                 {
                     this.state.paired.map((device,key) => {
 //                        console.log("en render dentro del map: " , {device, key});
@@ -165,29 +165,29 @@ export default class BluetoothList extends Component {
 
                         return (                        
                             
-                        <ListItem thumbnail key={device.address} style={[
+                        <View key={device.address} style={[
                             (this.state.deviceSelected != null && this.state.deviceSelected.address == device.address) ? styles.itemSelected : styles.itemFree
                             
                         ]}
                         >
                     {this.state.origen == "VENTA" && 
-                            <Left style={{padding:0,marginLeft:0}}>
-                            <Button transparent
+                            <View style={{padding:0,marginLeft:0}}>
+                            <TouchableOpacity
                                     onPress={() => {this.seleccionarDispositivo(device);}}
                             >
                                 {
                                 (this.state.deviceSelected != null && this.state.deviceSelected.address == device.address) ? <Icon name="ios-checkbox-outline" style={globalStyles.headerButton}/> : <Icon name="square-outline" style={globalStyles.headerButton}/>
                                 }
                                 
-                            </Button>
-                            </Left>
+                            </TouchableOpacity>
+                            </View>
                     }
         
                             
-                            <Body style={{marginLeft:0}}>
+                            <View style={{marginLeft:0}}>
                             <Text style={{fontWeight:"bold"}}>{device.name}</Text>
-                            </Body>
-                        </ListItem>
+                            </View>
+                        </View>
                         );
                     }
 
@@ -195,18 +195,19 @@ export default class BluetoothList extends Component {
                 }
       
                   
-                  </List>
-                          
-                </View>                    
+                  </View>
+                  <Separator/>   
+                </View>   
+                              
                 }
 
          
                 {
                     !this.state.searching  &&
-                    <Button block style={{ margin: 15, marginTop: 50, backgroundColor: "#568DAE" }} onPress={async () => this.buscarDispositivos()}>
+                    <TouchableOpacity block style={{ margin: 15, marginTop: 50, backgroundColor: "#568DAE" }} onPress={async () => this.buscarDispositivos()}>
                           <Icon name='ios-bluetooth' />
                           <Text>Buscar dispositivos</Text>
-                    </Button>
+                    </TouchableOpacity>
                 }
                 {
                     this.state.searching &&
@@ -218,12 +219,12 @@ export default class BluetoothList extends Component {
 
                 {
                     this.state.devicesArray.length > 0 &&
-                    <Separator bordered>
+                   
                     <Text>Dispositivos encontrados</Text>
-                    </Separator>
+                    
 
                 }
-                <List>
+                <View style={{flex:1}}>
 
                 
                 {
@@ -236,29 +237,29 @@ export default class BluetoothList extends Component {
                         return (
                         
                             
-                        <ListItem thumbnail key={device.address} style={[
+                        <View thumbnail key={device.address} style={[
                             (this.state.deviceSelected != null && this.state.deviceSelected.address == device.address) ? styles.itemSelected : styles.itemFree
                             
                         ]}
                         >
                     {this.state.origen == "VENTA" && 
-                            <Left style={{padding:0,marginLeft:0}}>
-                            <Button transparent
+                            <View style={{padding:0,marginLeft:0}}>
+                            <TouchableOpacity transparent
                                     onPress={() => {this.seleccionarDispositivo(device);}}
                             >
                                 {
                                 (this.state.deviceSelected != null && this.state.deviceSelected.address == device.address) ? <Icon name="ios-checkbox-outline" style={globalStyles.headerButton}/> : <Icon name="square-outline" style={globalStyles.headerButton}/>
                                 }
                                 
-                            </Button>
-                            </Left>
+                            </TouchableOpacity>
+                            </View>
                     }
         
                             
-                            <Body style={{marginLeft:0}}>
+                            <View style={{marginLeft:0}}>
                             <Text style={{fontWeight:"bold"}}>{device.name}</Text>
-                            </Body>
-                        </ListItem>
+                            </View>
+                        </View>
                         );
                     }
 
@@ -266,15 +267,17 @@ export default class BluetoothList extends Component {
                 }
       
                   
-                </List>
+                </View>
                 </SafeAreaView>
 
-              </Content>
+              </View>
       {this.state.origen == "VENTA" &&
               
-               <Footer >
-                <FooterTab style={{backgroundColor: "#51747F"}}>
-                  <Button
+               <View style={{ 
+                flexDirection: 'row', alignItems: 'center',
+                justifyContent: 'center', bottom:0, flex:0}}>
+                <View style={{backgroundColor: "#51747F", flex: 1, position: 'relative'}}>
+                  <TouchableOpacity
                   disabled = {this.state.deviceSelected == null}
                     
                    // onPress={() => this.toggleTab3()}
@@ -282,16 +285,87 @@ export default class BluetoothList extends Component {
                   >
                     
                     <Text style={{color: 'white'}}>Seleccionar impresora</Text>
-                  </Button>
+                  </TouchableOpacity>
                   
-                </FooterTab>
-              </Footer>
+                </View>
+              </View>
       }
+
       
-            </Container>
+            </View>
           );
 
     }
 
 }
 
+const styles = StyleSheet.create({
+
+  container: {
+    backgroundColor: "#fff"
+  },
+  itemSelected: {
+    backgroundColor:"lightgray"    
+  },
+  itemFree:{
+    backgroundColor:"white"    
+
+  },
+  btn: {
+    marginBottom: 8
+  },
+
+})
+
+const globalStyles = StyleSheet.create({
+  container: {
+    backgroundColor: "#FFF", flex: 1
+  },
+  text: {
+    alignSelf: "center",
+    marginBottom: 7
+  },
+  mb: {
+    marginBottom: 15
+  },
+  header: {
+    paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
+    backgroundColor:'#f6f6f6',
+    color:'#000000',
+    marginBottom: Platform.OS === 'ios' ? 0 : 0,
+    height:90,
+    flexDirection: 'row',
+    flex: 0,
+    alignItems: 'center',
+    justifyContent: 'flex-start', 
+    paddingTop: 35,
+  },
+  headerRight: {
+    paddingTop: Platform.OS === 'ios' ? 0 : 10
+  },
+  headerButton: {
+    color:'#2496bc',
+    fontSize: 25
+  },
+  headerTitle: {
+    color:'#000000',
+    textAlign:'center',
+    fontWeight: 'bold',
+  },
+  TouchableOpacityStyle: {
+    position: 'absolute',
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    right: 20,
+    bottom: 110,
+  },
+  FloatingButtonStyle: {
+//    resizeMode: 'contain',
+    width: 50,
+    height: 50,
+    //backgroundColor:'black'
+  },
+}
+)

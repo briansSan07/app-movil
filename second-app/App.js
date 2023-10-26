@@ -209,6 +209,7 @@ export default class App extends React.Component {
                                                
                                          />
           <Drawer.Screen name="Venta" component={Venta} options={{headerShown: false}} />
+          <Drawer.Screen name="BluetoothList" component={BluetoothList} options={{headerShown: false}} />
          
         </Drawer.Navigator>
     )
@@ -224,7 +225,7 @@ export default class App extends React.Component {
     <NavigationContainer>
       <Stack.Navigator>
       <Stack.Screen
-      name="Ruta"
+      name="Rutas"
       component={this.Rutas}
       options={{ headerShown: false, title: ''
       }}

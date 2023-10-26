@@ -45,13 +45,6 @@ const ventaModel = new VentaModel();
 const FROM_ACTIVATION = 1;
 const FROM_IS_ACTIVATED = 0;
 
-/*
-function openDatabase(){
-  const db = SQLite.openDatabase("db.db");
-  return db;
-}
-*/
-
 class Login extends Component {
 
   constructor(props) {
@@ -77,7 +70,7 @@ class Login extends Component {
     
       connecting:false,
       printer: null,
-      onActivating:false,
+      onActivating:false ,
 
     };
 
