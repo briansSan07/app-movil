@@ -1,14 +1,6 @@
 import React, { Component, useState, useCallback, useRef} from "react";
-import {
-  Container,  Header,  Title,  Content,  Button,  Icon,  ListItem,  Text,  Thumbnail,  Left,  Body,
-  Right,  Item,  Footer,  FooterTab,  Badge,  Accordion,  View,  Input,  List,  Toast,  H1,  H2,  H3, H4, CheckBox,
-  Spinner, Separator, Alert
-} from "react-native";
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+import { View, Alert } from "react-native";
 import Constants from 'expo-constants';
-
 import YoutubePlayer from "react-native-youtube-iframe";
 
 

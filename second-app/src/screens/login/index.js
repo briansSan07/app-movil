@@ -1,17 +1,11 @@
-import React, { Component,useState, useEffect } from "react";
-import { ImageBackground, StyleSheet, Image, View, Platform, StatusBar,Linking,Dimensions,SafeAreaView, Touchable } from "react-native";
-import { Container, Content, Form, Item, Label, Input, Header, Left, Body, Right, Icon, Title,
-  Spinner, TouchableOpacity, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, TextInput, 
-  ActivityIndicator} from "react-native";
- // import { TextInput } from 'react-native-gesture-handler';
-//import { SafeAreaView } from 'react-navigation';
-//import * as Localization from 'expo-localization';
+import React, { Component } from "react";
+import { ImageBackground, StyleSheet, Image, View, Linking,Dimensions,SafeAreaView, TouchableOpacity, 
+  KeyboardAvoidingView, TextInput,ActivityIndicator} from "react-native";
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
 const aspectRatio = deviceHeight/deviceWidth;
-import { Button, ButtonGroup, withTheme, Text} from '@rneui/themed';
+import { Button, Text} from '@rneui/themed';
 
-// import DateUtils from './../../lib/utils/dateUtils';
 
 const ConcradServer = require('../../lib/remote/ConcradServer');
 const SyncronizeCatalogs = require ('../../lib/syncronization/SyncronizeCatalogs');
@@ -20,18 +14,13 @@ const SyncronizeTransaction = require ('../../lib/syncronization/SyncronizeTrans
 const AppConfiguration = require ('../../lib/model/AppConfiguration');
 const UsuarioModel = require ('../../lib/model/UsuarioModel');
 const VentaModel = require ('../../lib/model/VentaModel');
-//import CatalogosModel from '../../lib/model/CatalogosModel';
+
 import VideoIndex from "../public/VideoIndex";
 
 import {BluetoothManager,BluetoothEscposPrinter,BluetoothTscPrinter} from 'tp-react-native-bluetooth-printer';
 
 import {LogBox} from 'react-native';
 
-import * as SQLite from "expo-sqlite";
-
-
-// import { styles } from "./styles";
-// import { globalStyles } from "./../styles";
 
 const launchscreenBg = require("./../../../assets/blanco.png");
 const launchscreenLogo = require("./../../../assets/concrad.png");
@@ -911,7 +900,7 @@ openVideo(){
         
        
 
-        <ImageBackground source={launchscreenBg} style={styles.imageContainer}>
+        <View style={styles.imageContainer}>
           <View style={styles.logoContainer}>
           <View style={{alignContent:"center"}}>
             <SafeAreaView style={{flex: 1}}>
@@ -1040,7 +1029,7 @@ openVideo(){
         
         </View>
         
-        </ImageBackground>
+        </View>
       </View>
     
     );
@@ -1052,8 +1041,7 @@ openVideo(){
 const styles = StyleSheet.create({
   imageContainer: {
     flex: 2,
-    width: deviceWidth,
-    height: null
+    backgroundColor: '#ffffff'
   },
   logoContainer: {
     flex: 1,

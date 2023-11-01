@@ -1,4 +1,3 @@
-
 import moment from "moment";
 const AppConfiguration = require ('../../lib/model/AppConfiguration');
 const ConcradServer = require ('../../lib/remote/ConcradServer');

@@ -1,10 +1,5 @@
 import React, { Component} from "react";
-import {
-  Container,  Header,  Title,  Content,  Button,  ListItem,  Text,  Thumbnail,  Left,  Body,
-  Right,  Item,  Footer,  FooterTab,  Badge,  Accordion,  View,  Input,  List,  Toast,  H1,  H2,  H3, H4, CheckBox,
-  Spinner, StyleSheet, Platform, Dimensions
-} from "react-native";
-import { SafeAreaView } from 'react-native';
+import { Text, View, Spinner, StyleSheet, Platform, Dimensions, SafeAreaView } from "react-native";
 
 import Icon from 'react-native-vector-icons/Ionicons';
 const deviceHeight = Dimensions.get("window").height;
@@ -159,7 +154,6 @@ export default class BluetoothList extends Component {
                   <View>
                 {
                     this.state.paired.map((device,key) => {
-//                        console.log("en render dentro del map: " , {device, key});
 
                         if(device.name != undefined){
 
@@ -230,7 +224,6 @@ export default class BluetoothList extends Component {
                 {
 
                     this.state.devicesArray.map((device,key) => {
-//                        console.log("en render dentro del map: " , {device, key});
 
                         if(device.name != undefined && device.name != ""){
 
@@ -279,8 +272,6 @@ export default class BluetoothList extends Component {
                 <View style={{backgroundColor: "#51747F", flex: 1, position: 'relative'}}>
                   <TouchableOpacity
                   disabled = {this.state.deviceSelected == null}
-                    
-                   // onPress={() => this.toggleTab3()}
                    onPress={() => this.conectarDispositivo()}
                   >
                     

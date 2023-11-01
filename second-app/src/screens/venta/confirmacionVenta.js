@@ -1,19 +1,12 @@
 import React, { Component } from "react";
-import {
-  Container,  Header,  Title, Subtitle,  Content,  Button,   ListItem,
-  Text,  Thumbnail,  Left,  Body,  Right,  Item,  Footer,  FooterTab,
-  Badge,  Accordion,  View,  Input,  List,  Toast,  H1,  H2,  H3, Switch, Dimensions, StyleSheet, TouchableOpacity, FlatList, Image
-} from "react-native";
-import { Col, Row, Grid } from 'react-native-easy-grid';
+import { Text, View, Toast, Switch, Dimensions, StyleSheet, TouchableOpacity, 
+  FlatList, Image, TextInput,SafeAreaView } from "react-native";
 import {NumericFormat} from 'react-number-format';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useRoute } from "@react-navigation/native";
 import Constants from 'expo-constants';
-//import styles from "./styles";
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
 const Separator = () => <View style={styles.separator} />;
-import {TextInput,SafeAreaView} from "react-native";
 
 
 var inicial=" ";

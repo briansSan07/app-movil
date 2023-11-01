@@ -1,16 +1,8 @@
 import 'react-native-gesture-handler';
 import React, { Component} from "react";
-import {
-  Container,  Header,  Title,  Content,  Button,  ListItem,  Text,  Thumbnail,  Left,  Body,
-  Right,  Item,  Footer,  Dimensions, Platform, FooterTab,  Badge,  Accordion,  View,  Input,  List,
-  ActivityIndicator, TouchableOpacity, StyleSheet
-} from "react-native";
+import { Button, Text,  Dimensions, Platform,  View, ActivityIndicator, TouchableOpacity, StyleSheet, TextInput, SafeAreaView } from "react-native";
 import {Picker} from '@react-native-picker/picker';
-import {TextInput, AppRegistry,Navigator,SafeAreaView } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import {  createDrawerNavigator } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer, createAppContainer} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 
@@ -557,7 +549,6 @@ this.origen = route.params.origen;
           <View style={{backgroundColor: "#51747F", flex: 1, position: 'relative'}}>
             <Button title='Agregar a la venta' disabled = {this.state.clienteSelected == null}
               
-             // onPress={() => this.toggleTab3()}
              onPress={() => this.agregarCliente()}
             />
               

@@ -2,7 +2,7 @@ const React = require("react-native");
 const { Dimensions, Platform } = React;
 const deviceHeight = Dimensions.get("window").height;
 import Constants from 'expo-constants';
-import { StatusBar } from 'expo-status-bar';
+
 import * as Expo from 'expo'
 
 export default {

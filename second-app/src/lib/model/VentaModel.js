@@ -5,11 +5,6 @@ const localStorage = new LocalStorage();
 const DateUtils = require ('./../../lib/utils/dateUtils');
 const dateUtils = new DateUtils();
 
-//import Controltransferencia from '../syncronization/SyncronizeTransaction'
-
-//const ctrlTransferencia = new Controltransferencia();
-
-
 class VentaModel  {
 
   constructor() {

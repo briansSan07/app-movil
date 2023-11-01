@@ -1,10 +1,5 @@
 import React, { Component} from "react";
-import {
-  Container,  Header,  Title,  Content,  Button,  ListItem,  Text,  Thumbnail,  Left,  Body,
-  Right,  Item,  Footer,  FooterTab,  Badge,  Accordion,  View,  Input,  List,  Toast,  H1,  H2,  H3, H4,
-  Card, CardItem, StyleSheet, Platform, Dimensions } from "react-native";
-import { Image , TextInput, AppRegistry,Navigator,SafeAreaView} from "react-native";
-import {Linking} from 'react-native'
+import { Text, View, StyleSheet, Platform, Dimensions, SafeAreaView, Linking} from 'react-native'
 import Geocoder from 'react-native-geocoding';
 
 import MapView from 'react-native-maps';
@@ -285,9 +280,6 @@ let productoFiltrados = this.state.productosDisplayArray.filter(function (produc
           <View style={{flex: 1}}>
             <View style={{flex:0}}>
              
-                {/*
-                <Thumbnail source={{uri: 'Image URL'}} />
-                 */}
                 
                   <Text style={{fontWeight:"bold"}}>{this.state.cliente.nombre_comercial}</Text>
                   <Text style={{color:'gray'}}>{this.state.cliente.razon_social}</Text>
@@ -309,10 +301,7 @@ let productoFiltrados = this.state.productosDisplayArray.filter(function (produc
                     
                   />
               </MapView>
-{/*
-              <Image source={{uri: 'https://www.pdcahome.com/wp-content/uploads/2017/12/madrid-google-maps.png'}} style={{height: 200, width: null, flex: 1}}/>
 
-*/}
             </View>}
             <View style={{flex:0, flexDirection:'row', marginTop:10}}>
               <View style={{flex:1,  alignItems: 'center'}}>

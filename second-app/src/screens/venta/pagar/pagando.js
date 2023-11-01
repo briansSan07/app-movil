@@ -1,37 +1,23 @@
 import React, { Component, useState } from "react";
-import { Container, Header, Title, Content, Button, Form, Body,   Footer,
-    FooterTab, H3, List, ListItem, InputGroup,  
-  Left, Right, Label, Item, H1, View,  Input, Text,  H2 
-} from "react-native";
-import daysjs, { Dayjs } from 'dayjs'
 dayjs.locale('es');
 import {Picker} from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Image, TextInput, TouchableOpacity, Animated, Dimensions,Platform,SafeAreaView, StyleSheet} from "react-native"
+import { View, Text, TextInput, TouchableOpacity, Animated, Dimensions,Platform,SafeAreaView, StyleSheet} from "react-native"
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { NumericFormat } from 'react-number-format';
 import moment from "moment";
 
 import Constants from 'expo-constants';
-//import styles from "./styles";
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
 
 const LocalStorage = require ('../../../lib/database/LocalStorage');
 const ConcradServer = require ('../../../lib/remote/ConcradServer');
 
-
 const concradServer = new ConcradServer();
 const localStorage = new LocalStorage();
 
-
-import NumberFormat from 'react-number-format';
-
-import { FlatList, TouchableWithoutFeedback } from "react-native-gesture-handler";
-//import DateTimePicker from "@react-native-community/datetimepicker";
-import  DateTimePicker, {DateType}  from 'react-native-ui-datepicker'
-import RNDateTimePicker from "@react-native-community/datetimepicker";
-import DatePicker from '@dietime/react-native-date-picker';
+import  DateTimePicker from 'react-native-ui-datepicker'
 import dayjs from "dayjs";
 const VentaModel = require ("../../../lib/model/VentaModel");
 const CatalogosModel = require ("../../../lib/model/CatalogosModel");
@@ -564,7 +550,7 @@ onSwipeValueChange = (swipeData) => {
              
                       )}
                       {
-                      (data.item.formaPago == "2" || data.item.formaPago == "3") && (// Tarjeta de Crédito || Tarjeta de Débito
+                      (data.item.formaPago == "2" || data.item.formaPago == "3") && (
                       <View style={{paddingTop:3,paddingBottom:3,backgroundColor:"#ffffff"}}>
                       <View style={{paddingTop:3,paddingBottom:3, flexDirection:'row'}}>   
                       <View style={{flex:2, paddingLeft:10}}>
@@ -601,7 +587,7 @@ onSwipeValueChange = (swipeData) => {
                       </View>
                       )}
                       {
-                      data.item.formaPago == "4" && (// Cheque
+                      data.item.formaPago == "4" && (
                       <View style={{paddingTop:3,paddingBottom:3,backgroundColor:"#ffffff"}}>
                       <View style={[styles.rowFront,{flexDirection:"row",backgroundColor:"#ffffff",}]}>   
                       <View style={{flex:2, paddingLeft:10}}>
@@ -663,7 +649,7 @@ onSwipeValueChange = (swipeData) => {
                       </View>
                       )}
                       {
-                      data.item.formaPago == "5" && (// Credito
+                      data.item.formaPago == "5" && (
                       <View style={{paddingTop:3,paddingBottom:3,backgroundColor:"#ffffff"}}>
                       
                         <View style={{paddingTop:3,paddingBottom:3}}>   
@@ -709,7 +695,7 @@ onSwipeValueChange = (swipeData) => {
                         </View>
                       )}
                       {
-                      data.item.formaPago == "7" && (// Transferencia
+                      data.item.formaPago == "7" && (
                       <View style={{paddingTop:3,paddingBottom:3,backgroundColor:"#ffffff"}}>
                       <View style={{paddingTop:3,paddingBottom:3}}>   
                       <View style={{flex:2, paddingLeft:10}}>
@@ -773,7 +759,6 @@ onSwipeValueChange = (swipeData) => {
 							</View>
 						)}
 						renderSectionHeader={({section}) => <Text>{section.title}</Text>}
-						//leftOpenValue={75}
 						rightOpenValue={-150}
 						previewRowKey={'0'}
 						previewOpenValue={-40}
@@ -784,7 +769,6 @@ onSwipeValueChange = (swipeData) => {
             onRowDidOpen={this.onRowDidOpen}
             onSwipeValueChange={this.onSwipeValueChange}
                 
-//            keyExtractor={ (item) => {const index = global.flatListIndex++; return index.toString(); }}
             
 
 
@@ -827,7 +811,6 @@ onSwipeValueChange = (swipeData) => {
             <TouchableOpacity
                 
                 style={ [styles.footerButton, styles.confirmButton]}
-                //disabled={this.state.cambio>0 || global.onSavingSale}
                 onPress={() => this.guardarVenta()}
               >
                 <View style ={{position: 'relative'}}>

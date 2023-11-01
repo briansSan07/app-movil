@@ -1,27 +1,19 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import {SafeAreaView} from 'react-native';
-import { Container, Header, Title, Content, Button, Form, Body,   Footer,
-  FooterTab, H3,
-  ListItem, StyleSheet,
-Left, Right, Label, Item, H1, View,  Input, Text,  H2, Spinner, Platform, Dimensions } from "react-native";
-import {Picker, TextInput} from "react-native"
-
+import { StyleSheet, View, Text, Spinner, Platform, Dimensions } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
 const SyncronizeTransaction = require ('../../../lib/syncronization/SyncronizeTransaction');
 const syncronizeTransaction = new SyncronizeTransaction();
 const AppConfiguration = require ('../../../lib/model/AppConfiguration');
 const appConfiguration = new AppConfiguration();
 const Separator = () => <View style={styles.separator} />;
-//import styles from "./styles";
 import Constants from 'expo-constants';
-//import styles from "./styles";
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
 
 import {BluetoothManager,BluetoothEscposPrinter,BluetoothTscPrinter} from 'tp-react-native-bluetooth-printer';
 
 const VentaModel = require ('../../../lib/model/VentaModel');
-
 
 import { TouchableOpacity } from "react-native-gesture-handler";
 

@@ -1,11 +1,7 @@
-const SyncronizeCatalogs = require ('./SyncronizeCatalogs');
-// import LocalStorage from '../database/LocalStorage';
-const VentaModel = require ('./../model/VentaModel');
-
 import dateUtils from "../utils/dateUtils";
-
+const SyncronizeCatalogs = require ('./SyncronizeCatalogs');
+const VentaModel = require ('./../model/VentaModel');
 const ConcradServer = require ('../../lib/remote/ConcradServer');
-
 const ventaModel = new VentaModel();
 const concradServer = new ConcradServer();
 const syncronizeCatalogs = new SyncronizeCatalogs();

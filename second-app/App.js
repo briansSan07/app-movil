@@ -1,27 +1,10 @@
 import 'react-native-gesture-handler';
-
-import  AppLoading  from 'expo-app-loading';
-import * as Font from 'expo-font';
-import * as gluestack from '@gluestack-ui/themed';
-import { ScrollView, Text,StyleSheet, TouchableNativeFeedback, View, Button, Image } from 'react-native';
-import { useFonts } from 'expo-font';
+import { StyleSheet} from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack'
 import {  createDrawerNavigator } from '@react-navigation/drawer';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer, createAppContainer, useNavigation } from '@react-navigation/native';
-
-import Gradient from './assets/Icons/Gradient';
-import DocumentData from './assets/Icons/DocumentData';
-import LightBulbPerson from './assets/Icons/LightbulbPerson';
-import Rocket from './assets/Icons/Rocket';
-import Logo from './assets/Icons/Logo';
 import * as React from 'react';
-
-
 import SideBar from './src/screens/sidebar';
-
-//import Home from './src/screens/HomeScreen';
-import SettingScreen from './src/screens/SettingScreen';
 import Venta from './src/screens/venta';
 
 import Cliente        from './src/screens/cliente';
@@ -44,11 +27,6 @@ const concradServer = new ConcradServer();
 const localStorage = new LocalStorage();
 const appConfiguration = new AppConfiguration();
 const login = new Login();
-
-
-import isObject from 'isobject';
-import Constants from 'expo-constants';
-import { DrawerLayout, gestureHandlerRootHOC } from 'react-native-gesture-handler';
 
 
 ////AQUI INICIA LA APP
@@ -217,9 +195,6 @@ export default class App extends React.Component {
   
 
   render() {
-    /*if (!this.state.isReady) {
-      return <AppLoading />;
-    }*/
 
     return(
     <NavigationContainer>
@@ -231,7 +206,6 @@ export default class App extends React.Component {
       }}
       />
       <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="SettingScreen" component={SettingScreen} />
       <Stack.Screen name="Cliente" component={Cliente} />
       <Stack.Screen name="ClienteDetalle" component={ClienteDetalle} options={{headerShown: false}}/>
       <Stack.Screen name="Venta" component={Venta} />

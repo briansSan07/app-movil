@@ -1,10 +1,6 @@
 import React, { Component} from "react";
 import { Updates } from 'expo';
-import {
- View, Switch,Spinner, Image,
-  FlatList, StyleSheet, Dimensions, Text, ActivityIndicator, Flash
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { View, Switch, Image, FlatList, StyleSheet, Dimensions, Text, ActivityIndicator, Button, TextInput, Alert } from "react-native";
 import { ScrollView } from 'react-native-virtualized-view'
 
 const deviceHeight = Dimensions.get("window").height;
@@ -15,8 +11,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 const Stack = createNativeStackNavigator();
 
 import Constants from 'expo-constants';
-import { Button, ListItem } from '@rneui/themed';
-import {TextInput, AppRegistry,Navigator,SafeAreaView, Alert} from "react-native";
 import {NumericFormat} from 'react-number-format';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -857,7 +851,6 @@ mostrarValor(producto){
     if (!categoria) {
       return null;
     }
-//console.log("categoriaBruta: " + categoria.tipo_producto + " expanded: " + expanded);
     return (
       <View>
         
@@ -953,7 +946,7 @@ render() {
     const buscadorProductosActivo = this.state.buscadorProductosActivo;
     const productoFiltrado = this.state.productosDisplayArray;
     const { ventaSinIva } = this.state;
-//    console.log("****** Render ");
+
     return (
   <View style={{ flex: 1 }}>
     
