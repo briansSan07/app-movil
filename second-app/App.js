@@ -208,11 +208,11 @@ export default class App extends React.Component {
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Cliente" component={Cliente} />
       <Stack.Screen name="ClienteDetalle" component={ClienteDetalle} options={{headerShown: false}}/>
-      <Stack.Screen name="Venta" component={Venta} />
+      <Stack.Screen name="Venta" component={Venta} options={{headerShown: false}}/>
       <Stack.Screen name="ConfirmacionVenta" component={ConfirmacionVenta} options={{headerShown: false}} />
       <Stack.Screen name="Pagando" component={Pagando} options={{headerShown: false}} />
       <Stack.Screen name="Pagada" component={Pagada} options={{headerShown: false}}/>
-      <Stack.Screen name="BluetoothList" component={BluetoothList} />
+      <Stack.Screen name="BluetoothList" component={BluetoothList} options={{headerShown: false}} />
       <Stack.Screen name="VideoIndex" component={VideoIndex} options={{title: '¿Qué es Concrad?'}} />
       
       

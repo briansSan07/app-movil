@@ -1,11 +1,13 @@
 import React, { Component} from "react";
-import { Text, View, Spinner, StyleSheet, Platform, Dimensions, SafeAreaView } from "react-native";
+import { Text, View, Spinner, StyleSheet, Platform, Dimensions, SafeAreaView,
+  ActivityIndicator, DeviceEventEmitter, NativeEventEmitter, PermissionsAndroid } from "react-native";
 
 import Icon from 'react-native-vector-icons/Ionicons';
 const deviceHeight = Dimensions.get("window").height;
 import Constants from 'expo-constants';
 
 import {BluetoothManager, BluetoothEscposPrinter} from "tp-react-native-bluetooth-printer";
+
 const Separator = () => <View style={styles.separator} />;
 import isObject from 'isobject';
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -151,7 +153,7 @@ export default class BluetoothList extends Component {
 
 
 
-                  <View>
+                  <View style={{flex:1}}>
                 {
                     this.state.paired.map((device,key) => {
 
@@ -165,7 +167,7 @@ export default class BluetoothList extends Component {
                         ]}
                         >
                     {this.state.origen == "VENTA" && 
-                            <View style={{padding:0,marginLeft:0}}>
+                            <View style={{padding:0,marginLeft:0, flex:1}}>
                             <TouchableOpacity
                                     onPress={() => {this.seleccionarDispositivo(device);}}
                             >
@@ -178,7 +180,7 @@ export default class BluetoothList extends Component {
                     }
         
                             
-                            <View style={{marginLeft:0}}>
+                            <View style={{marginLeft:0, flex:1}}>
                             <Text style={{fontWeight:"bold"}}>{device.name}</Text>
                             </View>
                         </View>
@@ -198,14 +200,16 @@ export default class BluetoothList extends Component {
          
                 {
                     !this.state.searching  &&
+                    <View style={{flex:1}}>
                     <TouchableOpacity block style={{ margin: 15, marginTop: 50, backgroundColor: "#568DAE" }} onPress={async () => this.buscarDispositivos()}>
                           <Icon name='ios-bluetooth' />
                           <Text>Buscar dispositivos</Text>
                     </TouchableOpacity>
+                    </View>
                 }
                 {
                     this.state.searching &&
-                    <View style={{alignItems:'center'}}>
+                    <View style={{alignItems:'center', flex:1}}>
                     <Spinner color='#51747F' />
                     <Text>Buscando dispositivos...</Text>
                     </View>
@@ -213,9 +217,9 @@ export default class BluetoothList extends Component {
 
                 {
                     this.state.devicesArray.length > 0 &&
-                   
+                    <View style={{flex:1}}>
                     <Text>Dispositivos encontrados</Text>
-                    
+                    </View>
 
                 }
                 <View style={{flex:1}}>
@@ -236,7 +240,7 @@ export default class BluetoothList extends Component {
                         ]}
                         >
                     {this.state.origen == "VENTA" && 
-                            <View style={{padding:0,marginLeft:0}}>
+                            <View style={{padding:0,marginLeft:0, flex:1}}>
                             <TouchableOpacity transparent
                                     onPress={() => {this.seleccionarDispositivo(device);}}
                             >
@@ -249,7 +253,7 @@ export default class BluetoothList extends Component {
                     }
         
                             
-                            <View style={{marginLeft:0}}>
+                            <View style={{marginLeft:0, flex:1}}>
                             <Text style={{fontWeight:"bold"}}>{device.name}</Text>
                             </View>
                         </View>

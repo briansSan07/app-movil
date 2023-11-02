@@ -22,8 +22,8 @@ import {BluetoothManager,BluetoothEscposPrinter,BluetoothTscPrinter} from 'tp-re
 import {LogBox} from 'react-native';
 
 
-const launchscreenBg = require("./../../../assets/blanco.png");
-const launchscreenLogo = require("./../../../assets/concrad.png");
+
+const launchscreenLogo = require("./../../../assets/icon.png");
 const concradServer = new ConcradServer();
 const appConfiguration = new AppConfiguration();
 const syncronizeCatalogs = new SyncronizeCatalogs();
@@ -896,7 +896,7 @@ openVideo(){
     const deviceWidth = Dimensions.get("window").width;
 
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'white' }}>
         
        
 
@@ -1040,7 +1040,7 @@ openVideo(){
 
 const styles = StyleSheet.create({
   imageContainer: {
-    flex: 2,
+    flex: 1,
     backgroundColor: '#ffffff'
   },
   logoContainer: {

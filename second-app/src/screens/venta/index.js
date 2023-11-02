@@ -796,13 +796,15 @@ mostrarValor(producto){
     }
     */
 
-    if (this.scrollViewRef) {
+/*    if (this.scrollViewRef) {
+
       // Calcula la posición de desplazamiento en función del índice
-      const position = categoria.index * 1; // Reemplaza ITEM_HEIGHT con la altura de tus elementos
+      const position = categoria.index * 10; // Reemplaza ITEM_HEIGHT con la altura de tus elementos
       // Usa ScrollView's scrollTo para desplazar la pantalla
       this.scrollViewRef.scrollTo({ x: 0, y: position, animated: true });
+      
     }
-
+*/
     this.setState({ listaAbierta: categoria.index})
 
 
@@ -1069,14 +1071,14 @@ render() {
       }
 
     {(!this.state.buscadorProductosActivo) &&
-      <ScrollView innerref={(ref) => (this.scrollViewRef = ref)}
-      showsVerticalScrollIndicator={true}>
+      //<ScrollView innerref={(ref) => (this.scrollViewRef = ref)}
+      //showsVerticalScrollIndicator={true}>
         <FlatList
           data={this.state.categoriaDisplayArray}
           renderItem={(categoria, index) => this._renderHeader (categoria, index)}
           keyExtractor={(categoria, index) => categoria.idtipoProducto.toString() + index}
         />
-        </ScrollView>
+        //</ScrollView>
 
 
     }

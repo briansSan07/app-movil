@@ -4,8 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
 
-const drawerCover = require("./../../../assets/blanco.png");
-const drawerImage = require("./../../../assets/concrad.png");
+const drawerImage = require("./../../../assets/icon.png");
 
 const datas = [
   {
@@ -62,12 +61,12 @@ export default class SideBar extends Component {
         >
           <SafeAreaView style={{flex: 1}}>
 
-            <Image source={drawerCover} style={styles.drawerCover} />
+            <View style={{flex:0.6}}>
             <Image square style={styles.drawerImage} source={drawerImage} />
-
+            </View>
 
             <FlatList
-            contentContainerStyle={{flex:1, marginLeft:20}}
+            contentContainerStyle={{flex:0, marginLeft:20}}
             data={datas}
             renderItem={({item}) => {
               return (
@@ -115,13 +114,6 @@ export default class SideBar extends Component {
 }
 
 const styles = StyleSheet.create({
-  drawerCover: {
-    alignSelf: "stretch",
-    height: windowHeight / 3.5,
-    width: null,
-    position: "relative",
-    marginBottom: 5
-  },
   drawerImage: {
     position: "absolute",
     left: Platform.OS === "android" ? windowWidth / 13 : windowWidth / 9,
