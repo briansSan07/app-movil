@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {SafeAreaView} from 'react-native';
-import { StyleSheet, View, Text, Spinner, Platform, Dimensions } from "react-native";
+import { StyleSheet, View, Text, ActivityIndicator, Platform, Dimensions } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
 const SyncronizeTransaction = require ('../../../lib/syncronization/SyncronizeTransaction');
 const syncronizeTransaction = new SyncronizeTransaction();
@@ -577,7 +577,7 @@ conectarDispositivo(attemps = 0){
 
 
           this.imprimir();
-//            console.log("IMPRIMIENDO...." ,);
+            console.log("IMPRIMIENDO...." );
 
       },(error)=>{
         console.log("Error de conexion: " , error.message);
@@ -658,7 +658,7 @@ conectarDispositivo(attemps = 0){
                 {
                     this.state.connecting &&
                     <View style={{alignItems:'center'}}>
-                    <Spinner color='#51747F' />
+                    <ActivityIndicator size="large" color='#51747F' />
                     <Text>Conectando con {this.state.printer.name}...</Text>
 
                     <TouchableOpacity style={{backgroundColor: "#CC0000", flexDirection:'row', alignItems:'center',

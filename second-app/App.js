@@ -10,6 +10,7 @@ import Venta from './src/screens/venta';
 import Cliente        from './src/screens/cliente';
 import ClienteDetalle from './src/screens/cliente/detalle';
 import BluetoothList from './src/screens/bluetooth/index';
+import Prueba from './src/screens/bluetooth/prueba';
 import VideoIndex from './src/screens/public/VideoIndex';
 
 import ConfirmacionVenta from './src/screens/venta/confirmacionVenta';
@@ -188,6 +189,7 @@ export default class App extends React.Component {
                                          />
           <Drawer.Screen name="Venta" component={Venta} options={{headerShown: false}} />
           <Drawer.Screen name="BluetoothList" component={BluetoothList} options={{headerShown: false}} />
+          <Drawer.Screen name="Prueba" component={Prueba} options={{headerShown: false}}/>
          
         </Drawer.Navigator>
     )
@@ -214,6 +216,7 @@ export default class App extends React.Component {
       <Stack.Screen name="Pagada" component={Pagada} options={{headerShown: false}}/>
       <Stack.Screen name="BluetoothList" component={BluetoothList} options={{headerShown: false}} />
       <Stack.Screen name="VideoIndex" component={VideoIndex} options={{title: '¿Qué es Concrad?'}} />
+      <Stack.Screen name="Prueba" component={Prueba} options={{headerShown: false}}/>
       
       
     </Stack.Navigator>

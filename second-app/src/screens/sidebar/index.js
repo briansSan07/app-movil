@@ -27,6 +27,12 @@ const datas = [
     route: "BluetoothList",
     icon: "cart",
     key: "3",
+  },
+  {
+    name: "Prueba",
+    route: "Prueba",
+    icon: "person",
+    key: "4",
   }
 ];
 
