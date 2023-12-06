@@ -1,11 +1,12 @@
 import React, { Component} from "react";
 import { Updates } from 'expo';
-import { View, Switch, Image, FlatList, StyleSheet, Dimensions, Text, ActivityIndicator, Button, TextInput, Alert } from "react-native";
+import { View, Switch, Image, FlatList, StyleSheet, Dimensions, Text, ActivityIndicator, TextInput, Modal } from "react-native";
 import { ScrollView } from 'react-native-virtualized-view'
-
+import ImageModal, {ImageDetail} from "react-native-image-modal";
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
-
+import ImageView from "react-native-image-viewing";
+import { Button } from "@rneui/themed";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
@@ -80,8 +81,7 @@ if (process.env.NODE_ENV !== 'production') {
       ventaSinIva: false,
       showUpdate: false,
       update:null,
-      shouldShow: false
-
+      selectedImage: null
     };    
     
     /*const data = [
@@ -779,6 +779,15 @@ mostrarValor(producto){
   };
 */
 
+
+  onDialogOpen(visible, producto){
+    console.log("ESTE ES EL: ", producto)
+    this.setState({visibleModal: visible});
+    
+
+  }
+
+
   onAccordionOpen(categoria, categoriaExpanded){
     
     if (!categoria) {
@@ -847,7 +856,7 @@ mostrarValor(producto){
 
 
 
-
+    const { selectedImage } = this.state;
     const { ventaSinIva } = this.state;
     
     if (!categoria) {
@@ -882,15 +891,23 @@ mostrarValor(producto){
 
 {this.state.listaAbierta == categoria.index
   ? ( 
+    <View>
   <FlatList 
 data={this.state.productosDisplayArray}
 renderItem={(producto) =>
   <View style={{ marginLeft: 5, marginRight: 5 }}>
+ 
     <View style={{ flexDirection: "row" }}>
-      <Image
-        style={{ width: 50, height: 50 }}
-        source={{ uri: 'https://atletl.api.concrad.com/' + producto.item.imagen }}
-      />
+    
+
+
+
+        <TouchableOpacity style={{flexDirection:'row'}} onPress={() => this.setState({ selectedImage: producto.item})}>
+        <Image style={{ width: 50, height: 50 }}
+        source={{ uri: 'https://atletl.api.concrad.com/' + producto.item.imagen }}/>
+        
+
+
       <View style={{ marginLeft: 5 }}>
         <Text style={{ fontSize: 14 }}>{producto.item.codigo} - {producto.item.nombre}</Text>
         <View style={{ flexDirection: "row" }}>
@@ -900,6 +917,7 @@ renderItem={(producto) =>
           </Text> 
         </View>
       </View>
+      </TouchableOpacity>
       <View style={{flex:1,  flexDirection: "column", alignItems: "flex-end", marginTop: 5}}>
         <View style={{ flexDirection: "row", alignItems: "flex-end"}}>
       <TouchableOpacity onPress={() => this.menosUno(producto)}>
@@ -930,8 +948,47 @@ renderItem={(producto) =>
 
     
   </View>}
-  
-  /> ): null }
+  keyExtractor={(producto) => producto.idProducto.toString()}
+  /> 
+  {selectedImage && (
+    <Modal animationType="slide" transparent={false} visible={true}>
+            <View style={{flex:1, alignItems:'center', justifyContent:'center', backgroundColor: "#eeeeee"}}>
+              <Image source={{ uri: 'https://atletl.api.concrad.com/' + selectedImage.imagen }} style={{ width: '100%', height: 450, marginBottom: 10 }} />
+              <Text style={{fontSize: 15}}>Nombre: <Text style={{fontWeight:'bold', fontSize: 25}}>{selectedImage.nombre}</Text></Text>
+              <Text style={{fontSize: 15}}>Codigo: <Text style={{fontWeight:'bold', fontSize: 25}}>{selectedImage.codigo}</Text></Text>
+              <Text style={{fontSize: 15}}>Precio: <Text style={{fontWeight:'bold', fontSize: 25}}>${selectedImage.precio}</Text></Text>
+              <Text style={{fontSize: 15}}>Existencia: <Text style={{fontWeight:'bold', fontSize: 25}}>{selectedImage.cantidad}</Text></Text>
+              <Button 
+                      title="Cerrar"
+                      icon={{
+                        name: 'close',
+                        type: 'font-awesome',
+                        size: 20,
+                        color: 'black',
+                      }} 
+                      iconPosition="left"
+                      iconContainerStyle={{ marginLeft: 10}}
+                      titleStyle={{ fontWeight: '700', color:'black' }}
+                      buttonStyle={{
+                      backgroundColor: 'rgba(204, 0, 0, 0.65)',
+                      borderColor: 'transparent',
+                      borderWidth: 0,
+                      borderRadius: 30,
+                    }}
+                    containerStyle={{
+                      width: 150,
+                      marginHorizontal: 50,
+                      marginVertical: 10,
+                      
+                    }}
+
+                onPress={() => this.setState({ selectedImage: null })
+                }/>
+            </View>
+          </Modal>
+  )}
+  </View>
+  ): null }
 </View>
 </View>
 
@@ -1107,10 +1164,12 @@ render() {
     renderItem={(producto) =>
       <View style={{ marginLeft: 5, marginRight: 5 }}>
         <View style={{ flexDirection: "row" }}>
+        <TouchableOpacity onPress={() => {this.onDialogOpen(producto, !this.state.onDialogOpen)}}>
           <Image
             style={{ width: 50, height: 50 }}
             source={{ uri: 'https://atletl.api.concrad.com/' + producto.item.imagen }}
           />
+          </TouchableOpacity>
           <View style={{ marginLeft: 5 }}>
             <Text style={{ fontSize: 14 }}>{producto.item.codigo} - {producto.item.nombre}</Text>
             <View style={{ flexDirection: "row" }}>

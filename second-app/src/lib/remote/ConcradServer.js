@@ -105,6 +105,7 @@ class ConcradServer{
                     nombre_comercial
                     razon_social
                     rfc
+
                     calle
                     no_ext
                     no_int
@@ -124,6 +125,8 @@ class ConcradServer{
                     created_at
                     updated_at
                 }  
+
+               
               
                 metodoPago(changesSince:${longTimestamp}) {
                     id

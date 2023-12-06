@@ -19,6 +19,9 @@
       "bundleIdentifier": "com.frankp20.secondapp"
     },
     "android": {
+      "permissions": [
+        "ACCES_FINE_LOCATION", "ACCES_COARSE_LOCATION", "BLUETOOTH"
+    ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/favicon.png",
         "backgroundColor": "#ffffff"

@@ -1,7 +1,7 @@
 import React, { Component} from "react";
-import { Text, View, ActivityIndicator, StyleSheet, Platform, 
+import { View, ActivityIndicator, StyleSheet, Platform, 
     Dimensions, SafeAreaView, FlatList, TouchableOpacity} from "react-native";
-
+    import { Button, Text} from '@rneui/themed';
 import Icon from 'react-native-vector-icons/Ionicons';
 const deviceHeight = Dimensions.get("window").height;
 import Constants from 'expo-constants';
@@ -11,7 +11,6 @@ import {BluetoothManager, BluetoothEscposPrinter} from "tp-react-native-bluetoot
 
 const Separator = () => <View style={styles.separator} />;
 import isObject from 'isobject';
-import { Button } from "@rneui/themed";
 
 const paired = [
     {
@@ -271,6 +270,193 @@ export default class Prueba extends Component{
 
                 }
                 </View>
+
+                <View style={{ alignItems:'center'}}>
+
+
+                <View style={{justifyContent: 'center', alignItems:'center'}}>
+              <Button 
+
+              title="Buscar dispositivos"
+              icon={{
+                name: 'bluetooth',
+                type: 'font-awesome',
+                size: 15,
+                color: 'black',
+              }} 
+              iconPosition="left"
+              iconContainerStyle={{ marginLeft: 10}}
+              titleStyle={{ fontWeight: '700', color:'black' }}
+            buttonStyle={{
+              backgroundColor: 'rgba(58, 150, 232, 0.75)',
+              borderColor: 'transparent',
+              borderWidth: 0,
+              borderRadius: 30,
+            }}
+            containerStyle={{
+              width: 190,
+              marginHorizontal: 50,
+              marginVertical: 10,
+              
+            }}
+
+              onPress={() => {  this.buscadorDispositivos() }
+              }/>
+          </View>
+
+<View >
+        <SafeAreaView>
+
+          <View style={{justifyContent: 'center', alignItems:'center',marginTop:20}}>
+            <Text>La venta se ha guardado exitosamente. </Text>
+          </View>
+          <View style={{justifyContent: 'center', alignItems:'center',margin:20}}>
+            <Text > Folio: </Text>
+            <Text style={{fontWeight:'bold',fontSize:20}}>{this.state.folio}</Text> 
+          </View>
+
+          <View style={{justifyContent: 'center', alignItems:'center'}}>
+              <Button 
+
+              title="Imprimir"
+              icon={{
+                name: 'print',
+                type: 'font-awesome',
+                size: 15,
+                color: 'black',
+              }} 
+              iconPosition="left"
+              iconContainerStyle={{ marginLeft: 10}}
+              titleStyle={{ fontWeight: '700', color:'black' }}
+            buttonStyle={{
+              backgroundColor: 'rgba(58, 150, 232, 0.75)',
+              borderColor: 'transparent',
+              borderWidth: 0,
+              borderRadius: 30,
+            }}
+            containerStyle={{
+              width: 150,
+              marginHorizontal: 50,
+              marginVertical: 10,
+              
+            }}
+
+              onPress={() => {  this.imprimirTicket(0) }
+              }/>
+
+{ false &&
+              <TouchableOpacity style={{ marginLeft:10,backgroundColor: "#568DAE"}}>
+                  <Icon style={{flex:1, fontSize:20, paddingLeft:5}} name='ios-send' />
+                  <Text style={{flex:2}}>Enviar</Text>
+              </TouchableOpacity>
+              }
+          </View>
+          
+          <View style={{justifyContent: 'center', alignItems:'center'}}>
+              <Button 
+
+              title="Nueva Venta"
+              icon={{
+                name: 'plus',
+                type: 'font-awesome',
+                size: 15,
+                color: 'black',
+              }} 
+              iconPosition="left"
+              iconContainerStyle={{ marginLeft: 10}}
+              titleStyle={{ fontWeight: '700', color:'black' }}
+            buttonStyle={{
+              backgroundColor: 'rgba(58, 150, 232, 0.75)',
+              borderColor: 'transparent',
+              borderWidth: 0,
+              borderRadius: 30,
+            }}
+            containerStyle={{
+              width: 150,
+              marginHorizontal: 50,
+              marginVertical: 10,
+              
+            }}
+
+              onPress={() => {  this.nuevaVenta() }
+              }/>
+          </View>
+
+
+          
+                {
+                    !this.state.connecting &&
+
+                    <View style={{justifyContent: 'center', alignItems:'center'}}>
+                      <ActivityIndicator size="large" color='#51747F' />
+                      <Text>Conectando con ...</Text>
+                      <Button 
+
+                      title="Cancelar"
+                      icon={{
+                        name: 'close',
+                        type: 'font-awesome',
+                        size: 20,
+                        color: 'black',
+                      }} 
+                      iconPosition="left"
+                      iconContainerStyle={{ marginLeft: 10}}
+                      titleStyle={{ fontWeight: '700', color:'black' }}
+                      buttonStyle={{
+                      backgroundColor: 'rgba(204, 0, 0, 0.65)',
+                      borderColor: 'transparent',
+                      borderWidth: 0,
+                      borderRadius: 30,
+                    }}
+                    containerStyle={{
+                      width: 150,
+                      marginHorizontal: 50,
+                      marginVertical: 10,
+                      
+                    }}
+
+                      onPress={() => {  this.nuevaVenta() }
+                      }/>
+               </View>
+                }
+                {
+                    !this.state.printer &&
+
+                    <View style={{justifyContent: 'center', alignItems:'center'}}>
+                      <Button 
+
+                      title="Desconectar dispositivo"
+                      icon={{
+                        name: 'bluetooth',
+                        type: 'font-awesome',
+                        size: 20,
+                        color: 'black',
+                      }} 
+                      iconPosition="left"
+                      iconContainerStyle={{ marginLeft: 10}}
+                      titleStyle={{ fontWeight: '700', color:'black' }}
+                      buttonStyle={{
+                      backgroundColor: 'rgba(255,215,0,0.5)',
+                      borderColor: 'transparent',
+                      borderWidth: 0,
+                      borderRadius: 30,
+                    }}
+                    containerStyle={{
+                      width: 160,
+                      marginHorizontal: 50,
+                      marginVertical: 10,
+                      
+                    }}
+
+                      onPress={() => {  this.disconnectDevice() }
+                      }/>
+               </View>
+                }      
+
+</SafeAreaView>
+</View>
+
+            </View>
         </SafeAreaView>
         </View>
         {this.state.origen !== "VENTA" &&

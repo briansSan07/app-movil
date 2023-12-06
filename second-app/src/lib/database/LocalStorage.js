@@ -1,4 +1,4 @@
-import * as SQLite from "expo-sqlite";
+ import * as SQLite from "expo-sqlite";
 
 class LocalStorage {
   
@@ -83,6 +83,7 @@ class LocalStorage {
           promises.push(this._createProducto(tx));
           promises.push(this._createProductoPrecio(tx));          
           promises.push(this._createClientes(tx));
+         // promises.push(this._createClienteDireccion(tx));
           promises.push(this._createTventa(tx));
           promises.push(this._createDetalleventa(tx));
           promises.push(this._createVentaPago(tx));
@@ -223,9 +224,7 @@ class LocalStorage {
                                               no_int VARCHAR(50), 
                                               colonia VARCHAR(100), 
                                               id_municipio INT, 
-                                              id_estado INT,
-                                              latitude VARCHAR(20),
-                                              longitude VARCHAR(20),                                              
+                                              id_estado INT,                                           
                                               codigo_postal INT, 
                                               genera_factura INT, 
                                               telefono VARCHAR(20), 
@@ -244,8 +243,6 @@ class LocalStorage {
     }
     _createTventa(tx){
 
-
-      console.log("_createTventa");
 /* 
 
 id_sync_status 
@@ -334,6 +331,11 @@ id_sync_status
         'CREATE TABLE IF NOT EXISTS dom_estado (id_estado SMALLINT PRIMARY KEY NOT NULL, nombre VARCHAR(250), created_at DATETIME, updated_at DATETIME)'
       );
     }
+   /* _createClienteDireccion(tx){
+      return tx.executeSql(
+        'CREATE TABLE IF NOT EXISTS t_cliente_direccion (id INTEGER PRIMARY KEY NOT NULL, idCliente INT NOT NULL, latitude VARCHAR(20), longitude VARCHAR(20))'
+      );
+    }*/
     _createMunicipios(tx){
       return tx.executeSql(
         'CREATE TABLE IF NOT EXISTS dom_municipio (id_municipio SMALLINT PRIMARY KEY NOT NULL, nombre VARCHAR(250), clave_mun SMALLINT, id_estado SMALLINT, created_at DATETIME, updated_at DATETIME)'
@@ -395,7 +397,9 @@ id_sync_status
 
           if(this.debug) console.log("remoteData.cliente.length: " + remoteData.cliente.length);
           this._fillClientes(tx,remoteData.cliente);
-          if(this.debug) console.log("remoteData.metodoPago.length: " + remoteData.metodoPago.length);
+          /*if(this.debug) console.log("remoteData.clienteDireccion.length: " + remoteData.clienteDireccion.length);
+          this._fillClienteDireccion(tx,remoteData.clienteDireccion);*/
+          if(this.debug) console.log("remoteData.metodoPago.length: " + remoteData.metodoPago.length); 
           this._fillMetodoPago(tx,remoteData.metodoPago);
           if(this.debug) console.log("remoteData.banco.length: " + remoteData.banco.length);
           this._fillBanco(tx,remoteData.banco);
@@ -660,7 +664,7 @@ id_sync_status
         }
         if(resultSet.rowsAffected == 0){
 
-          tx.executeSql('INSERT INTO Clientes (idCliente, clave, nombre_comercial, razon_social, rfc, calle, no_ext, no_int, colonia, id_municipio, id_estado,codigo_postal, genera_factura, telefono, celular, nivel_socioeconomico_id, id_status, has_credito, dias_credito, importe_credito, saldo_favor, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,? ,? ,? ,? ,? ,? ,? ,? ,?)', 
+          tx.executeSql('INSERT INTO Clientes (idCliente, clave, nombre_comercial, razon_social, rfc, calle, no_ext, no_int, colonia, id_municipio, id_estado,codigo_postal, genera_factura, telefono, celular, nivel_socioeconomico_id, id_status, has_credito, dias_credito, importe_credito, saldo_favor, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,? ,? ,? ,? ,? ,? ,? ,? , ?)', 
               [dto.id_cliente, dto.clave, dto.nombre_comercial, dto.razon_social, dto.rfc, dto.calle, dto.no_ext, dto.no_int, dto.colonia, dto.id_municipio, dto.id_estado, dto.codigo_postal, dto.genera_factura, dto.telefono, dto.celular, dto.nivel_socioeconomico_id, dto.id_estatus, dto.has_credito, dto.dias_credito, dto.importe_credito, dto.saldo_favor, dto.created_at, dto.updated_at])
       
 
@@ -672,6 +676,31 @@ id_sync_status
     
       }
     }
+
+   /* _fillClienteDireccion(tx,dto){
+        for(let i=0;i<dto.length;i++){
+
+        this.saveLastUpdate(dto[i].updated_at);
+        
+        tx.executeSql('UPDATE t_cliente_direccion SET idCliente = ?, latitude = ?, longitude = ?, WHERE id = ?',[  dto.id_cliente, dto.latitude, dto.longitude, dto.id],
+        function(tx, resultSet) {
+          if(this.debug){
+            console.log("ON UPDATE cliente_direccion-success: ");// ,  resultSet);
+          }
+          if(resultSet.rowsAffected == 0){
+  
+            tx.executeSql('INSERT INTO t_cliente_direccion (id, idCliente, latitude, longitude) VALUES (?, ?, ?, ?)', 
+                [dto.id, dto.id_cliente, dto.latitude, dto.longitude])
+        
+  
+            }
+          }, 
+          function(tx, error) {
+            console.log('cliente_dirrecion-update-error: ' + error.message);
+          });
+      
+        }
+    }*/
 
     _fillMetodoPago(tx,dto){
         // console.log(dto[0].metodo_pago)
@@ -859,14 +888,14 @@ id_sync_status
         if(this.db == null){ this.getConnection();}
         this.db.transaction(
         tx => {
-          /*
+          
           this._verifyTipoProducto(tx);
           this._verifyNivelSocioeconomico(tx);
           this._verifyProducto(tx);
           this._verifyClientes(tx);
           this._verifyMetodoPago(tx);
           this._verifyConfiguracion(tx);
-          */
+          
 //          this._verifyImpuestoTasaCuota(tx);
         }, function(error) {
           reject({success:false,error:error})
@@ -910,6 +939,14 @@ id_sync_status
         console.log(JSON.stringify(rows))
       );    
     }
+
+   /* _verifyClienteDireccion(tx){
+      tx.executeSql(
+        'select count(*) as cuantos from t_cliente_direccion', [], (_, { rows }) =>
+        console.log(JSON.stringify(rows))
+      );  
+    }*/
+
     _verifyMetodoPago(tx){
       tx.executeSql(
         'select count(*) as cuantos from metodoPago', [], (_, { rows }) =>

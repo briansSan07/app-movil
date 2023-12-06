@@ -48,7 +48,7 @@ class Pagando extends Component {
       date: new Date()
     };
 
-    this.state.fechaSeleccionada.setDate(this.state.fechaSeleccionada.getDate());
+    this.state.fechaSeleccionada.setDate(this.state.fechaSeleccionada.getDate()-1);
 
 
 //    console.log("global.carrito en EFECTIVO: " , global.carrito);

@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
-import {SafeAreaView} from 'react-native';
-import { StyleSheet, View, Text, ActivityIndicator, Platform, Dimensions } from "react-native";
+import {PermissionsAndroid, SafeAreaView} from 'react-native';
+import { StyleSheet, View, ActivityIndicator, Platform, Dimensions } from "react-native";
+import { Button, Text } from '@rneui/themed';
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 import Icon from 'react-native-vector-icons/Ionicons';
 const SyncronizeTransaction = require ('../../../lib/syncronization/SyncronizeTransaction');
 const syncronizeTransaction = new SyncronizeTransaction();
@@ -11,7 +14,7 @@ import Constants from 'expo-constants';
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
 
-import {BluetoothManager,BluetoothEscposPrinter,BluetoothTscPrinter} from 'tp-react-native-bluetooth-printer';
+import {BluetoothManager,BluetoothEscposPrinter,BluetoothTscPrinter, ALIGN} from 'tp-react-native-bluetooth-printer';
 
 const VentaModel = require ('../../../lib/model/VentaModel');
 
@@ -19,7 +22,11 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 const ventaModel = new VentaModel();
 
+
+
 class Pagada extends React.Component {
+  
+
   
   constructor(props) {
     super(props);
@@ -37,7 +44,8 @@ class Pagada extends React.Component {
 
   }
 
-
+  
+  
   componentDidMount(){
 
     // disparar sincronizacion de transacciones
@@ -63,7 +71,13 @@ class Pagada extends React.Component {
 
     }
 
+    
   }
+
+ 
+
+
+
 
 nuevaVenta(){
 
@@ -83,11 +97,14 @@ async imprimir(){
 
 //  console.log("consultarVentaById - THEN: " , result.venta);
   const venta = result.venta;
-    
+  
+   try{
+
   await BluetoothEscposPrinter.printerInit();
   
-  await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
-  await BluetoothEscposPrinter.setBlob(0);    
+  await BluetoothEscposPrinter.printerAlign(ALIGN.CENTER);
+
+  await BluetoothEscposPrinter.setBold(0);    
 
 // TEST IOS
  const code = 0; //acentos solo en minusculas....
@@ -109,37 +126,40 @@ fontType:1,
 
 return;
 */
-  await BluetoothEscposPrinter.printText(global.nombre_comercial + "\r\n", {
-  });
+
+  await BluetoothEscposPrinter.printText(global.nombre_comercial  + "\r\n", {
+  },);
+
   await BluetoothEscposPrinter.printText(global.domicilio_comercial + "\r\n", {
+    
     fonttype:1,
-fontType:1,
+
     widthtimes:0
-  });
+  },);
+
   await BluetoothEscposPrinter.printText(global.telefono + "\r\n", {
     fonttype:1,
-fontType:1,
     widthtimes:0
-  });
+  },);
 
   await BluetoothEscposPrinter.printText("Venta: " + venta.folio_venta + "\r\n", {});
   await BluetoothEscposPrinter.printText(venta.fecha + "\r\n", {});
   await  BluetoothEscposPrinter.printText("---------------------------------------------\n\r",{});
-  await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.LEFT);
+  await BluetoothEscposPrinter.printerAlign(ALIGN.LEFT);
   if(venta.nombre_comercial != null && venta.nombre_comercial != undefined){
     await BluetoothEscposPrinter.printText("Cliente: " + venta.nombre_comercial + "\r\n\r\n", {});
   }
 
-  await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
+  await BluetoothEscposPrinter.printerAlign(ALIGN.CENTER);
 
   await BluetoothEscposPrinter.setWidth(78*8);
 
   let columnWidths = [9,32,10,12];
 
 
-  await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.RIGHT);
+  await BluetoothEscposPrinter.printerAlign(ALIGN.RIGHT);
   await BluetoothEscposPrinter.printColumn(columnWidths,
-    [BluetoothEscposPrinter.ALIGN.CENTER,BluetoothEscposPrinter.ALIGN.CENTER,BluetoothEscposPrinter.ALIGN.CENTER,BluetoothEscposPrinter.ALIGN.CENTER],
+    [ALIGN.CENTER,ALIGN.CENTER,ALIGN.CENTER,ALIGN.CENTER],
     ["CANT.",'DESCRIPCION','PRECIO','IMPORTE'],{
       fonttype:1,
 fontType:1,
@@ -149,7 +169,6 @@ fontType:1,
       
     const detalle = venta.detalle;
 
-    
 
     for(let i=0;i<detalle.length;i++){
       const producto = detalle[i];
@@ -164,10 +183,9 @@ fontType:1,
 
       precio = Math.round(precio * 100) / 100;
       importe = Math.round(importe * 100) / 100;
-      
 
       await BluetoothEscposPrinter.printColumn(columnWidths,
-        [BluetoothEscposPrinter.ALIGN.CENTER,BluetoothEscposPrinter.ALIGN.LEFT,BluetoothEscposPrinter.ALIGN.RIGHT,BluetoothEscposPrinter.ALIGN.RIGHT],
+        [ALIGN.CENTER,ALIGN.LEFT,ALIGN.RIGHT,ALIGN.RIGHT],
         ["" + producto.cantidad, producto.codigo + " " + producto.nombre , "" + precio.toFixed(2) , "" + importe.toFixed(2) ],{
           fonttype:1,
 fontType:1,
@@ -176,7 +194,7 @@ fontType:1,
   
     }
 
-    await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.RIGHT);
+    await BluetoothEscposPrinter.printerAlign(ALIGN.RIGHT);
     
     await  BluetoothEscposPrinter.printText("---------------------------------------------\n\r",{});
     if(venta.for_factura == 1 || venta.is_vsi == 0){
@@ -202,6 +220,7 @@ fontType:1,
       fonttype:0,
       widthtimes:0  
     });
+
     const pagos = venta.pagos;
     for(let i=0;i<pagos.length;i++){
       const pago = pagos[i];
@@ -223,8 +242,8 @@ fontType:1,
           widthtimes:0  
         });
 
-      } else if(pago.id_metodo_pago == '2' || pago.id_metodo_pago == '3'){ // efectivo
-        await  BluetoothEscposPrinter.printText("Metodo de pago: XXXXX \n\r",{
+      } else if(pago.id_metodo_pago == '2' || pago.id_metodo_pago == '3'){ // tarjeta
+        await  BluetoothEscposPrinter.printText("Metodo de pago: Tarjeta \n\r",{
           fonttype:1,
 fontType:1,
           widthtimes:0  
@@ -259,7 +278,6 @@ fontType:1,
         if (pago.autorizacion != null){
           autorizacion = pago.autorizacion;
         }
-
         await  BluetoothEscposPrinter.printText("No. de cheque: " + autorizacion + " \n\r",{
           fonttype:1,
 fontType:1,
@@ -286,7 +304,7 @@ fontType:1,
 fontType:1,
           widthtimes:0  
         });                    
-        await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
+        await BluetoothEscposPrinter.printerAlign(ALIGN.CENTER);
         await  BluetoothEscposPrinter.printText("Me comprometo a realizar el deposito o transferencia por el importe total de la compra por: $"+pago.importe.toFixed(2) + " en la siguiente fecha acordada: " + autorizacion + ".\n\r\n\r\n\r\n\r",{
           fonttype:1,
 fontType:1,
@@ -307,6 +325,7 @@ fontType:1,
 fontType:1,
           widthtimes:0  
         });
+
         let autorizacion = "";
         if (pago.autorizacion != null){
           autorizacion = pago.autorizacion;
@@ -317,7 +336,7 @@ fontType:1,
 fontType:1,
           widthtimes:0  
         });                    
-        await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
+        await BluetoothEscposPrinter.printerAlign(ALIGN.CENTER);
         await  BluetoothEscposPrinter.printText("Me comprometo a realizar el deposito o transferencia por el importe total de la compra por: $"+pago.importe.toFixed(2) + " en la siguiente fecha acordada: " + autorizacion + ".\n\r\n\r\n\r\n\r",{
           fonttype:1,
 fontType:1,
@@ -329,12 +348,18 @@ fontType:1,
       }
 
     }
-    await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.CENTER);
+    await BluetoothEscposPrinter.printerAlign(ALIGN.CENTER);
 
     await  BluetoothEscposPrinter.printText("\n\r\n\r\n\r",{
       fonttype:0,
       widthtimes:0  
     });
+
+     } catch (e) {
+  alert(e.message || 'ERROR')
+    console.error('Error: ', e)
+    console.error('Stack Trace: ', e.stack)
+ }
 
 
 
@@ -402,6 +427,18 @@ async imprimirTesting(){
   const result = await ventaModel.consultarVentaById(idVenta)
 
   console.log("---> CHECANDO EL OBJETO VEnTA: ",{result});
+ try{
+  await BluetoothEscposPrinter.printText("HOLA MUNDO", {},);
+  await BluetoothEscposPrinter.printText("============", {},);
+ } catch (e) {
+  alert(e.message || 'ERROR')
+  window.onerror = function(message, line, col, error){
+    console.log("mensaje: ",message," linea: ",line," columna: ",col," error: ",error)
+  }
+  if (e instanceof ReferenceError) {
+    console.log('ReferenceError');
+  }
+ }
 }
 
 imprimirTicket(iteracion){
@@ -629,30 +666,63 @@ conectarDispositivo(attemps = 0){
           </View>
 
           <View style={{justifyContent: 'center', alignItems:'center'}}>
-              <TouchableOpacity style={{ marginRight:10,backgroundColor: "#568DAE", 
-              flexDirection:'row', alignItems:'center', justifyContent:'center', width:100, height:50}}
-              onPress={() => {  this.imprimirTicket(0) }}
-              >
-                  <Icon style={{flex:1, fontSize:20, paddingLeft:5}} name='md-print' />
-                  <Text style={{flex:2}}>Imprimir</Text>
-              </TouchableOpacity>
+              <Button 
 
-{ false &&
-              <TouchableOpacity style={{ marginLeft:10,backgroundColor: "#568DAE"}}>
-                  <Icon style={{flex:1, fontSize:20, paddingLeft:5}} name='ios-send' />
-                  <Text style={{flex:2}}>Enviar</Text>
-              </TouchableOpacity>
-              }
+              title="Imprimir"
+              icon={{
+                name: 'print',
+                type: 'font-awesome',
+                size: 15,
+                color: 'black',
+              }} 
+              iconPosition="left"
+              iconContainerStyle={{ marginLeft: 10}}
+              titleStyle={{ fontWeight: '700', color:'black' }}
+            buttonStyle={{
+              backgroundColor: 'rgba(58, 150, 232, 0.75)',
+              borderColor: 'transparent',
+              borderWidth: 0,
+              borderRadius: 30,
+            }}
+            containerStyle={{
+              width: 150,
+              marginHorizontal: 50,
+              marginVertical: 10,
+              
+            }}
+
+              onPress={() => {  this.imprimirTicket(0) }
+              }/>
           </View>
           
-          <View style={{flexDirection: 'column', justifyContent: 'center', alignItems:'center',marginTop:20}}>
-              <TouchableOpacity style={{backgroundColor: "#568DAE", flexDirection:'row', alignItems:'center',
-              justifyContent:'center', width:140, height:50}}
-              onPress={() => {  this.nuevaVenta() }}
-              >
-                  <Icon style={{flex:1, fontSize:20, paddingLeft:5}} name='ios-add' />
-                  <Text style={{flex:2}}>Nueva Venta</Text>
-              </TouchableOpacity>
+          <View style={{justifyContent: 'center', alignItems:'center'}}>
+              <Button 
+
+              title="Nueva Venta"
+              icon={{
+                name: 'plus',
+                type: 'font-awesome',
+                size: 15,
+                color: 'black',
+              }} 
+              iconPosition="left"
+              iconContainerStyle={{ marginLeft: 10}}
+              titleStyle={{ fontWeight: '700', color:'black' }}
+            buttonStyle={{
+              backgroundColor: 'rgba(58, 150, 232, 0.75)',
+              borderColor: 'transparent',
+              borderWidth: 0,
+              borderRadius: 30,
+            }}
+            containerStyle={{
+              width: 150,
+              marginHorizontal: 50,
+              marginVertical: 10,
+              
+            }}
+
+              onPress={() => {  this.nuevaVenta() }
+              }/>
           </View>
           
                 {
@@ -661,25 +731,65 @@ conectarDispositivo(attemps = 0){
                     <ActivityIndicator size="large" color='#51747F' />
                     <Text>Conectando con {this.state.printer.name}...</Text>
 
-                    <TouchableOpacity style={{backgroundColor: "#CC0000", flexDirection:'row', alignItems:'center',
-                    justifyContent:'center', width:80, height:50}}
-                      onPress={() => {  this.disconnectDevice() }}
-                      >
-                          <Icon style={{flex:1, fontSize:20, paddingLeft:5}} name='ios-close' />
-                          <Text style={{flex:2}}>Cancelar</Text>
-                      </TouchableOpacity>
+                    <Button 
+
+                      title="Cancelar"
+                      icon={{
+                        name: 'close',
+                        type: 'font-awesome',
+                        size: 20,
+                        color: 'black',
+                      }} 
+                      iconPosition="left"
+                      iconContainerStyle={{ marginLeft: 10}}
+                      titleStyle={{ fontWeight: '700', color:'black' }}
+                      buttonStyle={{
+                      backgroundColor: 'rgba(204, 0, 0, 0.65)',
+                      borderColor: 'transparent',
+                      borderWidth: 0,
+                      borderRadius: 30,
+                    }}
+                    containerStyle={{
+                      width: 150,
+                      marginHorizontal: 50,
+                      marginVertical: 10,
+                      
+                    }}
+
+                      onPress={() => {  this.disconnectDevice() }
+                      }/>
                     </View>
                 }
                 {
                     this.state.printer != null &&
                     <View style={{alignItems:'center'}}>
-                    <TouchableOpacity style={{backgroundColor: "#ffd700",marginTop:50, flexDirection:'row', alignItems:'center',
-                    justifyContent:'center', width:80, height:50}}
-                      onPress={() => {  this.disconnectDevice() }}
-                      >
-                          <Icon style={{flex:1, fontSize:20, paddingLeft:5}} name='ios-bluetooth' />
-                          <Text style={{flex:2}}>Desconectar dispositivo</Text>
-                      </TouchableOpacity>
+                    <Button 
+
+                      title="Desconectar dispositivo"
+                      icon={{
+                        name: 'bluetooth',
+                        type: 'font-awesome',
+                        size: 20,
+                        color: 'black',
+                      }} 
+                      iconPosition="left"
+                      iconContainerStyle={{ marginLeft: 10}}
+                      titleStyle={{ fontWeight: '700', color:'black' }}
+                      buttonStyle={{
+                      backgroundColor: 'rgba(255,215,0,0.5)',
+                      borderColor: 'transparent',
+                      borderWidth: 0,
+                      borderRadius: 30,
+                    }}
+                    containerStyle={{
+                      width: 160,
+                      marginHorizontal: 50,
+                      marginVertical: 10,
+                      
+                    }}
+
+                      onPress={() => {  this.disconnectDevice() }
+                      }/>
                     </View>
                 }      
                 </SafeAreaView>            

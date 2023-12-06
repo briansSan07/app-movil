@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import { Text, View, Toast, Switch, Dimensions, StyleSheet, TouchableOpacity, 
-  FlatList, Image, TextInput,SafeAreaView } from "react-native";
+  FlatList, Image, TextInput,SafeAreaView, Modal } from "react-native";
 import {NumericFormat} from 'react-number-format';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Constants from 'expo-constants';
+import { Button } from "@rneui/themed";
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
 const Separator = () => <View style={styles.separator} />;
@@ -33,7 +34,8 @@ class ConfirmacionVenta extends Component {
 
     isLoading:true, 
     showToast: false,
-    displayMetodoPago:false
+    displayMetodoPago:false,
+    selectedImage: null
   };
     
   }
@@ -198,7 +200,7 @@ pasarDatos(){
   render() {
   
     const ventaSinIva = this.state.ventaSinIva;
-  
+    const { selectedImage } = this.state;
     return (
       <View style={{flex:1}}>
         <View  style={{ 
@@ -254,12 +256,10 @@ pasarDatos(){
 
                 <View style={{ marginLeft: 5, marginRight: 5 }}>
                   <View style={{ flexDirection: "row" }}>
-                    <Image
-                      style={{ width: 50, height: 50 }}
-                      source={{ uri: 'https://atletl.api.concrad.com/' + item.img }}
-
+                  <TouchableOpacity style={{ flexDirection: 'row'}}onPress={() => this.setState({ selectedImage: item})}>
+                      <Image style={{ width: 50, height: 50 }}
+                      source={{ uri: 'https://atletl.api.concrad.com/' + item.img }}/>
                     
-                    />
                     <View style={{ marginLeft: 5 }}>
                       <Text style={{ fontSize: 14 }}>{item.codigo} - {item.nombre}</Text>
                       <View style={{ flexDirection: "row" }}>
@@ -269,6 +269,7 @@ pasarDatos(){
                         </Text> 
                       </View>
                     </View>
+                    </TouchableOpacity>
                     <View style={{flex:1,  flexDirection: "column", alignItems: "flex-end", marginTop: 5}}>
                       <View style={{ flexDirection: "row", alignItems: "flex-end"}}>
                     <TouchableOpacity onPress={() => this.menosUno(item)}>
@@ -302,7 +303,43 @@ pasarDatos(){
                 </View>}
                 keyExtractor = {(item) => item.idProducto}
                 />
-            
+              {selectedImage && (
+    <Modal animationType="slide" transparent={false} visible={true}>
+            <View style={{flex:1, alignItems:'center', justifyContent:'center', backgroundColor: "#eeeeee"}}>
+              <Image source={{ uri: 'https://atletl.api.concrad.com/' + selectedImage.img }} style={{ width: '100%', height: 450, marginBottom: 10 }} />
+              <Text style={{fontSize: 15}}>Nombre: <Text style={{fontWeight:'bold', fontSize: 25}}>{selectedImage.nombre}</Text></Text>
+              <Text style={{fontSize: 15}}>Codigo: <Text style={{fontWeight:'bold', fontSize: 25}}>{selectedImage.codigo}</Text></Text>
+              <Text style={{fontSize: 15}}>Precio: <Text style={{fontWeight:'bold', fontSize: 25}}>${selectedImage.precio}</Text></Text>
+              <Text style={{fontSize: 15}}>Existencia: <Text style={{fontWeight:'bold', fontSize: 25}}>{selectedImage.cantidad}</Text></Text>
+              <Button 
+                      title="Cerrar"
+                      icon={{
+                        name: 'close',
+                        type: 'font-awesome',
+                        size: 20,
+                        color: 'black',
+                      }} 
+                      iconPosition="left"
+                      iconContainerStyle={{ marginLeft: 10}}
+                      titleStyle={{ fontWeight: '700', color:'black' }}
+                      buttonStyle={{
+                      backgroundColor: 'rgba(204, 0, 0, 0.65)',
+                      borderColor: 'transparent',
+                      borderWidth: 0,
+                      borderRadius: 30,
+                    }}
+                    containerStyle={{
+                      width: 150,
+                      marginHorizontal: 50,
+                      marginVertical: 10,
+                      
+                    }}
+
+                onPress={() => this.setState({ selectedImage: null })
+                }/>
+            </View>
+          </Modal>
+  )}
           </SafeAreaView>
         </View>
 

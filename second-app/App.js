@@ -1,11 +1,12 @@
 import 'react-native-gesture-handler';
-import { StyleSheet} from 'react-native';
+import { StyleSheet, PermissionsAndroid, Platform} from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack'
 import {  createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer, createAppContainer, useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 import SideBar from './src/screens/sidebar';
 import Venta from './src/screens/venta';
+import * as Location from 'expo-location';
 
 import Cliente        from './src/screens/cliente';
 import ClienteDetalle from './src/screens/cliente/detalle';
@@ -145,6 +146,45 @@ export default class App extends React.Component {
     });
   }
 
+  solicitarPermisoUbicacion = async () => {
+    try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      
+      if (status === 'granted') {
+        console.log('Permiso de ubicación concedido');
+        // Realiza operaciones relacionadas con la ubicación aquí
+      } else {
+        console.log('Permiso de ubicación denegado');
+        // Maneja la negación del permiso aquí
+      }
+    } catch (error) {
+      console.error('Error al solicitar permiso de ubicación', error);
+    }
+    };
+  
+  
+  requestBluetoothPermissionAndroid = async () => {
+    try {
+      let { granted } = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+        {
+          title: 'Permiso de Bluetooth',
+          message: 'Esta aplicación necesita permisos de Bluetooth.',
+          buttonPositive: 'OK',
+        }
+      );
+  
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Permisos de Bluetooth concedidos');
+        // Aquí podrías realizar la impresión o realizar otras operaciones relacionadas con Bluetooth
+      } else {
+        console.warn('Se necesitan permisos de Bluetooth para continuar.');
+      }
+    } catch (error) {
+      console.error('Error al solicitar permisos:', error);
+    }
+  };
+
   checkAppIsActivated(){
     if(this.debug) console.debug("...checkAppIsActivated()");
     appConfiguration.isAppActivated()
@@ -167,8 +207,13 @@ export default class App extends React.Component {
   async componentDidMount() {
 
     this.inicializarApp();
+    this.solicitarPermisoUbicacion();
 
+    if (Platform.OS === 'android') {
+      await this.requestBluetoothPermissionAndroid();
+    }
 
+    
   }
 
   Rutas() {
@@ -208,7 +253,7 @@ export default class App extends React.Component {
       }}
       />
       <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="Cliente" component={Cliente} />
+      <Stack.Screen name="Cliente" component={Cliente} options={{headerShown: false}}/>
       <Stack.Screen name="ClienteDetalle" component={ClienteDetalle} options={{headerShown: false}}/>
       <Stack.Screen name="Venta" component={Venta} options={{headerShown: false}}/>
       <Stack.Screen name="ConfirmacionVenta" component={ConfirmacionVenta} options={{headerShown: false}} />

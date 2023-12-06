@@ -95,10 +95,7 @@ export default class BluetoothList extends Component {
 
     seleccionarDispositivo(item){
       let device = item.item;
-      console.log("SI ENTRAAAAAA A SELECCION", item.item)
-      console.log("Vacio o null", this.state.deviceSelected)
         this.setState({deviceSelected:device});
-          console.log("SEGUNDO ENTRA", this,this.state.deviceSelected)
       }
       conectarDispositivo(){
           const {route, navigation} = this.props;
@@ -113,7 +110,6 @@ export default class BluetoothList extends Component {
     
 
     render() {
-      console.log("CONNNNN", this.state.paired)
         return (
             <View style={styles.container}>
               <View style={{ ...globalStyles.header, height:110, paddingTop:40 }}>
@@ -203,12 +199,30 @@ export default class BluetoothList extends Component {
                 {
                     !this.state.searching  &&
                     <View style={{flex:2, flexDirection:'column', alignItems:'center'}}>
-                    <TouchableOpacity style={{ margin: 15, marginTop: 50, backgroundColor: "#568DAE", flexDirection:'row', 
-                    height:30, alignItems:'center', width:200, justifyContent:'center' }} 
-                    onPress={async () => this.buscarDispositivos()}>
-                          <Icon name='ios-bluetooth' style={{fontSize:25}}/>
-                          <Text>Buscar dispositivos</Text>
-                    </TouchableOpacity>
+                      <Button 
+                        title="Buscar dispositivos"
+                        icon={{
+                          name: 'bluetooth',
+                          type: 'font-awesome',
+                          size: 15,
+                          color: 'black',
+                        }} 
+                        iconPosition="left"
+                        iconContainerStyle={{ marginLeft: 10}}
+                        titleStyle={{ fontWeight: '700', color:'black' }}
+                        buttonStyle={{
+                          backgroundColor: 'rgba(58, 150, 232, 0.75)',
+                          borderColor: 'transparent',
+                          borderWidth: 0,
+                          borderRadius: 30,
+                        }}
+                        containerStyle={{
+                          width: 190,
+                          marginHorizontal: 50,
+                          marginVertical: 10,
+                        }}
+                        onPress={async () =>  this.buscarDispositivos()}
+                      />
                     </View>
                 }
                 {
