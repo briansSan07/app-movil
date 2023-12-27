@@ -289,7 +289,7 @@ let productoFiltrados = this.state.productosDisplayArray.filter(function (produc
               
             </View>
             <Separator />
-{            <View style={{flex:0}}>
+{  /*          <View style={{flex:0}}>
               <MapView 
               style={{height: 300,flex: 0}} 
               region={this.state.region}
@@ -302,7 +302,7 @@ let productoFiltrados = this.state.productosDisplayArray.filter(function (produc
                   />
               </MapView>
 
-            </View>}
+    </View>*/}
             <View style={{flex:0, flexDirection:'row', marginTop:10}}>
               <View style={{flex:1,  alignItems: 'center'}}>
                 <TouchableOpacity  style={{flexDirection:'row'}}

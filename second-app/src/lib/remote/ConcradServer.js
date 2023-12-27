@@ -105,7 +105,6 @@ class ConcradServer{
                     nombre_comercial
                     razon_social
                     rfc
-
                     calle
                     no_ext
                     no_int

@@ -3,6 +3,7 @@ dayjs.locale('es');
 import {Picker} from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { View, Text, TextInput, TouchableOpacity, Animated, Dimensions,Platform,SafeAreaView, StyleSheet} from "react-native"
+import RNPickerSelect from 'react-native-picker-select';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { NumericFormat } from 'react-number-format';
 import moment from "moment";
@@ -42,6 +43,7 @@ class Pagando extends Component {
       cambio:0, 
       pagos:[],
       rowMap:null,
+      selectedValue:null,
       cliente: this.props.route.params.cliente, 
       generaFactura: this.props.route.params.generaFactura, 
       ventaSinIva: this.props.route.params.ventaSinIva, 
@@ -505,24 +507,44 @@ onSwipeValueChange = (swipeData) => {
                     <View style={{flex:1}}>
                       <Text>Forma de pago:</Text>
                     </View>                    
-                    <View style={{flex:1,backgroundColor:"#ffffff", height:60}}>
+                    <View style={{flex:1,backgroundColor:"#ffffff"}}>
+                      {Platform.OS === 'android' ? 
                               <Picker
                                 key={"p_" + data.item.key}
-                                mode="dropdown"
-
-                                placeholder="Selecciona..."
-                                style={{ color: "#000000"}}                              
+                                mode="dialog"
+                                style={{ color: "#000000", height:60}}                              
                                 selectedValue={data.item.formaPago}
                                 onValueChange={(value) => {this.onFormaPagoChange(value,data.item.key)} }
                               >                                
                                 { this.state.metodosPago != null &&
                                   this.state.metodosPago.map((metodoPago) => {
-                                      return <Picker.Item label={metodoPago.metodo_pago} value={""+metodoPago.id} key={"pi_"+metodoPago.id} />
+                                      return <Picker.Item label={metodoPago.metodo_pago} value={""+metodoPago.id} key={"pi_"+metodoPago.id} /> 
                                   })
                                 }
 
 
                               </Picker>
+                              
+                            : 
+
+                            <RNPickerSelect
+                            darkTheme={true}
+                            style={{
+                              ...pickerSelectStyles,
+                              iconContainer: {
+                                top: 7,
+                                right: 14,
+                              },
+                            }}                              
+                            items={this.state.metodosPago != null && this.state.metodosPago.map((metodoPago) => 
+                              ({ label: metodoPago.metodo_pago, value: "" + metodoPago.id }))}  
+                            placeholder={{ label: 'Metodo de pago', value: null }}     
+                            onValueChange={(value) => {this.onFormaPagoChange(value,data.item.key)} }
+                            Icon={() => {
+                              return <Icon name="caret-down-outline" size={24} color="gray" />;
+                            }}
+                          />
+                          }
                     </View>  
                 </View>
               </TouchableOpacity>
@@ -590,19 +612,17 @@ onSwipeValueChange = (swipeData) => {
                       data.item.formaPago == "4" && (
                       <View style={{paddingTop:3,paddingBottom:3,backgroundColor:"#ffffff"}}>
                       <View style={[styles.rowFront,{flexDirection:"row",backgroundColor:"#ffffff",}]}>   
-                      <View style={{flex:2, paddingLeft:10}}>
+                      <View style={{flex:1, paddingLeft:10}}>
                           <Text>Banco:</Text>
                         </View>
-                        <View style={{flex:1, alignItems:'flex-end', flex:1,backgroundColor:"#ffffff", height:60}}>
-                        
+                        <View style={{flex:1, alignItems:'flex-end', flex:1,backgroundColor:"#ffffff"}}>
+                        {Platform.OS === 'android' ? 
                         <Picker
-                          mode="dropdown"
-                          
-                          placeholder="Selecciona..."
-                          
-                          style={{color: "black", width:200, alignItems:'flex-end' }}
+                          mode="dialog"
+                          style={{ width:200, alignItems:'flex-end', height:45 }}
                           selectedValue={data.item.idBanco}
                           onValueChange={(value) => {this.onBancoChange(value,data.item.key)} }
+                          
                         >
                           {
                             this.state.bancos.map((banco) => { 
@@ -610,7 +630,27 @@ onSwipeValueChange = (swipeData) => {
                           })
                           }
 
-                        </Picker>                 
+                        </Picker> 
+                          
+                            : 
+
+                            <RNPickerSelect
+                            
+                            darkTheme={true}
+                            style={{
+                              ...pickerSelectStyles,
+                              iconContainer: {
+                                top: 7,
+                                right: 14,
+                              },
+                            }}
+                            items={this.state.bancos.map(banco => ({ label: banco.nombre_corto, value: "" + banco.id }))}  
+                            placeholder={{ label: 'Selecciona un banco', value: null }}     
+                            onValueChange={(value) => {this.onBancoChange(value,data.item.key)} }
+                            Icon={() => {
+                              return <Icon name="caret-down-outline" size={24} color="gray" />;
+                            }}
+                          />}                
                         </View>
                         
                       </View>    
@@ -997,3 +1037,31 @@ FloatingButtonStyle: {
   //backgroundColor:'black'
 },
 })
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    
+    height:35,
+    paddingLeft:20,
+    fontSize: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
+    marginRight:10
+  },
+  inputAndroid: {
+    fontSize: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    borderColor: 'purple',
+    borderRadius: 8,
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
+
+  },
+});

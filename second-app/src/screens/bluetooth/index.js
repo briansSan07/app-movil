@@ -1,6 +1,5 @@
 import React, { Component} from "react";
 import { Text, View, ActivityIndicator, StyleSheet, Platform, Dimensions, SafeAreaView } from "react-native";
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 const deviceHeight = Dimensions.get("window").height;
 import Constants from 'expo-constants';

@@ -2,6 +2,7 @@ import 'react-native-gesture-handler';
 import React, { Component} from "react";
 import { Button, Text,  Dimensions, Platform,  View, ActivityIndicator, TouchableOpacity, StyleSheet, TextInput, SafeAreaView } from "react-native";
 import {Picker} from '@react-native-picker/picker';
+import RNPickerSelect from 'react-native-picker-select';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -58,7 +59,7 @@ this.origen = route.params.origen;
       busquedaConcluida:false,      
 
       clienteSelected:null,
-      estadosArray: (global.estados) ? [{nombre:"Ver por estado",id_estado:"0"},...global.estados] : [],
+      estadosArray: Platform.OS === 'ios' ?  ((global.estados) ? [...global.estados] : []) : ((global.estados) ? [{nombre:"Ver por estado",id_estado:"0"},...global.estados] : []),
       estado:(global.estados) ? global.estados : "0"
 
     };
@@ -95,6 +96,7 @@ this.origen = route.params.origen;
   
 
   consultarEstados(){
+    
     if (global.estados == null) {
       catalogosModel.consultarEstados()
       .then((result) => {
@@ -113,7 +115,9 @@ this.origen = route.params.origen;
         console.log('error al consultarEstados: ', error.message);
       });
     }
-  }
+    }
+    
+  
 
 
 
@@ -297,6 +301,8 @@ this.origen = route.params.origen;
 
     
     filtrarClienteEstado(estado){
+      
+        
       console.log("filtrarClienteEstado: " , {estado});
       this.setState({isLoading:true}, () => {
 
@@ -328,6 +334,8 @@ this.origen = route.params.origen;
 
       });
     }
+    
+    
 
 
   findPalabraClave (buscando, origenBusqueda) {
@@ -395,37 +403,69 @@ this.origen = route.params.origen;
         }
         {
           !buscadorActivo &&
-          <View style={{flex: 8,alignContent:"center", paddingTop: 10, paddingBottom: 5}}>
+          <View style={{flex: 8,alignContent:"center", paddingTop: 12, paddingBottom: 5}}>
             <Text style={globalStyles.headerTitle}>
             {this.state.origen == "MENU" && "Clientes"}
             {this.state.origen == "VENTA" && "Agregar cliente"}            
             </Text>
-            <View style={{flex:1,flexDirection:"row", paddingBottom: 0, borderWidth:1, justifyContent: 'center', alignSelf:'stretch',
-                          borderLeftColor:"#000000",borderBottomColor:"#000000",
-                          borderTopColor:"#000000",borderRightColor:"#000000", 
-                          alignItems: 'center', borderRadius:20 }}>
-
+            {Platform.OS === 'android' ? <View style={{ flex:1,flexDirection:"row", paddingTop:0, paddingBottom: 0, borderWidth:1, justifyContent: 'center', alignSelf:'stretch',
+                                borderLeftColor:"#000000",borderBottomColor:"#000000",
+                                borderTopColor:"#000000",borderRightColor:"#000000", 
+                                alignItems: 'center', borderRadius:20}}>
+                            
                               <Picker
                                 
                                 key={'edo'}
                                 mode="dropdown"
                                 
-                                placeholder="Ver por estado"
-                                style={{ width:225,paddingTop:0}} 
+                               
+                                style={{ width:225}} 
                                 selectedValue={ this.state.estado}
                                 onValueChange={(value) => {this.filtrarClienteEstado(value)} }
-                              >
-                                
+                              > 
                                 {
                                   this.state.estadosArray.map((estado) => { 
                                     return <Picker.Item label={estado.nombre} value={""+estado.id_estado} key={"pi_"+estado.id_estado} /> 
                                 })
                                 }
                               </Picker>
+                              </View>
+                              
+                            : 
+                            <View style={{flex:1, flexDirection:'row'}}>
+                            <RNPickerSelect
+                            darkTheme={true}
+                            style={{
+                              ...pickerSelectStyles,
+                              iconContainer: {
+                                top: 7,
+                                right: 14,
+                              },
+                            }}                              
+                            items={this.state.estadosArray.map(estado => ({
+                              label: estado.nombre,
+                              value: "" + estado.id_estado
+                              
+                            }))}
+                            placeholder={{ label: 'Ver por estado', value: null }}     
+                            onValueChange={(value) => {this.filtrarClienteEstado(value)} }
+                            Icon={() => {
+                              return <Icon name="caret-down-outline" size={24} color="gray" />;
+                            }}
+                          />
+                          </View>
+                          }
             </View>                              
 
 
-          </View>
+
+
+            
+
+
+
+
+
         }
 
           <View style={{flex: 3, alignItems: 'flex-end', paddingRight:18, flexDirection:'row', justifyContent:'flex-end'}}>
@@ -442,11 +482,7 @@ this.origen = route.params.origen;
               }            
             </TouchableOpacity>
 
-            {this.state.origen == "MENU" && 
-              <TouchableOpacity>
-                <Icon name="person-add" style={globalStyles.headerButton}/>
-              </TouchableOpacity>
-            }
+          
 
           </View>          
         </View>
@@ -636,3 +672,31 @@ const globalStyles = StyleSheet.create({
     },
   }
 )
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    width: 220,
+    height:35,
+    paddingLeft:20,
+    fontSize: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
+    marginRight:10
+  },
+  inputAndroid: {
+    fontSize: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    borderColor: 'purple',
+    borderRadius: 8,
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
+
+  },
+});

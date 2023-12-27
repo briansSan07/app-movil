@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { ImageBackground, StyleSheet, Image, View, Linking,Dimensions,SafeAreaView, TouchableOpacity, 
+import { StyleSheet, Image, View, Linking,Dimensions,SafeAreaView, TouchableOpacity, 
   KeyboardAvoidingView, TextInput,ActivityIndicator} from "react-native";
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;

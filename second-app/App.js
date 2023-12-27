@@ -207,13 +207,12 @@ export default class App extends React.Component {
   async componentDidMount() {
 
     this.inicializarApp();
-    this.solicitarPermisoUbicacion();
-
+    
     if (Platform.OS === 'android') {
+      this.solicitarPermisoUbicacion();
       await this.requestBluetoothPermissionAndroid();
     }
-
-    
+   
   }
 
   Rutas() {

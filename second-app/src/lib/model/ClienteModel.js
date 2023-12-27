@@ -21,7 +21,7 @@ class ClienteModel  {
       let transactionResult = {};
       localStorage.getConnection().transaction(tx => {
         tx.executeSql(
-          `SELECT idCliente as key,idCliente,clave,nombre_comercial,razon_social,rfc,telefono,celular,latitude,longitude,id_estado,nivel_socioeconomico_id,
+          `SELECT idCliente as key,idCliente,clave,nombre_comercial,razon_social,rfc,telefono,celular,id_estado,nivel_socioeconomico_id,
                   has_credito,dias_credito,importe_credito,saldo_favor,
                   id_status
              FROM Clientes
@@ -61,7 +61,7 @@ class ClienteModel  {
       let transactionResult = {};
       localStorage.getConnection().transaction(tx => {
         tx.executeSql(
-          `SELECT idCliente as key,idCliente,clave,nombre_comercial,razon_social,rfc,telefono,celular,latitude,longitude,nivel_socioeconomico_id,
+          `SELECT idCliente as key,idCliente,clave,nombre_comercial,razon_social,rfc,telefono,celular,nivel_socioeconomico_id,
                   has_credito,dias_credito,importe_credito,saldo_favor,
                   id_status
              FROM Clientes
@@ -102,7 +102,7 @@ class ClienteModel  {
       let transactionResult = {};
       localStorage.getConnection().transaction(tx => {
         tx.executeSql(
-          `SELECT idCliente as key,idCliente,clave , nombre_comercial,razon_social,rfc,telefono,celular,latitude,longitude,nivel_socioeconomico_id,
+          `SELECT idCliente as key,idCliente,clave , nombre_comercial,razon_social,rfc,telefono,celular,nivel_socioeconomico_id,
                   has_credito,dias_credito,importe_credito,saldo_favor,
                   id_status
              FROM Clientes

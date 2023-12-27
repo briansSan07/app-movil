@@ -1,11 +1,9 @@
 import React, { Component} from "react";
 import { Updates } from 'expo';
-import { View, Switch, Image, FlatList, StyleSheet, Dimensions, Text, ActivityIndicator, TextInput, Modal } from "react-native";
+import { View, Switch, Image, FlatList, StyleSheet, Dimensions, Text, ActivityIndicator, TextInput, Modal, Platform } from "react-native";
 import { ScrollView } from 'react-native-virtualized-view'
-import ImageModal, {ImageDetail} from "react-native-image-modal";
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
-import ImageView from "react-native-image-viewing";
 import { Button } from "@rneui/themed";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -1012,21 +1010,22 @@ render() {
       <View  style={{ 
     paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
     backgroundColor:'#f6f6f6',
+    flex:0,
     color:'#000000',
     marginBottom: Platform.OS === 'ios' ? 0 : 0,
     height:90,
     paddingTop: 30,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start', }}>
-        <View style={{flex: 0}}>
+    }}>
+        
                               <TouchableOpacity
                                 style={{flex: 0,
                                   padding: 10,}}
                                 onPress={() => this.props.navigation.openDrawer()}>
                                 <Icon name="menu" style={{color:'#2496bc', fontSize: 30}} />
                               </TouchableOpacity>
-        </View>
+        
 
             
               
@@ -1049,7 +1048,7 @@ render() {
                   <Text style={{ fontSize: 10, color: 'black', marginLeft: 10 }}>Mínimo 3 caracteres.. Da enter para iniciar búsqueda</Text>
                 </View>
     ) : (
-                <View style={{ flex: 3, paddingLeft: 25 }}>
+                <View style={{ flex: 3, paddingLeft: 25, paddingTop: Platform.OS === 'ios' ? 14 : 0 }}>
                   <Text style={{color:'#000000',
                                 textAlign:'center',
                                 fontWeight: 'bold'}}>Nueva Venta</Text>

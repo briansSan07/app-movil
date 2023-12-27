@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
-import {PermissionsAndroid, SafeAreaView} from 'react-native';
+import {SafeAreaView} from 'react-native';
 import { StyleSheet, View, ActivityIndicator, Platform, Dimensions } from "react-native";
 import { Button, Text } from '@rneui/themed';
-import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
-import Icon from 'react-native-vector-icons/Ionicons';
 const SyncronizeTransaction = require ('../../../lib/syncronization/SyncronizeTransaction');
 const syncronizeTransaction = new SyncronizeTransaction();
 const AppConfiguration = require ('../../../lib/model/AppConfiguration');
@@ -97,6 +94,17 @@ async imprimir(){
 
 //  console.log("consultarVentaById - THEN: " , result.venta);
   const venta = result.venta;
+
+
+  var texto = global.domicilio_comercial;
+  var longitudTotal = texto.length;
+
+  
+  var mitad = Math.floor(longitudTotal / 2);
+
+  var inicio = texto.slice(0, mitad);
+  var final = texto.slice(mitad);
+
   
    try{
 
@@ -130,16 +138,23 @@ return;
   await BluetoothEscposPrinter.printText(global.nombre_comercial  + "\r\n", {
   },);
 
-  await BluetoothEscposPrinter.printText(global.domicilio_comercial + "\r\n", {
+  await BluetoothEscposPrinter.printText(inicio, {
     
     fonttype:1,
+    fontType:1,
+    widthtimes:0,
+  },);
 
-    widthtimes:0
+  await BluetoothEscposPrinter.printText(final, {
+    
+    fonttype:1,
+    fontType:1,
+    widthtimes:0,
   },);
 
   await BluetoothEscposPrinter.printText(global.telefono + "\r\n", {
     fonttype:1,
-    widthtimes:0
+    widthtimes:0,
   },);
 
   await BluetoothEscposPrinter.printText("Venta: " + venta.folio_venta + "\r\n", {});
@@ -163,7 +178,7 @@ return;
     ["CANT.",'DESCRIPCION','PRECIO','IMPORTE'],{
       fonttype:1,
 fontType:1,
-      widthtimes:0  
+      widthtimes:0,
     });
 
       
@@ -189,7 +204,7 @@ fontType:1,
         ["" + producto.cantidad, producto.codigo + " " + producto.nombre , "" + precio.toFixed(2) , "" + importe.toFixed(2) ],{
           fonttype:1,
 fontType:1,
-          widthtimes:0  
+          widthtimes:0,  
         });
   
     }
@@ -201,18 +216,18 @@ fontType:1,
 
       await  BluetoothEscposPrinter.printText("SUBTOTAL: $ " + venta.subtotal.toFixed(2) +" \n\r",{
         fonttype:0,
-        widthtimes:0  
+        widthtimes:0, 
       });
       if(venta.ieps > 0){
         await  BluetoothEscposPrinter.printText("I.E.P.S.: $ " + venta.ieps.toFixed(2) +" \n\r",{
           fonttype:0,
-          widthtimes:0  
+          widthtimes:0, 
         });      
   
       }
       await  BluetoothEscposPrinter.printText("I.V.A.: $ " + venta.iva.toFixed(2) +" \n\r",{
         fonttype:0,
-        widthtimes:0  
+        widthtimes:0, 
       });      
     }
 
@@ -229,29 +244,29 @@ fontType:1,
         await  BluetoothEscposPrinter.printText("Metodo de pago: Efectivo \n\r",{
           fonttype:1,
 fontType:1,
-          widthtimes:0  
+          widthtimes:0,  
         });
         await  BluetoothEscposPrinter.printText("Efectivo: " + pago.efectivo.toFixed(2) + " \n\r",{
           fonttype:1,
 fontType:1,
-          widthtimes:0  
+          widthtimes:0,  
         });
         await  BluetoothEscposPrinter.printText("Cambio: "+ Math.abs(pago.cambio).toFixed(2) +" \n\r",{
           fonttype:1,
 fontType:1,
-          widthtimes:0  
+          widthtimes:0,  
         });
 
       } else if(pago.id_metodo_pago == '2' || pago.id_metodo_pago == '3'){ // tarjeta
         await  BluetoothEscposPrinter.printText("Metodo de pago: Tarjeta \n\r",{
           fonttype:1,
 fontType:1,
-          widthtimes:0  
+          widthtimes:0,  
         });
         await  BluetoothEscposPrinter.printText("Importe: " + pago.importe.toFixed(2) + " \n\r",{
           fonttype:1,
 fontType:1,
-          widthtimes:0  
+          widthtimes:0,  
         });
         let autorizacion = "";
         if (pago.autorizacion != null){
@@ -261,18 +276,18 @@ fontType:1,
         await  BluetoothEscposPrinter.printText("Autorización: " + autorizacion + " \n\r",{
           fonttype:1,
 fontType:1,
-          widthtimes:0  
+          widthtimes:0,  
         });
       } else if(pago.id_metodo_pago == '4'){ // cheque
         await  BluetoothEscposPrinter.printText("Metodo de pago: Cheque \n\r",{
           fonttype:1,
 fontType:1,
-          widthtimes:0  
+          widthtimes:0,  
         });
         await  BluetoothEscposPrinter.printText("Importe: " + pago.importe.toFixed(2) + " \n\r",{
           fonttype:1,
 fontType:1,
-          widthtimes:0  
+          widthtimes:0,  
         });
         let autorizacion = "";
         if (pago.autorizacion != null){
@@ -281,18 +296,18 @@ fontType:1,
         await  BluetoothEscposPrinter.printText("No. de cheque: " + autorizacion + " \n\r",{
           fonttype:1,
 fontType:1,
-          widthtimes:0  
+          widthtimes:0,  
         });   
       } else if(pago.id_metodo_pago == '5'){ // crédito
         await  BluetoothEscposPrinter.printText("Metodo de pago: Credito \n\r",{
           fonttype:1,
 fontType:1,
-          widthtimes:0  
+          widthtimes:0,  
         });
         await  BluetoothEscposPrinter.printText("Importe: " + pago.importe.toFixed(2) + " \n\r",{
           fonttype:1,
 fontType:1,
-          widthtimes:0  
+          widthtimes:0,  
         });
         let autorizacion = "";
         if (pago.autorizacion != null){
@@ -302,14 +317,19 @@ fontType:1,
         await  BluetoothEscposPrinter.printText("Fecha progamada de pago: " + autorizacion + " \n\r\n\r",{
           fonttype:1,
 fontType:1,
-          widthtimes:0  
+          widthtimes:0,  
         });                    
         await BluetoothEscposPrinter.printerAlign(ALIGN.CENTER);
-        await  BluetoothEscposPrinter.printText("Me comprometo a realizar el deposito o transferencia por el importe total de la compra por: $"+pago.importe.toFixed(2) + " en la siguiente fecha acordada: " + autorizacion + ".\n\r\n\r\n\r\n\r",{
+        await  BluetoothEscposPrinter.printText("Me comprometo a realizar el deposito o transferencia por el importe total de la compra por: $"+pago.importe.toFixed(2) ,{
           fonttype:1,
 fontType:1,
-          widthtimes:0  
+          widthtimes:0,  
         });
+        await BluetoothEscposPrinter.printText(" en la siguiente fecha acordada: " + autorizacion + ".\n\r\n\r\n\r\n\r", {
+          fonttype:1,
+          fontType:1,
+          widthtimes:0,  
+          });
         await  BluetoothEscposPrinter.printText("---------------------------------------------\n\r",{});
         await  BluetoothEscposPrinter.printText("Nombre y firma.\n\r",{});
 
@@ -318,12 +338,12 @@ fontType:1,
         await  BluetoothEscposPrinter.printText("Metodo de pago: Transferencia \n\r",{
           fonttype:1,
 fontType:1,
-          widthtimes:0  
+          widthtimes:0,  
         });
         await  BluetoothEscposPrinter.printText("Importe: " + pago.importe.toFixed(2) + " \n\r",{
           fonttype:1,
 fontType:1,
-          widthtimes:0  
+          widthtimes:0,  
         });
 
         let autorizacion = "";
@@ -337,11 +357,16 @@ fontType:1,
           widthtimes:0  
         });                    
         await BluetoothEscposPrinter.printerAlign(ALIGN.CENTER);
-        await  BluetoothEscposPrinter.printText("Me comprometo a realizar el deposito o transferencia por el importe total de la compra por: $"+pago.importe.toFixed(2) + " en la siguiente fecha acordada: " + autorizacion + ".\n\r\n\r\n\r\n\r",{
+        await  BluetoothEscposPrinter.printText("Me comprometo a realizar el deposito o transferencia por el importe total de la compra por: $"+pago.importe.toFixed(2),{
           fonttype:1,
 fontType:1,
-          widthtimes:0  
+          widthtimes:0,  
         });
+        await BluetoothEscposPrinter.printText(" en la siguiente fecha acordada: " + autorizacion + ".\n\r\n\r\n\r\n\r", {
+          fonttype:1,
+          fontType:1,
+          widthtimes:0,  
+          });
         await  BluetoothEscposPrinter.printText("---------------------------------------------\n\r",{});
         await  BluetoothEscposPrinter.printText("Nombre y firma.\n\r",{});
 
@@ -352,7 +377,7 @@ fontType:1,
 
     await  BluetoothEscposPrinter.printText("\n\r\n\r\n\r",{
       fonttype:0,
-      widthtimes:0  
+      widthtimes:0,  
     });
 
      } catch (e) {
@@ -420,26 +445,6 @@ disconnectDevice(){
 
 }
 
-async imprimirTesting(){
-
-  const idVenta = this.state.idVenta;
-
-  const result = await ventaModel.consultarVentaById(idVenta)
-
-  console.log("---> CHECANDO EL OBJETO VEnTA: ",{result});
- try{
-  await BluetoothEscposPrinter.printText("HOLA MUNDO", {},);
-  await BluetoothEscposPrinter.printText("============", {},);
- } catch (e) {
-  alert(e.message || 'ERROR')
-  window.onerror = function(message, line, col, error){
-    console.log("mensaje: ",message," linea: ",line," columna: ",col," error: ",error)
-  }
-  if (e instanceof ReferenceError) {
-    console.log('ReferenceError');
-  }
- }
-}
 
 imprimirTicket(iteracion){
   

@@ -22,7 +22,7 @@ const datas = [
   //  bg: "#477EEA",
   // types: "11"
   },
-  {
+  /*{
     name: "BluetoothList",
     route: "BluetoothList",
     icon: "cart",
@@ -33,7 +33,7 @@ const datas = [
     route: "Prueba",
     icon: "person",
     key: "4",
-  }
+  }*/
 ];
 
 

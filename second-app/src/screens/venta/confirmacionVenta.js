@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Text, View, Toast, Switch, Dimensions, StyleSheet, TouchableOpacity, 
-  FlatList, Image, TextInput,SafeAreaView, Modal } from "react-native";
+  FlatList, Image, TextInput,SafeAreaView, Modal, Platform } from "react-native";
 import {NumericFormat} from 'react-number-format';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Constants from 'expo-constants';
@@ -41,9 +41,10 @@ class ConfirmacionVenta extends Component {
   }
   
   componentDidMount(){
+
     this.calculandoCarrito();
     this.setState({    isLoading:false    });
-
+    
   }
 
   onChangeTBox(producto, cantidad){
@@ -221,7 +222,7 @@ pasarDatos(){
                                 <Icon name="arrow-back" style={{color:'#2496bc', fontSize: 30}} />
                               </TouchableOpacity>
         </View>
-          <View style={{flex: 1, paddingLeft: 20,flexDirection:'column'}}>
+          <View style={{flex: 1, paddingLeft: 20,flexDirection:'column', paddingTop: Platform.OS === 'ios' ? 15 : 0}}>
           <Text style={globalStyles.headerTitle} >Detalle de la venta</Text>
           {
            this.state.cliente != null && (
