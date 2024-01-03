@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const deviceHeight = Dimensions.get("window").height;
 import Constants from 'expo-constants';
 import ScrollView from "react-native-virtualized-view";
-
+import { DrawerActions } from "@react-navigation/native";
 import {BluetoothManager, BluetoothEscposPrinter} from "tp-react-native-bluetooth-printer";
 
 const Separator = () => <View style={styles.separator} />;
@@ -110,7 +110,7 @@ export default class Prueba extends Component{
           <View style={{flex:3}}>
           <TouchableOpacity style={{paddingLeft:10}}
             
-            onPress={() => this.props.navigation.openDrawer()}>
+            onPress={() => this.props.navigation.dispatch(DrawerActions.openDrawer())}>
             <Icon name="menu" style={{color:'#2496bc', fontSize: 30}} />
           </TouchableOpacity>
           </View>

@@ -112,7 +112,7 @@ console.log("usuario logeado: ",{result});
 
   async componentDidMount() {
 
-    LogBox.ignoreWarnings([ 'VirtualizedLists should never be nested inside plain ScrollViews with the same orientation - use another VirtualizedList-backed container instead', ]);
+  //  LogBox.ignoreWarnings([ 'VirtualizedLists should never be nested inside plain ScrollViews with the same orientation - use another VirtualizedList-backed container instead', ]);
 
     this.checkAppIsActivated();
 //    CatalogosModel.consultarConfiguracion();
@@ -421,7 +421,7 @@ let sourceId = null;
                             if(this.debug) console.log('ERROR DE LOADKEY!!!', error);
                             this.setState({usuarioValido: false});
                           });
-      
+    
                         }
                         if(from == FROM_ACTIVATION){
                           //logeo remoto

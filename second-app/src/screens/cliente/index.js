@@ -5,7 +5,7 @@ import {Picker} from '@react-native-picker/picker';
 import RNPickerSelect from 'react-native-picker-select';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
-
+import { DrawerActions } from '@react-navigation/native';
 
 const deviceHeight = Dimensions.get("window").height;
 import Constants from 'expo-constants';
@@ -358,6 +358,7 @@ this.origen = route.params.origen;
   
   render() {
 
+    
     const buscadorActivo = this.state.buscadorActivo;
     return (
       <View style={styles.container}>
@@ -367,7 +368,7 @@ this.origen = route.params.origen;
           <View style={{flex: 3,}}>
             <TouchableOpacity style={{paddingLeft:10}}
               
-              onPress={() => this.props.navigation.openDrawer()}>
+              onPress={() => this.props.navigation.dispatch(DrawerActions.openDrawer())}>
               <Icon name="menu" style={{color:'#2496bc', fontSize: 30}} />
             </TouchableOpacity>
           </View>
@@ -375,7 +376,7 @@ this.origen = route.params.origen;
         {(this.state.origen=="VENTA" && 
         
         <View style={{flex:3, paddingLeft:10}}>
-            <TouchableOpacity style={{flex:0}}onPress={() => this.props.navigation.goBack()}>
+            <TouchableOpacity style={{flex:0}} onPress={() => this.props.navigation.goBack()}>
               <Icon name="arrow-back"  style={globalStyles.headerButton} />
             </TouchableOpacity>
           </View>

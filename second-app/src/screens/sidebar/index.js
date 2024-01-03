@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { DrawerActions } from '@react-navigation/native'
 import { Image,SafeAreaView, FlatList, Text, View, Dimensions, Platform, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
 const windowHeight = Dimensions.get("window").height;
@@ -62,7 +63,7 @@ export default class SideBar extends Component {
 
     return (
         <View
-          bounce={false}
+          
           style={{ flex: 1, backgroundColor: "#fff", top: -1 }}
         >
           <SafeAreaView style={{flex: 1}}>
@@ -81,7 +82,7 @@ export default class SideBar extends Component {
                 flexDirection:'row',
                 marginBottom: 20}}
                 onPress={() => {
-                  this.props.navigation.closeDrawer();
+                  this.props.navigation.dispatch(DrawerActions.closeDrawer());
                   console.log("****** this.state.uniqueValue: " , global.ventaUnique);
                   this.props.navigation.navigate(item.route , {uniqueValue:global.ventaUnique,origen:"MENU"});
                   this.nextAction();                  

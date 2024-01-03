@@ -6,18 +6,20 @@ const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
 import { Button } from "@rneui/themed";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+import { DrawerActions } from "@react-navigation/native";
 const Stack = createNativeStackNavigator();
 
 import Constants from 'expo-constants';
 import {NumericFormat} from 'react-number-format';
 import Icon from 'react-native-vector-icons/Ionicons';
 
+const Login = require('./../login/index')
 const CatalogosModel = require ('../../lib/model/CatalogosModel');
 const SyncronizeCatalogs = require ('./../../lib/syncronization/SyncronizeCatalogs');
 const ProductoModel = require ('../../lib/model/ProductoModel');
 const ClienteModel = require ('../../lib/model/ClienteModel');
 
+const login = new Login();
 const catalogosModel = new CatalogosModel();
 const syncronizeCatalogs = new SyncronizeCatalogs();
 const productoModel = new ProductoModel();
@@ -109,6 +111,9 @@ if (process.env.NODE_ENV !== 'production') {
   }
 
   componentDidMount(){
+
+   
+
     console.log("componentDidMount");
     this.consultaCategoria();
     this.consultaNivelSocioeconomicoPublico();
@@ -1022,7 +1027,7 @@ render() {
                               <TouchableOpacity
                                 style={{flex: 0,
                                   padding: 10,}}
-                                onPress={() => this.props.navigation.openDrawer()}>
+                                onPress={() => this.props.navigation.dispatch(DrawerActions.openDrawer())}>
                                 <Icon name="menu" style={{color:'#2496bc', fontSize: 30}} />
                               </TouchableOpacity>
         

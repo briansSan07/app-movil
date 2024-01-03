@@ -166,7 +166,7 @@ _performSyncronization(){
   }    
 
   sincronizarNuevasVentas(ventasList){
-
+console.log("Aqui sie ntra");
     return new Promise((resolve, reject) => {      
       const ventasPromises = [];
 
@@ -195,7 +195,7 @@ _performSyncronization(){
       ventaModel.consultarVentaById(idVenta)
       .then((result) => {
         console.log("VentaModel.consultarVentaById - THEN: " , result.venta.id);
-
+        console.log("no es nueva");
         this.loadVentaTransactionStatus(result.venta)
         .then((success) => {
           console.log('En this.verificarAplicacionVenta exitosa...', success);
@@ -220,7 +220,7 @@ _performSyncronization(){
       ventaModel.consultarVentaById(idVenta)
       .then((result) => {
         console.log("VentaModel.consultarVentaById - THEN: " , result.venta.id);
-
+        console.log("Es nuevo");
         this.nuevaVentaTransaction(result.venta)
         .then((success) => {
           console.log('En this.nuevaVentaTransaction exitosa...');
@@ -298,7 +298,7 @@ _performSyncronization(){
         "listaVentas":null
     }
 
-      concradServer.saveTransaction("COBRO_VENTA",global.sourceId,venta.id,dateUtils.fechaFormat(new Date(),'T'),data)
+      concradServer.saveTransaction("COBRO_VENTA",global.sourceId,venta.id,venta.fecha,data)
       .then(response => {
         
         if(this.debug) console.log("saveTransaction venta: " + ( venta.id ) + " success: " , response);
@@ -392,10 +392,10 @@ _performSyncronization(){
 
   loadVentaTransactionStatus(venta){
     
-//    console.log("**** loadVentaTransactionStatus");
+    console.log("**** loadVentaTransactionStatus");
     return new Promise((resolve, reject) => {      
 
-      let fecha= dateUtils.fechaFormat(new Date(),'T');
+      let fecha= venta.fecha;
       
 
       concradServer.getTransactionStatus("COBRO_VENTA",     global.sourceId,       venta.id, fecha, venta.id_sync_remote )

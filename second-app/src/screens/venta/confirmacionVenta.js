@@ -32,6 +32,9 @@ class ConfirmacionVenta extends Component {
     ieps:0 , 
     suma:0 , 
 
+   
+
+
     isLoading:true, 
     showToast: false,
     displayMetodoPago:false,

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {SafeAreaView} from 'react-native';
 import { StyleSheet, View, ActivityIndicator, Platform, Dimensions } from "react-native";
 import { Button, Text } from '@rneui/themed';
+import { CommonActions } from '@react-navigation/native';
 const SyncronizeTransaction = require ('../../../lib/syncronization/SyncronizeTransaction');
 const syncronizeTransaction = new SyncronizeTransaction();
 const AppConfiguration = require ('../../../lib/model/AppConfiguration');
@@ -78,7 +79,10 @@ class Pagada extends React.Component {
 
 nuevaVenta(){
 
-  this.props.navigation.navigate("Venta",{uniqueValue:global.ventaUnique})
+  this.props.navigation.navigate("Rutas",{uniqueValue:global.ventaUnique});
+  this.props.navigation.dispatch(CommonActions.reset({
+    index:'1', routes: [{name: 'Rutas'}],
+  }));
   global.ventaUnique = global.ventaUnique + 1;
 
 }

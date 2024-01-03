@@ -43,7 +43,8 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       isReady: false,
-      isActivated:false
+      isActivated:false,
+      usuario: global.usuario,
     };
     this.debug = true;
   }
@@ -206,6 +207,9 @@ export default class App extends React.Component {
 
   async componentDidMount() {
 
+
+    console.log("usuario", global.usuario)
+
     this.inicializarApp();
     
     if (Platform.OS === 'android') {
@@ -216,27 +220,49 @@ export default class App extends React.Component {
   }
 
   Rutas() {
+    if (global.usuario=== undefined) {
+      console.log("--------------------LOGIN")
     return(
-        <Drawer.Navigator backBehavior="history"
-        initialRouteName = "Login"
-        screenOptions={{
-              activeTintColor: "#e91e63"
-        }}
-        drawerContent={(props) =><SideBar {...props} />}
-          >
-          <Drawer.Screen name="Cliente" component={Cliente} options={{headerShown: false}} />
-          <Drawer.Screen name="Login" component={Login} 
-                                      options={{
-                                        headerShown: false, hidden: true, swipeEnabled: false
-                                              }}
-                                               
-                                         />
-          <Drawer.Screen name="Venta" component={Venta} options={{headerShown: false}} />
-          <Drawer.Screen name="BluetoothList" component={BluetoothList} options={{headerShown: false}} />
-          <Drawer.Screen name="Prueba" component={Prueba} options={{headerShown: false}}/>
+      
+      <Drawer.Navigator backBehavior="history" 
+      
+      screenOptions={{
+            activeTintColor: "#e91e63"
+      }}
+      drawerContent={(props) =><SideBar {...props} />}
+        >
+           <Drawer.Screen name="Login" component={Login} options={{headerShown: false, swipeEnabled: false}}/>
+          <Drawer.Screen  name="Venta" component={Venta} options={{headerShown: false}} />
          
-        </Drawer.Navigator>
+          
+          
+        <Drawer.Screen name="Cliente" component={Cliente} options={{headerShown: false}}/>
+        
+       
+       
+      </Drawer.Navigator>
+      
     )
+    }
+    else{
+      console.log("--------------------VENTA")
+      return(
+      <Drawer.Navigator backBehavior="history" 
+      
+      screenOptions={{
+            activeTintColor: "#e91e63"
+      }}
+      drawerContent={(props) =><SideBar {...props} />}
+        >
+        
+        <Drawer.Screen  name="Venta" component={Venta} options={{headerShown: false}} />
+        <Drawer.Screen name="Cliente" component={Cliente} options={{headerShown: false}}/>
+        <Drawer.Screen name="Pagada" component={Pagada} options={{headerShown: false}}/>
+      
+       
+      </Drawer.Navigator>
+      )
+    }
   }
   
 
@@ -244,23 +270,25 @@ export default class App extends React.Component {
 
     return(
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator
+        
+      >
       <Stack.Screen
       name="Rutas"
       component={this.Rutas}
       options={{ headerShown: false, title: ''
       }}
       />
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="Cliente" component={Cliente} options={{headerShown: false}}/>
-      <Stack.Screen name="ClienteDetalle" component={ClienteDetalle} options={{headerShown: false}}/>
       <Stack.Screen name="Venta" component={Venta} options={{headerShown: false}}/>
+      <Stack.Screen name="Cliente"  component={Cliente} options={{headerShown: false}}/>
+      <Stack.Screen name="ClienteDetalle" component={ClienteDetalle} options={{headerShown: false}}/>
       <Stack.Screen name="ConfirmacionVenta" component={ConfirmacionVenta} options={{headerShown: false}} />
       <Stack.Screen name="Pagando" component={Pagando} options={{headerShown: false}} />
       <Stack.Screen name="Pagada" component={Pagada} options={{headerShown: false}}/>
       <Stack.Screen name="BluetoothList" component={BluetoothList} options={{headerShown: false}} />
       <Stack.Screen name="VideoIndex" component={VideoIndex} options={{title: '¿Qué es Concrad?'}} />
       <Stack.Screen name="Prueba" component={Prueba} options={{headerShown: false}}/>
+      
       
       
     </Stack.Navigator>
