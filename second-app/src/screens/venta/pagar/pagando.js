@@ -20,6 +20,8 @@ const localStorage = new LocalStorage();
 
 import  DateTimePicker from 'react-native-ui-datepicker'
 import dayjs from "dayjs";
+import 'dayjs/locale/es-mx';
+import { color } from "@rneui/themed/dist/config";
 const VentaModel = require ("../../../lib/model/VentaModel");
 const CatalogosModel = require ("../../../lib/model/CatalogosModel");
 const ventaModel = new VentaModel();
@@ -34,6 +36,7 @@ class Pagando extends Component {
     
     global.flatListIndex = 0;
     this.state = {
+      fechaSeteada: false,
       fechaSeleccionada: new Date(),
       carrito: this.props.route.params.carrito,
       metodosPago: [],
@@ -106,7 +109,7 @@ console.log("agregarOtroPago");
   guardarVenta(){
 
     // se ha capturado el total del pago
-    if(this.state.cambio <= 0){
+    if(this.state.cambio <= 0 & this.state.fechaSeteada == true){
       global.onSavingSale = true;
 
 console.log("-GUARDARVENTA- : " ,{
@@ -146,10 +149,8 @@ console.log("-GUARDARVENTA- : " ,{
       })
       .catch((error) => {
 
-        console.log("168");
         console.log('error al salvarVenta: ', error.message);
         global.onSavingSale = false;
-        console.log("171");
 
 //        this.setState({usuarioValido: false});
 
@@ -208,7 +209,7 @@ console.log("-GUARDARVENTA- : " ,{
   }
 
   componentDidMount(){
-
+    this.setState({fechaSeteada:false});
     console.log("**** componentDidMount");
     const date = moment().add(7,'days');
     this.setState({maxDate:date.toDate()});
@@ -280,6 +281,7 @@ onBancoChange(value, key) {
   const pagos = this.state.pagos;
   const index = pagos.findIndex( pago => pago.key == key);
   pagos[index].idBanco = value;
+  this.setState({fechaSeteada:true}),
   this.setState({pagos:pagos},() => this.calcularTotales());
 }
 
@@ -295,6 +297,7 @@ onImporteEfectivoTBox(cantidad,key){
 //    pagos[index].importe = "";
     pagos[index].efectivo = "";
   }
+  this.setState({fechaSeteada:true}),
   this.setState({pagos:pagos},() => {this.calcularTotales()})
 }
 
@@ -319,6 +322,16 @@ onAutorizacionTBox(autorizacion,key){
   this.setState({pagos:pagos})
 }
 
+onAutorizacionTBoxDoble(autorizacion,key){
+  console.log("onAutorizacionTBoxDoble: ",{autorizacion, key});
+  const pagos = this.state.pagos;
+  const index = pagos.findIndex( pago => pago.key == key);
+  pagos[index].autorizacion = autorizacion;
+  this.setState({fechaSeteada:true}),
+  this.setState({pagos:pagos})
+
+}
+
 onFechaTBox (fecha,key) {
   
   console.log("onFechaTBox: ",{fecha, key});
@@ -327,8 +340,8 @@ onFechaTBox (fecha,key) {
   console.log("fechaFormat: ",fechaFormat);
   const index = pagos.findIndex( pago => pago.key == key);
   pagos[index].autorizacion = fechaFormat;
-  this.setState({pagos:pagos})
-  
+  this.setState({pagos:pagos}),
+  this.setState({fechaSeteada:true})
 }
 
 onFechaCreditoTBox(fecha,key){
@@ -339,8 +352,8 @@ onFechaCreditoTBox(fecha,key){
   console.log("fechaFormat: ",fechaFormat);
   const index = pagos.findIndex( pago => pago.key == key);
   pagos[index].autorizacion = fechaFormat;
-  this.setState({pagos:pagos})
-
+  this.setState({pagos:pagos}),
+  this.setState({fechaSeteada:true})
 }
 
 
@@ -438,13 +451,12 @@ onSwipeValueChange = (swipeData) => {
 
       <View style={{flex:1}}>
         <View  style={{ 
-          paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
+          paddingTop: Platform.OS === 'ios' ? 0 : 0, 
           backgroundColor:'#f6f6f6',
           flex: 0,
           color:'#000000',
           marginBottom: Platform.OS === 'ios' ? 0 : 0,
-          height:90,
-          paddingTop: 30,
+          height:65,
           flexDirection: 'row',
           alignItems: 'center',
           }}>
@@ -584,7 +596,7 @@ onSwipeValueChange = (swipeData) => {
                             placeholderTextColor="#000000"
                             style={{ width:100 ,height: 30, borderColor: "gray", borderWidth: 1,  backgroundColor: "#f3f3f3"}}
                             value={data.item.autorizacion}
-                            onChangeText={(autorizacion) => this.onAutorizacionTBox(autorizacion,data.item.key)}
+                            onChangeText={(autorizacion) => this.onAutorizacionTBoxDoble(autorizacion,data.item.key)}
                             keyboardType={"numeric"}
                           /> 
                         </View>
@@ -690,6 +702,8 @@ onSwipeValueChange = (swipeData) => {
                       )}
                       {
                       data.item.formaPago == "5" && (
+                        
+                    
                       <View style={{paddingTop:3,paddingBottom:3,backgroundColor:"#ffffff"}}>
                       
                         <View style={{paddingTop:3,paddingBottom:3}}>   
@@ -705,13 +719,12 @@ onSwipeValueChange = (swipeData) => {
                           minimumDate={this.state.fechaSeleccionada}
                           maximumDate={this.state.maxCreditoDate}
                           format="dd-mm-yyyy"
-
-                          locale={'es'}
-                        
-                          
-                          placeHolderText="Selecciona una fecha"
-                          textStyle={{ color: "green" }}
-                          placeHolderTextStyle={{ color: "#bbbbbb" }}
+                          todayContainerStyle={{
+                            borderWidth: 0,  
+                          }}
+                          todayTextStyle={{color:"black"}}
+                          locale={'es-mx'}
+                          placeHolderTextStyle={{ color: "#000" }}
                           onValueChange={(fecha) => this.onFechaCreditoTBox(fecha,data.item.key)}
                          
                         />
@@ -749,13 +762,12 @@ onSwipeValueChange = (swipeData) => {
                           minimumDate={this.state.fechaSeleccionada}
                           maximumDate={this.state.maxDate}
                           format="dd-mm-yyyy"
-
-                          locale={"es"}
-                        
-                          
-                          placeHolderText="Selecciona una fecha"
-                          textStyle={{ color: "green" }}
-                          placeHolderTextStyle={{ color: "#bbbbbb" }}
+                          locale={"es-mx"}
+                          todayContainerStyle={{
+                            borderWidth: 0,  
+                          }}
+                          todayTextStyle={{color:"black"}}
+                          placeHolderTextStyle={{ color: "#000" }}
                           onValueChange={(fecha) => this.onFechaTBox(fecha,data.item.key)}
                          
                         />

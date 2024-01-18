@@ -23,7 +23,8 @@ const datas = [
   //  bg: "#477EEA",
   // types: "11"
   },
-  /*{
+  /*
+  {
     name: "BluetoothList",
     route: "BluetoothList",
     icon: "cart",

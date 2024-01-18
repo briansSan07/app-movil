@@ -40,12 +40,11 @@ const {route} = this.props;
 this.origen = route.params.origen;
 
 
-   console.log("origen:" , this.origen);
 
     if(this.origen == undefined){
       this.origen="MENU";
     }
-    console.log("origen:" , this.origen);
+
  
     this.state = {
       isLoading: true, 
@@ -633,16 +632,16 @@ const globalStyles = StyleSheet.create({
       marginBottom: 15
     },
     header: {
-      paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
+      paddingTop: Platform.OS === 'ios' ? 0 : 0 , 
       backgroundColor:'#f6f6f6',
       color:'#000000',
       marginBottom: Platform.OS === 'ios' ? 0 : 0,
-      height:90,
+      height:65,
       flexDirection: 'row',
       
       alignItems: 'center',
       justifyContent: 'flex-start', 
-      paddingTop: 35,
+
     },
     headerRight: {
       paddingTop: Platform.OS === 'ios' ? 0 : 10

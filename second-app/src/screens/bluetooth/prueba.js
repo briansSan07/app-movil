@@ -15,27 +15,27 @@ import isObject from 'isobject';
 const paired = [
     {
       address: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-      name: 'First Item',
+      name: '',
     },
     {
       address: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-      name: 'Second Item',
+      name: '',
     },
     {
       address: '58694a0f-3da1-471f-bd96-145571e29d72',
-      name: 'Third Item',
+      name: '',
     },
     {
         address: 'bd7acbea-c1b1-46c2-aed5-3ad5378974',
-        name: 'First second Item',
+        name: '',
       },
       {
         address: '3ac68afc-c605-48d3-a4f8-fbd91aa9asasa',
-        name: 'Second second Item',
+        name: '',
       },
       {
         address: '58694a0f-3da1-471f-bd96-145571128qw2',
-        name: 'Third second Item',
+        name: '',
       },
   ];
 
@@ -65,7 +65,7 @@ export default class Prueba extends Component{
               },
               {
                 address: '58694a0f-3da1-471f-bd96-145571e29d72',
-                name: 'Third Item',
+                name: '',
               },
               {
                   address: 'bd7acbea-c1b1-46c2-aed5-3ad5378974',
@@ -101,7 +101,16 @@ export default class Prueba extends Component{
     }
 
 
+
     render() {
+      const filteredProductos = filteredProductos;
+      if (Platform.OS =='android'){
+      const filteredProductos = paired.filter((producto) => producto.name); // Filtra los productos con nombre definido
+      return filteredProductos;
+      }
+      
+      const filteredProductos2 = this.state.devicesArray.filter((producto) => producto.name); // Filtra los productos con nombre definido
+
     return(
         <View style={styles.container}>
         <View style={{ ...globalStyles.header, height:110, paddingTop:40 }}>
@@ -152,20 +161,22 @@ export default class Prueba extends Component{
 
         <View style={{flex:1}}>
         {
-            this.state.paired!= null && 
+            this.state.paired!= null && Platform.OS == 'android' &&
 
                             
                     <View style={{flex:1}}>
                 <FlatList 
-                data={this.state.paired}
+                data={filteredProductos}
                 renderItem={(paired) =>
-                    <View style={{flex:1, flexDirection:'row', alignItems:'center'}}>
-                    <View style={{flex:0.5, flexDirection:'row', justifyContent:'center'}}>
-                    <TouchableOpacity
+                  
+                  <TouchableOpacity
                             onPress={() => {<Text>Holaaa</Text>}}
                     >
+                    <View style={{flex:1, flexDirection:'row', alignItems:'center'}}>
+                    <View style={{flex:0.5, flexDirection:'row', justifyContent:'center'}}>
+                    
                     <Icon name="checkbox-outline" style={globalStyles.headerButton}/> 
-                    </TouchableOpacity>
+                    
                     </View>
                     <View style={{flex:4}}>
                     <Text style={{fontWeight:"bold", color:'black', fontSize:15}}>nombre: {paired.item.name}</Text>
@@ -174,7 +185,8 @@ export default class Prueba extends Component{
                     </View>
                     
                     </View>
-                    
+                   </TouchableOpacity>
+                  
                     }
                 keyExtractor={(paired) => paired.address.toString()} style={[
                     (this.state.deviceSelected != null && this.state.deviceSelected.address == device.address) 
@@ -233,8 +245,10 @@ export default class Prueba extends Component{
                         
                         <View style={{flex:1}}>    
                         <FlatList 
-                        data={this.state.devicesArray}
+                        data={filteredProductos2}
                         renderItem={({item}) =>
+                        
+                         
                           <View style={{flex:1, flexDirection:'row', alignItems:'center'}}>
                     {this.state.origen !== "MENU" && 
                             <View style={{flex:0.5, flexDirection:'row', justifyContent:'center', alignContent:'center'}}>
@@ -259,6 +273,7 @@ export default class Prueba extends Component{
                             <Separator/>
                             </View>
                             </View>
+                        
                             }
                             keyExtractor={(item) => item.address.toString()} style={[
                             (this.state.deviceSelected != null && this.state.deviceSelected.address == item.address) 
@@ -520,7 +535,7 @@ const styles = StyleSheet.create({
       marginBottom: 15
     },
     header: {
-      paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
+      paddingTop: Platform.OS === 'ios' ? 0 : 0, 
       backgroundColor:'#f6f6f6',
       color:'#000000',
       marginBottom: Platform.OS === 'ios' ? 0 : 0,

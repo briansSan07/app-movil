@@ -1,10 +1,12 @@
-import React, { Component } from "react";
-import { Text, View, Toast, Switch, Dimensions, StyleSheet, TouchableOpacity, 
-  FlatList, Image, TextInput,SafeAreaView, Modal, Platform } from "react-native";
+import React, { Component, useCallback } from "react";
+import { Text, View, Switch, Dimensions, StyleSheet, TouchableOpacity, 
+  FlatList, Image, TextInput,SafeAreaView, Modal, Platform, Alert } from "react-native";
 import {NumericFormat} from 'react-number-format';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Constants from 'expo-constants';
 import { Button } from "@rneui/themed";
+import { CommonActions, useFocusEffect } from '@react-navigation/native';
+
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
 const Separator = () => <View style={styles.separator} />;
@@ -31,24 +33,26 @@ class ConfirmacionVenta extends Component {
     iva:0 , 
     ieps:0 , 
     suma:0 , 
-
    
 
 
     isLoading:true, 
-    showToast: false,
     displayMetodoPago:false,
     selectedImage: null
   };
-    
+  
+
   }
   
+
+
   componentDidMount(){
 
     this.calculandoCarrito();
     this.setState({    isLoading:false    });
     
   }
+
 
   onChangeTBox(producto, cantidad){
 
@@ -66,10 +70,9 @@ class ConfirmacionVenta extends Component {
             //console.log("Global:" + carritoCompras)
         }
     }
-      Toast.show({
-        text: "Se Elimino de su Carrito",
-        buttonText: "Okay"
-      })
+    Alert.alert(
+      'Ha eliminado el producto del carrito.'
+    );
       console.log("carritoCompras: " , {carritoCompras});
     }else{
     let nuevoProductoParaCarrito = this.state.carrito.filter (function (item) {return item.id === producto.id; })
@@ -107,10 +110,9 @@ class ConfirmacionVenta extends Component {
                 }
             }
             //() =>
-              Toast.show({
-                text: "Se Elimino de su Carrito",
-                buttonText: "Okay"
-              })
+            Alert.alert(
+              'Ha eliminado el producto del carrito.'
+            );
               this.setState({carrito: carritoCompras}, () => {this.calculandoCarrito()});
           } else {
               this.setState({carrito: carritoCompras}, () => {this.calculandoCarrito()});
@@ -199,21 +201,62 @@ pasarDatos(){
   })
 }
 
+pasarDatos2(){
+  let carritoCompras = [...this.state.carrito];
+  const {route, navigation} = this.props;
 
+
+  console.log("carrito: ", carritoCompras);
+  const onGoBack = route.params.onGoBack
+  if (onGoBack){
+    onGoBack(carritoCompras);
+  }
+  this.props.navigation.goBack();
+
+
+  
+
+  /*if (carritoCompras.length == 0)
+  {
+    console.log("Vacio")
+  
+  this.props.navigation.navigate("Rutas",{uniqueValue:global.ventaUnique});
+  this.props.navigation.dispatch(CommonActions.reset({
+    index:'1', routes: [{name: 'Rutas'}],
+  }));
+  }
+  else{
+    console.log("Lleno")
+    this.props.navigation.push("Venta", {uniqueValue:global.ventaUnique, carritoCompras:carritoCompras, 
+      cliente:this.state.cliente , 
+      generaFactura:this.state.generaFactura, 
+      ventaSinIva:this.state.ventaSinIva,
+        });
+        this.calculandoCarrito();
+  
+        
+
+}
+//      this.categoriaArray=[];
+//      this.setState({car: this.state.carritoCompras=[]})
+//      this.consultaCategoria()
+//      this.consultaProductos(this.state.nivelSocioeconomico)
+*/
+}
 
   render() {
-  
+    global.carrito = this.state.carritos;
     const ventaSinIva = this.state.ventaSinIva;
     const { selectedImage } = this.state;
     return (
       <View style={{flex:1}}>
         <View  style={{ 
-    paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
+    paddingTop: Platform.OS === 'ios' ? 0 : 0 , 
     backgroundColor:'#f6f6f6',
     color:'#000000',
     marginBottom: Platform.OS === 'ios' ? 0 : 0,
-    height:90,
-    paddingTop: 30,
+    height:65,
+
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start', }}>
@@ -221,7 +264,7 @@ pasarDatos(){
                               <TouchableOpacity
                                 style={{flex: 0,
                                   padding: 10,}}
-                                onPress={() => this.props.navigation.goBack()}>
+                                onPress={() => this.pasarDatos2()}>
                                 <Icon name="arrow-back" style={{color:'#2496bc', fontSize: 30}} />
                               </TouchableOpacity>
         </View>
@@ -305,7 +348,7 @@ pasarDatos(){
 
                   <Separator/>
                 </View>}
-                keyExtractor = {(item) => item.idProducto}
+                keyExtractor = {(item) => item.id.toString()}
                 />
               {selectedImage && (
     <Modal animationType="slide" transparent={false} visible={true}>

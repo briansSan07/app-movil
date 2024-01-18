@@ -1,12 +1,12 @@
 import 'react-native-gesture-handler';
-import { StyleSheet, PermissionsAndroid, Platform} from 'react-native';
+import { StyleSheet, PermissionsAndroid, Platform, Alert, Linking} from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack'
 import {  createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer, createAppContainer, useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 import SideBar from './src/screens/sidebar';
 import Venta from './src/screens/venta';
-import * as Location from 'expo-location';
+
 
 import Cliente        from './src/screens/cliente';
 import ClienteDetalle from './src/screens/cliente/detalle';
@@ -45,6 +45,7 @@ export default class App extends React.Component {
       isReady: false,
       isActivated:false,
       usuario: global.usuario,
+      
     };
     this.debug = true;
   }
@@ -147,43 +148,115 @@ export default class App extends React.Component {
     });
   }
 
-  solicitarPermisoUbicacion = async () => {
+  solicitarPermisos = async () => {
+    
+    if (Platform.OS === 'android') {
+      await this.solicitarPermisosAndroid();
+    } 
+  };
+
+  solicitarPermisosAndroid = async () => {
     try {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      
-      if (status === 'granted') {
-        console.log('Permiso de ubicación concedido');
-        // Realiza operaciones relacionadas con la ubicación aquí
-      } else {
-        console.log('Permiso de ubicación denegado');
-        // Maneja la negación del permiso aquí
-      }
-    } catch (error) {
-      console.error('Error al solicitar permiso de ubicación', error);
-    }
-    };
+      if (Platform.OS === 'android') {
+        
   
+        // Solicitar permiso de ubicación
+        const locationGranted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Permiso de Ubicación',
+            message: 'La aplicación necesita acceso a la ubicación.',
+            buttonNeutral: 'Preguntarme después',
+            buttonNegative: 'Cancelar',
+            buttonPositive: 'Aceptar',
+          }
+        );
   
-  requestBluetoothPermissionAndroid = async () => {
-    try {
-      let { granted } = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
-        {
-          title: 'Permiso de Bluetooth',
-          message: 'Esta aplicación necesita permisos de Bluetooth.',
-          buttonPositive: 'OK',
+        if (locationGranted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Permiso de Ubicación concedido');
+        } else {
+          console.log('Permiso de Ubicación denegado');
         }
-      );
+
+        // Solicitar permiso de Bluetooth
+        const bluetoothGranted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+          {
+            title: 'Permiso de Bluetooth',
+            message: 'La aplicación necesita acceso al Bluetooth.',
+            buttonNeutral: 'Preguntarme después',
+            buttonNegative: 'Cancelar',
+            buttonPositive: 'Aceptar',
+          }
+        );
   
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('Permisos de Bluetooth concedidos');
-        // Aquí podrías realizar la impresión o realizar otras operaciones relacionadas con Bluetooth
-      } else {
-        console.warn('Se necesitan permisos de Bluetooth para continuar.');
+        if (bluetoothGranted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Permiso de Bluetooth concedido');
+        } else {
+          console.log('Permiso de Bluetooth denegado');
+        }
+
+        const bluetoothGranted2 = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+          {
+            title: 'Permiso de Bluetooth',
+            message: 'La aplicación necesita acceso al Bluetooth.',
+            buttonNeutral: 'Preguntarme después',
+            buttonNegative: 'Cancelar',
+            buttonPositive: 'Aceptar',
+          }
+        );
+  
+        if (bluetoothGranted2 === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Permiso de Bluetooth concedido');
+        } else {
+          console.log('Permiso de Bluetooth denegado');
+        }
+
+        const bluetoothGranted3 = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.NEARBY_WIFI_DEVICES,
+          {
+            title: 'Permiso de Bluetooth',
+            message: 'La aplicación necesita acceso al Bluetooth.',
+            buttonNeutral: 'Preguntarme después',
+            buttonNegative: 'Cancelar',
+            buttonPositive: 'Aceptar',
+          }
+        );
+  
+        if (bluetoothGranted3 === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Permiso de Bluetooth concedido');
+        } else {
+          console.log('Permiso de Bluetooth denegado');
+        }
+
+        
+        
       }
     } catch (error) {
-      console.error('Error al solicitar permisos:', error);
+      console.warn('Error al solicitar permisos en Android:', error);
     }
+  };
+
+  mostrarAlerta = () => {
+    Alert.alert(
+      'Permisos requeridos',
+      'La aplicación necesita permisos para acceder a la ubicación y al Bluetooth.',
+      [
+        {
+          text: 'Ir a configuración',
+          onPress: () => this.abrirConfiguracion(),
+        },
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+      ]
+    );
+  };
+
+  abrirConfiguracion = () => {
+    Linking.openSettings();
   };
 
   checkAppIsActivated(){
@@ -208,14 +281,11 @@ export default class App extends React.Component {
   async componentDidMount() {
 
 
-    console.log("usuario", global.usuario)
+ 
 
     this.inicializarApp();
-    
-    if (Platform.OS === 'android') {
-      this.solicitarPermisoUbicacion();
-      await this.requestBluetoothPermissionAndroid();
-    }
+    console.log("config");
+    this.solicitarPermisos();
    
   }
 
@@ -233,11 +303,11 @@ export default class App extends React.Component {
         >
            <Drawer.Screen name="Login" component={Login} options={{headerShown: false, swipeEnabled: false}}/>
           <Drawer.Screen  name="Venta" component={Venta} options={{headerShown: false}} />
-         
-          
-          
-        <Drawer.Screen name="Cliente" component={Cliente} options={{headerShown: false}}/>
+
+          <Drawer.Screen name="ConfirmacionVenta" component={ConfirmacionVenta} options={{headerShown: false}} />
         
+        <Drawer.Screen name="Cliente" component={Cliente} options={{headerShown: false}}/>
+
        
        
       </Drawer.Navigator>
@@ -247,7 +317,7 @@ export default class App extends React.Component {
     else{
       console.log("--------------------VENTA")
       return(
-      <Drawer.Navigator backBehavior="history" 
+      <Drawer.Navigator backBehavior='none' 
       
       screenOptions={{
             activeTintColor: "#e91e63"
@@ -257,8 +327,8 @@ export default class App extends React.Component {
         
         <Drawer.Screen  name="Venta" component={Venta} options={{headerShown: false}} />
         <Drawer.Screen name="Cliente" component={Cliente} options={{headerShown: false}}/>
-        <Drawer.Screen name="Pagada" component={Pagada} options={{headerShown: false}}/>
-      
+        <Drawer.Screen name="Pagada" component={Pagada} options={{headerShown: false, swipeEnabled: false, gestureEnabled: false}} />
+        <Drawer.Screen name="ConfirmacionVenta" component={ConfirmacionVenta} options={{headerShown: false}} />
        
       </Drawer.Navigator>
       )
@@ -284,7 +354,7 @@ export default class App extends React.Component {
       <Stack.Screen name="ClienteDetalle" component={ClienteDetalle} options={{headerShown: false}}/>
       <Stack.Screen name="ConfirmacionVenta" component={ConfirmacionVenta} options={{headerShown: false}} />
       <Stack.Screen name="Pagando" component={Pagando} options={{headerShown: false}} />
-      <Stack.Screen name="Pagada" component={Pagada} options={{headerShown: false}}/>
+      <Stack.Screen name="Pagada" component={Pagada} options={{headerShown: false, swipeEnabled: false, gestureEnabled: false}}/>
       <Stack.Screen name="BluetoothList" component={BluetoothList} options={{headerShown: false}} />
       <Stack.Screen name="VideoIndex" component={VideoIndex} options={{title: '¿Qué es Concrad?'}} />
       <Stack.Screen name="Prueba" component={Prueba} options={{headerShown: false}}/>

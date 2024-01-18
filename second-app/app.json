@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "second-app",
+    "name": "Concrad Punto de Venta 2.0",
     "slug": "second-app",
     
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -21,7 +21,8 @@
     },
     "android": {
       "permissions": [
-        "ACCES_FINE_LOCATION", "ACCES_COARSE_LOCATION", "BLUETOOTH"
+        "ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION", "NEARBY_WIFI_DEVICES", "BLUETOOTH_SCAN", 
+        "BLUETOOTH_CONNECT", "BLUETOOTH", "BLUETOOTH_ADMIN", "ACCESS_LOCATION"
     ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/favicon.png",
@@ -42,6 +43,14 @@
     },
     "updates": {
       "url": "https://u.expo.dev/4df25e85-1463-4fad-ae1b-cdae5b55c6ea"
-    }
+    },
+    "plugins": [
+      [
+        "expo-updates",
+        {
+          "username": "frankp20"
+        }
+      ]
+    ]
   }
 }

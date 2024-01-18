@@ -1,5 +1,5 @@
 import React, { Component} from "react";
-import { Updates } from 'expo';
+import * as Updates from 'expo-updates';
 import { View, Switch, Image, FlatList, StyleSheet, Dimensions, Text, ActivityIndicator, TextInput, Modal, Platform } from "react-native";
 import { ScrollView } from 'react-native-virtualized-view'
 const deviceHeight = Dimensions.get("window").height;
@@ -34,6 +34,7 @@ let textPersistence = "";
 
 export default class Venta extends Component {
 
+
   constructor(props) {
     super(props);
 
@@ -43,7 +44,12 @@ if (process.env.NODE_ENV !== 'production') {
 
    //console.log("* uniqueValue: " , (props.route.params.uniqueValue));
 
+
+         
+
     this.state = {
+      origen: this.origen,
+      prevOrigen: '',
       count: 0, 
       text:" ", 
       subtotal:0 , 
@@ -53,7 +59,7 @@ if (process.env.NODE_ENV !== 'production') {
       suma:0 , 
       
 //      total:0 , 
-      showToast: false,
+
       isLoading:true , 
       isReload:false,
 
@@ -91,8 +97,13 @@ if (process.env.NODE_ENV !== 'production') {
   }
 
 
+
+
   initializeComponent(){
 
+
+
+    console.log("Inicializando")
     this.setState({
       carritoCompras: [],
       categoriaArray: [],
@@ -111,29 +122,40 @@ if (process.env.NODE_ENV !== 'production') {
   }
 
   componentDidMount(){
-
    
+   
+    if (this.state.origen=="ConfirmacionVenta") {
+      this.checkAppUpdates();
+      //    this.consultaClientes();
+      
+          this.setState({ ventaSinIva:global.preciosDeVentaSinIva });
+          console.log("global.preciosDeVentaSinIva: " , global.preciosDeVentaSinIva );
+          console.log("state.ventaSinIva: " , this.state.ventaSinIva );
+         
+      
+          const { navigation } = this.props;
+    }
 
-    console.log("componentDidMount");
-    this.consultaCategoria();
-    this.consultaNivelSocioeconomicoPublico();
-    this.consultaMetodosPago();
-    this.consultaBancos();
-    this.consultaEstados();
-    this.checkAppUpdates();
-//    this.consultaClientes();
-
-    this.setState({ ventaSinIva:global.preciosDeVentaSinIva });
-    console.log("global.preciosDeVentaSinIva: " , global.preciosDeVentaSinIva );
-    console.log("state.ventaSinIva: " , this.state.ventaSinIva );
-    
-
-    const { navigation } = this.props;
-
+    else {
+      console.log("componentDidMount");
+      this.consultaCategoria();
+      this.consultaNivelSocioeconomicoPublico();
+      this.consultaMetodosPago();
+      this.consultaBancos();
+      this.consultaEstados();
+      this.checkAppUpdates();
+  //    this.consultaClientes();
+  
+      this.setState({ ventaSinIva:global.preciosDeVentaSinIva });
+      console.log("global.preciosDeVentaSinIva: " , global.preciosDeVentaSinIva );
+      console.log("state.ventaSinIva: " , this.state.ventaSinIva );
+     
+  
+      const { navigation } = this.props;
+    }
   }
 
   componentDidUpdate(prevProps) {
-    
 //    console.log( "********* venta.componentDidUpdate this.isLoading: " , prevProps );
 //uniqueValue: props.route.Param?.uniqueValue || 0 ,
     const prevUniqueValue =  prevProps.route.params?.uniqueValue;
@@ -155,8 +177,13 @@ if (process.env.NODE_ENV !== 'production') {
 
     }
     
+
+    
+//    console.log("componentDidUpdate - origen:" , origen ,  " prevOrigen: ", this.state.prevOrigen );
+
   }
-  
+
+
   /*shouldComponentUpdate(nextProps) {
     //productosDisplayArray
 //    console.log(".shouldComponentUpdate:" , {nextProps:nextProps.navigation.state.params.uniqueValue , "this.props": this.props.navigation.state.params.uniqueValue});
@@ -370,13 +397,17 @@ if (process.env.NODE_ENV !== 'production') {
   onChangeTBox = (producto, cantidad) => {
 
     let carritoCompras = [...this.state.carritoCompras];
+
+
+
+
     console.log("onChangeTBox: [" + cantidad+"]");
 
     if (cantidad >= producto.item.cantidad) {
         console.log("surtir: " + producto.item.nombre + " para surtir este pedido");
 //        porSurtir.push(producto.nombre)
     }
-    if (cantidad === "" || cantidad === " " || cantidad === undefined || cantidad === null || cantidad === "NaN") {
+    if (cantidad === "" || cantidad === " " || cantidad === undefined || cantidad === null || cantidad === "NaN" || cantidad ===0) {
         for (let i = 0; i < carritoCompras.length; i++) {
             if (carritoCompras[i].id === producto.item.idProducto) {
                 carritoCompras.splice(i, 1)
@@ -526,7 +557,6 @@ mostrarValor(producto){
     //totalPrecio = carritoCompras.reduce((acc, data) => acc + (data.cantidad*data.precio), 0);
 
     const carrito = this.state.carritoCompras;
-
     let suma=0;
     let count = 0;
     let subtotal = 0;
@@ -536,8 +566,12 @@ mostrarValor(producto){
 
     console.log("-------- calculandoCarrito ------------ " , this.state.ventaSinIva);
 
-    carrito.forEach((producto) => {
+        const borrador = carrito.filter(item => item.cantidad > 0)
 
+
+        this.setState({carritoCompras:borrador});
+        console.log("carrito", this.state.carritoCompras)
+    carrito.forEach((producto) => {
       console.log("producto: " , producto)
       const productoSubTotal = (producto.cantidad * producto.precio_antes_impuestos );
       count += producto.cantidad;
@@ -568,6 +602,7 @@ mostrarValor(producto){
       ieps:ieps ,
       isLoading: false
     })
+   
   }
 
 
@@ -591,13 +626,14 @@ mostrarValor(producto){
   }
 
     pasarDatos(){
-
-      this.props.navigation.navigate("ConfirmacionVenta", {
+      
+      this.props.navigation.push("ConfirmacionVenta", {
+        origen:"VENTA",
         carrito:this.state.carritoCompras, 
         cliente:this.state.cliente , 
         generaFactura:this.state.generaFactura, 
         ventaSinIva:this.state.ventaSinIva,
-  
+        onGoBack: (producto) => this.calculandoCarrito(producto),
       })
 //      this.categoriaArray=[];
 //      this.setState({car: this.state.carritoCompras=[]})
@@ -928,7 +964,7 @@ renderItem={(producto) =>
       </TouchableOpacity>
 
       <TextInput
-        placeholder= "0"
+        
         placeholderTextColor="#000000"
         style={{
           width: 40,
@@ -939,7 +975,9 @@ renderItem={(producto) =>
         }}
         onChangeText={(cantidad) => this.onChangeTBox(producto, cantidad)}
         keyboardType={"numeric"}
-        value={"" + this.state.carritoCompras.filter(row => row.id == producto.item.idProducto).reduce((cant, row) => cant + row.cantidad, inicial)}
+        
+        value={"" + this.state.carritoCompras.filter(row => row.id == producto.item.idProducto, item => item.cantidad > 0).reduce((cant, row) => cant + row.cantidad, inicial)}
+        
       />
       
       <TouchableOpacity onPress={() => this.sumaUno(producto)}>
@@ -1004,6 +1042,10 @@ renderItem={(producto) =>
 
 
 render() {
+  if (this.state.reload) {
+    // Lógica de recarga aquí
+    this.setState({ reload: false });
+  }
 
     const buscadorProductosActivo = this.state.buscadorProductosActivo;
     const productoFiltrado = this.state.productosDisplayArray;
@@ -1013,13 +1055,13 @@ render() {
   <View style={{ flex: 1 }}>
     
       <View  style={{ 
-    paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
+    paddingTop: Platform.OS === 'ios' ? 0 : 0, 
     backgroundColor:'#f6f6f6',
     flex:0,
     color:'#000000',
     marginBottom: Platform.OS === 'ios' ? 0 : 0,
-    height:90,
-    paddingTop: 30,
+    height:70,
+    paddingTop: 1,
     flexDirection: 'row',
     alignItems: 'center',
     }}>
@@ -1233,7 +1275,7 @@ render() {
               >
                 <View style ={{position: 'relative'}}>
                 <Icon name="md-cart" style={{ color: 'white', fontSize: 25 }} />
-                 {this.state.count != 0 &&
+                 {this.state.count > 0 &&
                 <View style ={{
                   backgroundColor: '#33BFAA',
                   borderRadius: 10,

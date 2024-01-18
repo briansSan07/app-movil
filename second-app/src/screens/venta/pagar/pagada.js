@@ -648,13 +648,12 @@ conectarDispositivo(attemps = 0){
 
 
         <View  style={{ 
-          paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
+          paddingTop: Platform.OS === 'ios' ? 0 : 0 , 
           backgroundColor:'#f6f6f6',
           flex: 0,
           color:'#000000',
           marginBottom: Platform.OS === 'ios' ? 0 : 0,
-          height:90,
-          paddingTop: 30,
+          height:65,
           flexDirection: 'row',
           alignItems: 'center',
           }}>

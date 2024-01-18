@@ -384,16 +384,16 @@ const globalStyles = StyleSheet.create({
     marginBottom: 15
   },
   header: {
-    paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
+    paddingTop: Platform.OS === 'ios' ? 0 : 0, 
     backgroundColor:'#f6f6f6',
     color:'#000000',
     marginBottom: Platform.OS === 'ios' ? 0 : 0,
-    height:90,
+    height:65,
     flexDirection: 'row',
     flex: 0,
     alignItems: 'center',
     justifyContent: 'flex-start', 
-    paddingTop: 35,
+
   },
   headerRight: {
     paddingTop: Platform.OS === 'ios' ? 0 : 10

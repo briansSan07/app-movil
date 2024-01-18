@@ -24,6 +24,7 @@ export default class BluetoothList extends Component {
         if(paired == undefined || paired == null){
             paired = [];
         }
+      
         console.log("origen: " , origen);
         this.state = {
             origen:origen,
@@ -109,9 +110,14 @@ export default class BluetoothList extends Component {
     
 
     render() {
+
+
+
+      const filteredProductos2 = this.state.devicesArray.filter((producto) => producto.name); // Filtra los productos con nombre definido
+
         return (
             <View style={styles.container}>
-              <View style={{ ...globalStyles.header, height:110, paddingTop:40 }}>
+              <View style={{ ...globalStyles.header, height:70 }}>
                 
               {(this.state.origen=="MENU" && 
                 <View style={{flex:3}}>
@@ -158,32 +164,35 @@ export default class BluetoothList extends Component {
 
                   <View style={{flex:1}}>
                 {
-                  this.state.paired!= null &&
+                  this.state.paired!= null && Platform.OS == 'android' &&
                   
                   <View style={{flex:1}}>
                         <FlatList 
                           data={this.state.paired}
                           renderItem={({item}) =>
-                            <View style={{flex:1, flexDirection:'row', alignItems:'center'}}>
-                              {this.state.origen == "VENTA" && 
-                                <View style={{flex:0.5, flexDirection:'row', justifyContent:'center'}}>
-                                  <TouchableOpacity
+                          <TouchableOpacity
                                           onPress={() => this.seleccionarDispositivo({item})}
                                   >
+                            <View style={{flex:1, flexDirection:'row', alignItems:'center'}}>
+                              
+                                <View style={{flex:0.5, flexDirection:'row', justifyContent:'center'}}>
+                                  
                                     {
                                     (this.state.deviceSelected != null && this.state.deviceSelected.address == item.address) 
                                       ? <Icon name="checkbox-outline" style={globalStyles.headerButton}/> 
                                       : <Icon name="square-outline" style={globalStyles.headerButton}/>
                                     }                                  
-                                    </TouchableOpacity>
+                                    
                                   </View>
-                              }
+                              
           
                               
                               <View style={{marginLeft:0, flex:1}}>
                                 <Text style={{fontWeight:"bold"}}>{item.name}</Text>
                               </View>
+                              
                             </View>
+                            </TouchableOpacity>
                           }
                         />
                   </View>
@@ -248,30 +257,33 @@ export default class BluetoothList extends Component {
                         
                         <View style={{flex:1}}>    
                         <FlatList 
-                        data={this.state.devicesArray}
+                        data={filteredProductos2}
                         renderItem={({item}) =>
-                          <View style={{flex:1, flexDirection:'row', alignItems:'center'}}>
-                    {this.state.origen == "VENTA" && 
-                            <View style={{flex:0.5, flexDirection:'row', justifyContent:'center', alignContent:'center'}}>
-                            <TouchableOpacity 
+                        <TouchableOpacity 
                                     onPress={() => this.seleccionarDispositivo({item})}
                             >
+                          <View style={{flex:1, flexDirection:'row', alignItems:'center'}}>
+                            
+                            <View style={{flex:0.5, flexDirection:'row', justifyContent:'center', alignContent:'center'}}>
+                            
                                 {
                                 (this.state.deviceSelected != null && this.state.deviceSelected.address == item.address) 
                                 ? <Icon name="checkbox-outline" style={globalStyles.headerButton}/> 
                                 : <Icon name="square-outline" style={globalStyles.headerButton}/>
                                 }
                                 
-                            </TouchableOpacity>
+                            
                             </View>
-                    }
+                    
         
                             
                             <View style={{marginLeft:0, flex:4}}>
                             <Text style={{fontWeight:"bold"}}>{item.name}</Text>
                             <Separator/>
                             </View>
+                            
                             </View>
+                            </TouchableOpacity>
                             }
                         />
                         </View>
@@ -342,7 +354,7 @@ const globalStyles = StyleSheet.create({
     marginBottom: 15
   },
   header: {
-    paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight , 
+    paddingTop: Platform.OS === 'ios' ? 0 : 0 , 
     backgroundColor:'#f6f6f6',
     color:'#000000',
     marginBottom: Platform.OS === 'ios' ? 0 : 0,
