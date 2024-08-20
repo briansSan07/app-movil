@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Concrad Punto de Venta 2.0",
-    "slug": "second-app",
+    "name": "Concrad Punto de Venta 2.1",
+    "slug": "second-app2",
     
     "version": "1.0.2",
     "orientation": "portrait",
@@ -17,7 +17,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.frankp20.secondapp"
+      "bundleIdentifier": "com.brian12345.secondapp"
     },
     "android": {
       "permissions": [
@@ -28,27 +28,27 @@
         "foregroundImage": "./assets/favicon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.frankp20.secondapp"
+      "package": "com.brian12345.secondapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "4df25e85-1463-4fad-ae1b-cdae5b55c6ea"
+        "projectId": "40897d2d-bcc0-4400-88c0-3b122c9c09b6"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/4df25e85-1463-4fad-ae1b-cdae5b55c6ea"
+      "url": "https://u.expo.dev/40897d2d-bcc0-4400-88c0-3b122c9c09b6"
     },
     "plugins": [
       [
         "expo-updates",
         {
-          "username": "frankp20"
+          "username": "brian12345"
         }
       ]
     ]

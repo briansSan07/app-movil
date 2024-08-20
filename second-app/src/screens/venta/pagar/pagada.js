@@ -960,3 +960,4 @@ const globalStyles = StyleSheet.create({
     height: 50,
     //backgroundColor:'black'
   },})
+  

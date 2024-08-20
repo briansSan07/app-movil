@@ -151,23 +151,28 @@ class VentaModel  {
     });
   }
 
-  consultaFolio(tx){
-    let folio = 0;
+  consultaFolio(tx) {
     return new Promise((resolve, reject) => {
-    
       tx.executeSql(
-        'select value from c_configuracion where [key] = ?', ['proceso_2_folio'], 
-        (tx, { rows }) => { //THEN
-          folio = parseInt(rows._array[0].value);
-          console.log("consultaFolio then: " , folio);
-          resolve({folio});
-        }, function (tx,error) { //CATCH
-          console.log("consultaFolio error:"  ,{error})
-          reject( {success:false,error:error} );
+        'select value from c_configuracion where [key] = ?', ['proceso_2_folio'],
+        (tx, { rows }) => { // THEN
+          if (rows && rows.length > 0) {
+            const folio = parseInt(rows._array[0].value);
+            console.log("consultaFolio then: ", folio);
+            resolve({ folio });
+          } else {
+            console.log("consultaFolio then: No rows found");
+            reject(new Error('No rows found'));
+          }
+        },
+        (tx, error) => { // CATCH
+          console.log("consultaFolio error:", { error });
+          reject({ success: false, error: error });
         }
       );
     });
   }
+  
 
   
   insertVenta(folioVenta , folio, venta, pagos){

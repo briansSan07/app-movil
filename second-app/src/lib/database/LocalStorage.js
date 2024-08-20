@@ -364,8 +364,8 @@ id_sync_status
 
 
     _inicializarFolio(tx){
-//      tx.executeSql('INSERT INTO c_configuracion ( key, value) VALUES(?,?)',["proceso_2_serie","V"]);
-//      tx.executeSql('INSERT INTO c_configuracion ( key, value) VALUES(?,?)',["proceso_2_folio","1"]);
+      tx.executeSql('INSERT INTO c_configuracion ( key, value) VALUES(?,?)',["proceso_2_serie","V"]);
+      tx.executeSql('INSERT INTO c_configuracion ( key, value) VALUES(?,?)',["proceso_2_folio","1"]);
       tx.executeSql('INSERT INTO c_configuracion ( key, value) VALUES(?,?)',["token",""]);
       tx.executeSql('INSERT INTO c_configuracion ( key, value) VALUES(?,?)',["isActivado",0]);
     }    

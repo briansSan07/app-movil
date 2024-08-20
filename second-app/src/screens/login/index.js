@@ -68,7 +68,7 @@ class Login extends Component {
 
 
   setAppIsActivated( state ){
-    
+    console.log("aaaaa");
     this.setState({ isActivated: state },() => { 
 
       if(this.debug) console.log ("this.state.isActivated: " , this.state.isActivated);
